@@ -1,58 +1,34 @@
-/* Logo Animation - appears, stays 2s, then disappears */
-@keyframes logoSequence {
+/* Unified Animation - same style for both logo and text */
+@keyframes splashSequence {
   0% { 
     opacity: 0; 
-    transform: scale(0.7) translateY(-10px); 
+    transform: scale(0.7); 
     filter: blur(8px);
   }
   15% { 
     opacity: 1; 
-    transform: scale(1) translateY(0); 
+    transform: scale(1); 
     filter: blur(0);
   }
   85% { 
     opacity: 1; 
-    transform: scale(1) translateY(0); 
+    transform: scale(1); 
     filter: blur(0);
   }
   100% { 
     opacity: 0; 
-    transform: scale(0.9) translateY(10px); 
-    filter: blur(4px);
-  }
-}
-
-/* Text Animation - appears after logo disappears, stays 2s, then disappears */
-@keyframes textSequence {
-  0% { 
-    opacity: 0; 
-    transform: translateY(20px) scale(0.8); 
+    transform: scale(0.8); 
     filter: blur(6px);
   }
-  15% { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-    filter: blur(0);
-  }
-  85% { 
-    opacity: 1; 
-    transform: translateY(0) scale(1); 
-    filter: blur(0);
-  }
-  100% { 
-    opacity: 0; 
-    transform: translateY(-15px) scale(0.9); 
-    filter: blur(4px);
-  }
 }
 
-/* Animation classes */
+/* Animation classes - both use the same animation style */
 .logo-animation {
-  animation: logoSequence 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: splashSequence 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .text-animation {
-  animation: textSequence 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2.2s forwards;
+  animation: splashSequence 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2.2s forwards;
 }
   
   /* ===== COMPREHENSIVE RESPONSIVE BREAKPOINTS ===== */
