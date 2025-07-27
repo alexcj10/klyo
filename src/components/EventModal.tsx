@@ -192,10 +192,22 @@ const EventModal: React.FC<EventModalProps> = ({
                   type="text"
                   required
                   value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 100) {
+                      setFormData({ ...formData, title: e.target.value });
+                    }
+                  }}
+                  maxLength={100}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter event title..."
                 />
+                <div className="flex justify-end mt-1">
+                  <span className={`text-xs ${
+                    formData.title.length > 90 ? 'text-red-500' : 'text-gray-400'
+                  }`}>
+                    {formData.title.length}/100
+                  </span>
+                </div>
               </div>
 
               {/* Description */}

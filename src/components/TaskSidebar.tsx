@@ -306,15 +306,29 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
             className="border-b border-gray-200/30 bg-gradient-to-br from-white to-gray-50/50 mx-4 lg:mx-5 rounded-xl mb-3 shadow-sm"
           >
             <div className="p-4 space-y-3">
-              <input
-                type="text"
-                placeholder="What needs to be done?"
-                value={newTaskTitle}
-                onChange={(e) => setNewTaskTitle(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
-                className="w-full px-4 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm placeholder-gray-400 transition-all duration-200"
-                autoFocus
-              />
+              <div>
+                <input
+                  type="text"
+                  placeholder="What needs to be done?"
+                  value={newTaskTitle}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 100) {
+                      setNewTaskTitle(e.target.value);
+                    }
+                  }}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
+                  maxLength={100}
+                  className="w-full px-4 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm placeholder-gray-400 transition-all duration-200"
+                  autoFocus
+                />
+                <div className="flex justify-end mt-1">
+                  <span className={`text-xs ${
+                    newTaskTitle.length > 90 ? 'text-red-500' : 'text-gray-400'
+                  }`}>
+                    {newTaskTitle.length}/100
+                  </span>
+                </div>
+              </div>
               <div className="grid grid-cols-2 gap-2">
                 <select
                   value={newTaskCategory}
