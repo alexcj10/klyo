@@ -1,3 +1,28 @@
+/* Splash Container - ensures full viewport coverage */
+.splash-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* Splash Center - perfect centering for content */
+.splash-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
 /* Unified Animation - same style for both logo and text */
 @keyframes splashSequence {
   0% { 
@@ -29,38 +54,6 @@
 
 .text-animation {
   animation: splashSequence 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2.2s forwards;
-}
-
-/* Mobile-specific optimizations for pixel-perfect centering */
-@media screen and (max-width: 768px) {
-  /* Ensure proper viewport handling on mobile devices */
-  .splash-container {
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height for modern browsers */
-    min-height: -webkit-fill-available; /* iOS Safari fallback */
-  }
-  
-  /* Additional centering support for older mobile browsers */
-  .splash-center {
-    display: grid;
-    place-items: center;
-    align-content: center;
-    justify-content: center;
-    height: 100%;
-  }
-}
-
-/* Specific fixes for common Android devices */
-@media screen and (max-width: 480px) {
-  .splash-center {
-    /* Force perfect centering on small screens */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
 }
   
   /* ===== COMPREHENSIVE RESPONSIVE BREAKPOINTS ===== */

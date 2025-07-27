@@ -295,7 +295,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                     }}
                   >
                     {foundEvents.length > 1 && (
-                      <div className="text-sm text-gray-600 font-medium mb-2 bg-white/80 backdrop-blur-sm p-2 rounded-lg border border-gray-100">
+                      <div className="text-sm text-gray-600 font-medium mb-2 sticky top-0 bg-white/80 backdrop-blur-sm p-2 rounded-lg border border-gray-100">
                         Found {foundEvents.length} events matching "{query}"
                       </div>
                     )}

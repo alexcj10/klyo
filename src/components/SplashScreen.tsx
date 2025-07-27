@@ -14,13 +14,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onDone }) => {
   }, [onDone]);
 
   return (
-    <div 
-      className="fixed inset-0 bg-[#16171A] z-[9999] w-full overflow-hidden splash-container" 
-      style={{ 
-        height: '100vh',
-        minHeight: '-webkit-fill-available'
-      }}
-    >
+    <div className="fixed inset-0 bg-[#16171A] z-[9999] overflow-hidden splash-container">
       {/* Logo - appears first, stays 2s, then disappears */}
       <div className="absolute inset-0 splash-center">
         <img 
