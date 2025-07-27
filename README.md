@@ -1,7 +1,14 @@
 # <p align="center">Organize your day effortlessly with Klyo</p>
 <img width="1920" height="1440" alt="62shots_so" src="https://github.com/user-attachments/assets/5fd16341-b007-491e-9ffd-8d1ebcf6a1ac" />
 
-### 🚀 Getting Started
+<p align="center">
+  <strong>Plan. Prioritize. Progress.</strong><br/>
+  Minimal UI ✦ Blazing fast ✦ Powered by TypeScript + Tailwind + Vite
+</p>
+
+---
+
+## ⚡ Quick Start
 
 ```bash
 git clone https://github.com/alexcj10/klyo.git
@@ -10,47 +17,96 @@ npm install
 npm run dev
 ```
 
-> Open [http://localhost:5173](http://localhost:5173) to view it in the browser.
+> 🌍 Visit [localhost:5173](http://localhost:5173) to see it in action.
 
 ---
 
-### 📦 Minimal Project Structure
+## 🧭 Project Layout
 
 ```
 klyo/
-├── public/            # Static files
-├── src/
-│   ├── components/    # Reusable UI elements
-│   ├── data/          # Mock data / constants
-│   ├── hooks/         # Custom React hooks
-│   ├── types/         # TypeScript types
-│   ├── utils/         # Utility functions
-│   ├── App.tsx        # Main app layout
-│   └── main.tsx       # App entry point
-├── vite.config.ts     # Vite configuration
-├── tailwind.config.js # Tailwind CSS config
-└── package.json       # Project metadata
+├── 🌐 public/               → Static assets & favicons
+├── 📁 src/
+│   ├── 🧩 components/       → UI Components
+│   │   ├── 📅 CalendarView      → Core scheduler
+│   │   ├── 📋 TaskSidebar       → Task manager
+│   │   ├── ✏️ EventModal        → Add/edit events
+│   │   ├── 👁️ EventViewModal    → View event details
+│   │   ├── 📊 DayViewModal      → Daily breakdown
+│   │   ├── 🎯 Header            → Top navigation
+│   │   ├── 🔍 SearchOverlay     → Command palette
+│   │   └── 🎬 SplashScreen      → App intro
+│   ├── 📊 data/             → Mock data & constants
+│   ├── 🪝 hooks/            → Custom React hooks
+│   ├── 🎯 types/            → TypeScript definitions
+│   ├── 🛠️ utils/            → Utility helpers
+│   ├── 🚀 App.tsx           → Root layout
+│   └── 🎯 main.tsx          → App entry
+├── 📋 package.json          → Metadata & scripts
+├── ⚙️ vite.config.ts        → Vite configuration
+├── 🎨 tailwind.config.js    → Tailwind setup
+└── 📖 README.md            → Documentation
 ```
 
 ---
 
-### 🤝 Contributing
+## 🤝 Contribution Guide
 
-1. **Fork** this repo
-2. **Create a branch**
+### 🧱 Workflow
 
-   ```bash
-   git checkout -b feature/your-feature
-   ```
-3. **Commit your changes**
-
-   ```bash
-   git commit -m "feat: your update"
-   ```
-4. **Push and open a PR**
-
-> Please maintain code consistency and follow the folder structure.
+| Step | Description  | Command                                     |
+| ---- | ------------ | ------------------------------------------- |
+| 1️⃣  | Fork project | Click "Fork" on GitHub                      |
+| 2️⃣  | Clone repo   | `git clone <your-fork-url>`                 |
+| 3️⃣  | New feature  | `git checkout -b feature/awesome`           |
+| 4️⃣  | Code & test  | Make it perfect 💅                          |
+| 5️⃣  | Commit       | `git commit -m "feat: add awesome feature"` |
+| 6️⃣  | Push         | `git push origin feature/awesome`           |
+| 7️⃣  | PR           | Open a Pull Request 📬                      |
 
 ---
 
-Made with ❤️ by [Alex](https://github.com/alexcj10)
+### 🧠 Code Standards
+
+* ✅ Follow established conventions
+* ✨ Use semantic names (clear, contextual)
+* 💡 Type everything (TypeScript FTW)
+* 📚 Comment tricky logic blocks
+* ♻️ Modularize logic into utils/hooks/components
+* 🧪 Write tests for important features
+
+---
+
+### 🔖 Commit Naming (Conventional Commits)
+
+| Type        | Emoji | Purpose                         | Example                             |
+| ----------- | ----- | ------------------------------- | ----------------------------------- |
+| `feat:`     | ✨     | New feature                     | `feat: add dark mode`               |
+| `fix:`      | 🐛    | Bug fix                         | `fix: resolve modal crash`          |
+| `docs:`     | 📝    | Documentation updates           | `docs: add API usage section`       |
+| `style:`    | 🎨    | Code style changes (no logic)   | `style: format with prettier`       |
+| `refactor:` | 🔧    | Code restructure (no features)  | `refactor: optimize date parsing`   |
+| `test:`     | ✅     | Add/update tests                | `test: add tests for calendar view` |
+| `chore:`    | 🔁    | Misc changes (builds/deps/etc.) | `chore: bump tailwind to v3.4`      |
+
+---
+
+### 🐞 Reporting Bugs
+
+Please include:
+
+* ✅ Clear problem description
+* 📸 Screenshots or screen recording
+* 🔁 Reproduction steps
+* 🌐 Environment (browser/OS/version)
+
+---
+
+### 💡 Suggesting Features
+
+To propose enhancements:
+
+* 🎯 Describe the feature clearly
+* 📍 Explain the use case and benefit
+* 🖼️ Include mockups if relevant
+* 💬 Suggest how it could be implemented
