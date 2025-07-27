@@ -1,199 +1,28 @@
-/* Splash Container - ensures full viewport coverage */
-.splash-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-}
+/* Splash Screen Animations - Pure Tailwind Layout */
 
-/* Splash Center - perfect centering for content */
-.splash-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-}
-
-/* Unified Animation - same style for both logo and text */
 @keyframes splashSequence {
   0% { 
     opacity: 0; 
-    transform: scale(0.7); 
-    filter: blur(8px);
+    transform: scale(0.8); 
   }
   15% { 
     opacity: 1; 
     transform: scale(1); 
-    filter: blur(0);
   }
   85% { 
     opacity: 1; 
     transform: scale(1); 
-    filter: blur(0);
   }
   100% { 
     opacity: 0; 
-    transform: scale(0.8); 
-    filter: blur(6px);
+    transform: scale(0.9); 
   }
 }
 
-/* Animation classes - both use the same animation style */
 .logo-animation {
-  animation: splashSequence 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: splashSequence 2.2s ease-out forwards;
 }
 
 .text-animation {
-  animation: splashSequence 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) 2.2s forwards;
+  animation: splashSequence 2.2s ease-out 2.2s forwards;
 }
-  
-  /* ===== COMPREHENSIVE RESPONSIVE BREAKPOINTS ===== */
-  
-  /* Extra small devices (portrait phones, less than 360px) */
-  @media (max-width: 359px) {
-    .splash-background {
-      padding: clamp(8px, 2vw, 15px);
-    }
-    .splash-logo {
-      width: clamp(45px, 15vw, 65px);
-      height: clamp(45px, 15vw, 65px);
-    }
-    .splash-tagline {
-      font-size: clamp(0.6rem, 3vw, 0.75rem);
-      margin-top: clamp(8px, 2vh, 15px);
-      padding: 0 8px;
-    }
-  }
-  
-  /* Small devices (landscape phones, 360px to 575px) */
-  @media (min-width: 360px) and (max-width: 575px) {
-    .splash-logo {
-      width: clamp(60px, 14vw, 80px);
-      height: clamp(60px, 14vw, 80px);
-    }
-    .splash-tagline {
-      font-size: clamp(0.75rem, 2.8vw, 0.9rem);
-      margin-top: clamp(12px, 2.5vh, 20px);
-    }
-  }
-  
-  /* Medium devices (tablets, 576px to 991px) */
-  @media (min-width: 576px) and (max-width: 991px) {
-    .splash-logo {
-      width: clamp(80px, 12vw, 110px);
-      height: clamp(80px, 12vw, 110px);
-    }
-    .splash-tagline {
-      font-size: clamp(0.9rem, 2.2vw, 1.1rem);
-      margin-top: clamp(16px, 3vh, 28px);
-    }
-  }
-  
-  /* Large devices (desktops, 992px to 1399px) */
-  @media (min-width: 992px) and (max-width: 1399px) {
-    .splash-logo {
-      width: clamp(100px, 10vw, 130px);
-      height: clamp(100px, 10vw, 130px);
-    }
-    .splash-tagline {
-      font-size: clamp(1rem, 1.8vw, 1.25rem);
-      margin-top: clamp(20px, 3.5vh, 35px);
-    }
-  }
-  
-  /* Extra large devices (large desktops, 1400px and up) */
-  @media (min-width: 1400px) {
-    .splash-logo {
-      width: clamp(120px, 8vw, 160px);
-      height: clamp(120px, 8vw, 160px);
-    }
-    .splash-tagline {
-      font-size: clamp(1.1rem, 1.5vw, 1.4rem);
-      margin-top: clamp(25px, 4vh, 45px);
-    }
-  }
-  
-  /* ===== ORIENTATION & HEIGHT SPECIFIC ===== */
-  
-  /* Landscape orientation (any device) */
-  @media (orientation: landscape) and (max-height: 600px) {
-    .splash-background {
-      padding: clamp(8px, 2vh, 20px);
-    }
-    .splash-logo {
-      width: clamp(40px, 8vh, 90px);
-      height: clamp(40px, 8vh, 90px);
-    }
-    .splash-tagline {
-      font-size: clamp(0.6rem, 2vh, 1rem);
-      margin-top: clamp(8px, 1.5vh, 20px);
-    }
-  }
-  
-  /* Very short screens (foldable phones, smart watches) */
-  @media (max-height: 400px) {
-    .splash-background {
-      padding: 5px;
-    }
-    .splash-logo {
-      width: clamp(35px, 10vh, 60px);
-      height: clamp(35px, 10vh, 60px);
-    }
-    .splash-tagline {
-      font-size: clamp(0.5rem, 2.5vh, 0.8rem);
-      margin-top: clamp(5px, 1vh, 12px);
-    }
-  }
-  
-  /* Ultra-wide screens (21:9 aspect ratio and wider) */
-  @media (min-aspect-ratio: 21/9) {
-    .splash-logo {
-      width: clamp(80px, 6vw, 120px);
-      height: clamp(80px, 6vw, 120px);
-    }
-    .splash-tagline {
-      font-size: clamp(0.9rem, 1.2vw, 1.2rem);
-      max-width: min(70vw, 500px);
-    }
-  }
-  
-  /* High DPI displays (Retina, 4K, etc.) */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-    .splash-logo {
-      image-rendering: -webkit-optimize-contrast;
-      image-rendering: crisp-edges;
-    }
-  }
-  
-  /* Reduced motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    .splash-logo {
-      animation: none;
-    }
-  }
-  
-  /* Dark mode support (if system preference) */
-  @media (prefers-color-scheme: dark) {
-    .splash-background {
-      background: #0a0a0b;
-    }
-  }
-  
-  /* Light mode support (if system preference) */
-  @media (prefers-color-scheme: light) {
-    .splash-background {
-      background: #16171A;
-    }
-    .splash-tagline {
-      color: #ffffff;
-    }
-  }

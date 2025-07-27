@@ -9,14 +9,14 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onDone }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDone();
-    }, 4500); // 4.5 seconds total: logo (2s) + text (2s) + buffer (0.5s)
+    }, 4500);
     return () => clearTimeout(timer);
   }, [onDone]);
 
   return (
-    <div className="fixed inset-0 bg-[#16171A] z-[9999] overflow-hidden splash-container">
-      {/* Logo - appears first, stays 2s, then disappears */}
-      <div className="absolute inset-0 splash-center">
+    <div className="fixed inset-0 bg-[#16171A] z-[9999] flex items-center justify-center overflow-hidden">
+      {/* Logo - appears first, centered */}
+      <div className="absolute flex items-center justify-center">
         <img 
           src="/klyo2.png" 
           alt="Klyo Logo" 
@@ -24,8 +24,8 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onDone }) => {
         />
       </div>
       
-      {/* Text - appears after logo disappears, stays 2s, then disappears */}
-      <div className="absolute inset-0 splash-center">
+      {/* Text - appears after logo, same center position */}
+      <div className="absolute flex items-center justify-center">
         <div className="text-white/90 text-sm sm:text-base md:text-lg lg:text-xl text-center font-medium tracking-wide max-w-sm sm:max-w-md md:max-w-lg px-6 opacity-0 text-animation">
           Organize Your Day, Effortlessly
         </div>
