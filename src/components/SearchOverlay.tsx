@@ -305,17 +305,17 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                       
                       return (
                         <div key={`${event.id}-${index}`} className="p-4 rounded-xl bg-white/90 backdrop-blur-md border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-200">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-bold text-xl text-gray-800">{event.title}</h4>
-                            <div className="flex gap-2">
-                              <span className={`px-2 py-1 text-xs rounded font-medium ${
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <h4 className="font-bold text-xl text-gray-800 flex-1 min-w-0">{event.title}</h4>
+                            <div className="flex gap-2 flex-shrink-0">
+                              <span className={`px-2 py-1 text-xs rounded font-medium whitespace-nowrap ${
                                 event.priority === 'high' ? 'bg-red-100 text-red-700' :
                                 event.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
                                 'bg-green-100 text-green-700'
                               }`}>
                                 {event.priority}
                               </span>
-                              <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700">
+                              <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700 whitespace-nowrap">
                                 {event.category}
                               </span>
                             </div>
