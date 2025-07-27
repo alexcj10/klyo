@@ -9,26 +9,27 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onDone }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       onDone();
-    }, 2000); // 2 seconds
+    }, 4500); // 4.5 seconds total: logo (2s) + text (2s) + buffer (0.5s)
     return () => clearTimeout(timer);
   }, [onDone]);
 
   return (
-    <div className="fixed inset-0 bg-[#16171A] flex flex-col items-center justify-center z-[9999] min-h-screen w-full overflow-hidden">
-      <div className="flex flex-col items-center justify-center">
+    <div className="fixed inset-0 bg-[#16171A] z-[9999] min-h-screen w-full overflow-hidden">
+      {/* Logo - appears first, stays 2s, then disappears */}
+      <div className="absolute inset-0 flex items-center justify-center">
         <img 
           src="/klyo2.png" 
           alt="Klyo Logo" 
-          className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-32 lg:h-32 xl:w-36 xl:h-36 object-contain opacity-0"
-          style={{
-            animation: 'logoAppear 1.2s cubic-bezier(0.83, 0, 0.17, 1) forwards'
-          }}
+          className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 object-contain opacity-0 logo-animation"
         />
-        <div className="mt-3 sm:mt-4 md:mt-6 lg:mt-8 text-white/80 text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-center font-light tracking-wide max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg px-4">
+      </div>
+      
+      {/* Text - appears after logo disappears, stays 2s, then disappears */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-white/90 text-sm sm:text-base md:text-lg lg:text-xl text-center font-medium tracking-wide max-w-sm sm:max-w-md md:max-w-lg px-6 opacity-0 text-animation">
           Organize Your Day, Effortlessly
         </div>
       </div>
-
     </div>
   );
 };
