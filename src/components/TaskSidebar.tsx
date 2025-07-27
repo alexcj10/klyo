@@ -270,25 +270,26 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
 
             {/* Sort Dropdown and Add Task Button */}
             {tasks.length > 0 && (
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2">
-                <span className="text-xs text-gray-500 font-medium flex-shrink-0">Sort by:</span>
+              <div className="flex items-center space-x-2">
+                <span className="text-xs text-gray-500 font-medium flex-shrink-0">Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-                  className="flex-1 min-w-0 text-xs bg-white/70 border border-gray-200/50 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 transition-all duration-200"
+                  className="flex-1 min-w-0 text-xs bg-white/70 border border-gray-200/50 rounded-lg px-2 py-1.5 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 transition-all duration-200"
                 >
                   <option value="priority">Priority</option>
-                  <option value="date">Due Date</option>
+                  <option value="date">Date</option>
                   <option value="category">Category</option>
                 </select>
                 <motion.button
                   whileHover={{ scale: 1.02, y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsAddingTask(true)}
-                  className="flex-shrink-0 px-4 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 text-sm font-semibold flex items-center justify-center space-x-2"
+                  className="flex-shrink-0 px-3 py-1.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 text-xs font-semibold flex items-center justify-center space-x-1"
                 >
-                  <Plus className="w-4 h-4" />
-                  <span>Add Task</span>
+                  <Plus className="w-3 h-3" />
+                  <span className="hidden sm:inline">Add Task</span>
+                  <span className="sm:hidden">Add</span>
                 </motion.button>
               </div>
             )}
@@ -333,7 +334,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                 <select
                   value={newTaskCategory}
                   onChange={(e) => setNewTaskCategory(e.target.value as Task['category'])}
-                  className="px-4 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm"
+                  className="px-2 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm min-w-0 truncate"
                 >
                   <option value="work">💼 Work</option>
                   <option value="personal">🏠 Personal</option>
@@ -344,19 +345,19 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                 <select
                   value={newTaskPriority}
                   onChange={(e) => setNewTaskPriority(e.target.value as Task['priority'])}
-                  className="px-4 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm"
+                  className="px-2 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm min-w-0 truncate"
                 >
                   <option value="low">🟢 Low</option>
                   <option value="medium">🟡 Medium</option>
                   <option value="high">🔴 High</option>
                 </select>
               </div>
-              <div className="flex space-x-2 pt-1">
+              <div className="flex space-x-3 pt-2">
                 <motion.button
                   whileHover={{ scale: 1.02, y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleAddTask}
-                  className="flex-1 px-4 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl hover:shadow-lg transition-all duration-300 text-sm font-semibold"
+                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 text-sm font-medium"
                 >
                   Add Task
                 </motion.button>
@@ -367,7 +368,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                     setIsAddingTask(false);
                     setNewTaskTitle('');
                   }}
-                  className="flex-1 px-4 py-3 border border-gray-200/60 text-gray-700 bg-white/80 rounded-xl hover:bg-gray-50 transition-all duration-300 text-sm font-semibold"
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 bg-white rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 text-sm font-medium"
                 >
                   Cancel
                 </motion.button>
