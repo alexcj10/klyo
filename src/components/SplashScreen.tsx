@@ -14,9 +14,15 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onDone }) => {
   }, [onDone]);
 
   return (
-    <div className="fixed inset-0 bg-[#16171A] z-[9999] min-h-screen w-full overflow-hidden">
+    <div 
+      className="fixed inset-0 bg-[#16171A] z-[9999] w-full overflow-hidden splash-container" 
+      style={{ 
+        height: '100vh',
+        minHeight: '-webkit-fill-available'
+      }}
+    >
       {/* Logo - appears first, stays 2s, then disappears */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 splash-center">
         <img 
           src="/klyo2.png" 
           alt="Klyo Logo" 
@@ -25,7 +31,7 @@ const SplashScreen: React.FC<SplashScreenProps> = ({ onDone }) => {
       </div>
       
       {/* Text - appears after logo disappears, stays 2s, then disappears */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      <div className="absolute inset-0 splash-center">
         <div className="text-white/90 text-sm sm:text-base md:text-lg lg:text-xl text-center font-medium tracking-wide max-w-sm sm:max-w-md md:max-w-lg px-6 opacity-0 text-animation">
           Organize Your Day, Effortlessly
         </div>
