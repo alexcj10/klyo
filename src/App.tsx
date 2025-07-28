@@ -250,7 +250,7 @@ function App() {
       >
         <div
           className={`flex-1 min-w-0 p-4 lg:p-6 transition-all duration-300 ${
-            isSidebarOpen ? 'lg:mr-80' : 'lg:mr-0'
+            isSidebarOpen ? 'lg:mr-80 xl:mr-96' : 'lg:mr-0'
           }`}
         >
           <CalendarView
@@ -271,7 +271,7 @@ function App() {
             opacity: isSidebarOpen ? 1 : 0,
           }}
           transition={{ duration: 0.3, ease: 'easeInOut' }}
-          className="hidden lg:block fixed right-0 top-16 bottom-0 w-80 xl:w-96 bg-white/95 backdrop-blur-sm border-l border-gray-200/50 shadow-lg z-30"
+          className="hidden lg:block fixed right-0 top-16 bottom-0 w-80 xl:w-96 bg-white/95 backdrop-blur-sm border-l border-gray-200/50 shadow-lg z-30 overflow-hidden"
         >
           <TaskSidebar
             tasks={tasks}
@@ -326,7 +326,7 @@ function App() {
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         className={`hidden lg:block fixed top-1/2 -translate-y-1/2 z-40 bg-white shadow-lg border border-gray-200/50 rounded-l-xl p-3 transition-all duration-300 ${
-          isSidebarOpen ? 'right-80' : 'right-0'
+          isSidebarOpen ? 'right-80 xl:right-96' : 'right-0'
         }`}
       >
         <motion.div animate={{ rotate: isSidebarOpen ? 0 : 180 }} transition={{ duration: 0.3 }}>
