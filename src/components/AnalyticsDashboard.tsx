@@ -402,8 +402,14 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => `${name} ${percentage}%`}
-                    outerRadius={80}
+                    label={({ name, percentage }) => {
+                      // Show percentages for all categories on mobile, names on desktop
+                      if (window.innerWidth < 640) {
+                        return `${percentage}%`;
+                      }
+                      return `${name} ${percentage}%`;
+                    }}
+                    outerRadius={window.innerWidth < 640 ? 60 : 80}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -412,6 +418,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
                     ))}
                   </Pie>
                   <Tooltip />
+                  <Legend 
+                    wrapperStyle={{ fontSize: '12px' }}
+                    iconType="circle"
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </motion.div>
