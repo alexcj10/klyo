@@ -225,16 +225,16 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`bg-gradient-to-br ${color} p-4 sm:p-6 rounded-2xl text-white shadow-lg cursor-pointer relative overflow-hidden`}
+      className={`bg-gradient-to-br ${color} p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl text-white shadow-lg cursor-pointer relative overflow-hidden`}
     >
       <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
       <div className="relative z-10">
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <div className="p-2 bg-white/20 rounded-lg">
+        <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+          <div className="p-1.5 sm:p-2 bg-white/20 rounded-lg">
             {icon}
           </div>
           <div className="text-right">
-            <div className="text-xl sm:text-2xl font-bold">{value}</div>
+            <div className="text-lg sm:text-xl lg:text-2xl font-bold">{value}</div>
             <div className="text-xs sm:text-sm opacity-90">{title}</div>
           </div>
         </div>
@@ -278,25 +278,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
   };
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4 sm:mb-6">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg">
-            <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Analytics Dashboard</h2>
-            <p className="text-sm sm:text-base text-gray-600">Track your productivity and insights</p>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
 
       {/* View Toggle */}
       <ViewToggle />
 
       {/* Enhanced Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
         <StatCard
           title="Productivity Score"
           value={`${analytics.productivityScore}%`}
@@ -339,18 +327,18 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6"
           >
             {/* Enhanced Weekly Activity */}
             <motion.div
               whileHover={{ scale: 1.01 }}
-              className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100 col-span-1 lg:col-span-2"
+              className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 col-span-1 lg:col-span-2"
             >
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                 <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
                 Weekly Activity Overview
               </h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
                 <ComposedChart data={analytics.weeklyActivity}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="day" stroke="#6b7280" fontSize={12} />
@@ -366,13 +354,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
             {/* Productivity Score Radial Chart */}
             <motion.div
               whileHover={{ scale: 1.01 }}
-              className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100"
+              className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                 <Target className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
                 Productivity Score
               </h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
                 <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" data={[{
                   name: 'Productivity',
                   value: analytics.productivityScore,
@@ -389,13 +377,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
             {/* Enhanced Category Distribution */}
             <motion.div
               whileHover={{ scale: 1.01 }}
-              className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100"
+              className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                 <PieChartIcon className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
                 Category Distribution
               </h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
                 <PieChart>
                   <Pie
                     data={analytics.eventsByCategory}
@@ -432,18 +420,18 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6"
           >
             {/* Time Distribution */}
             <motion.div
               whileHover={{ scale: 1.01 }}
-              className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100"
+              className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
                 Time Distribution
               </h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
                 <BarChart data={analytics.timeDistributionData} layout="horizontal">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis type="number" stroke="#6b7280" fontSize={12} />
@@ -457,20 +445,28 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
             {/* Priority Analysis */}
             <motion.div
               whileHover={{ scale: 1.01 }}
-              className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100"
+              className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                 <Award className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
                 Priority Analysis
               </h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
                 <PieChart>
                   <Pie
                     data={analytics.eventsByPriority}
                     cx="50%"
                     cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
+                    labelLine={false}
+                    label={({ name, percentage }) => {
+                      // Show percentages for all categories on mobile, names on desktop
+                      if (window.innerWidth < 640) {
+                        return `${percentage}%`;
+                      }
+                      return `${name} ${percentage}%`;
+                    }}
+                    innerRadius={window.innerWidth < 640 ? 30 : 40}
+                    outerRadius={window.innerWidth < 640 ? 60 : 80}
                     paddingAngle={5}
                     dataKey="value"
                   >
@@ -479,7 +475,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
                     ))}
                   </Pie>
                   <Tooltip />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ fontSize: '12px' }}
+                    iconType="circle"
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </motion.div>
@@ -487,13 +486,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
             {/* Monthly Trends */}
             <motion.div
               whileHover={{ scale: 1.01 }}
-              className="bg-white p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-100 col-span-1 lg:col-span-2"
+              className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 col-span-1 lg:col-span-2"
             >
-              <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
                 <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
                 6-Month Productivity Trends
               </h3>
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
                 <AreaChart data={analytics.monthlyTrends}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
