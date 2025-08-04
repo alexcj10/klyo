@@ -299,7 +299,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   </div>
                   
                   {event.description && (
-                    <p className="text-gray-600 text-xs sm:text-sm mb-1.5 sm:mb-2 line-clamp-1">
+                    <p className="text-gray-600 text-xs sm:text-sm mb-1.5 sm:mb-2 line-clamp-1 whitespace-pre-wrap">
                       {event.description}
                     </p>
                   )}

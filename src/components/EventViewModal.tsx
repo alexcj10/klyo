@@ -209,7 +209,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
             {event.description && (
               <div>
                 <h3 className="text-sm font-medium text-gray-700 mb-2">Description</h3>
-                <p className="text-gray-600 text-sm leading-relaxed bg-gray-50 rounded-lg p-3">
+                <p className="text-gray-600 text-sm leading-relaxed bg-gray-50 rounded-lg p-3 whitespace-pre-wrap">
                   {event.description}
                 </p>
               </div>

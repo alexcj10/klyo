@@ -541,7 +541,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                         </div>
 
                         {event.description && (
-                          <p className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed">
+                          <p className="text-xs text-gray-600 mb-3 line-clamp-2 leading-relaxed whitespace-pre-wrap">
                             {event.description}
                           </p>
                         )}

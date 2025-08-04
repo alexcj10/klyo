@@ -325,7 +325,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                           </div>
                           {event.description && (
                             <div className="text-gray-700">
-                              <div className={`${hasLongDescription && !isExpanded ? 'line-clamp-3' : ''}`}>
+                              <div className={`whitespace-pre-wrap ${hasLongDescription && !isExpanded ? 'line-clamp-3' : ''}`}>
                                 {isExpanded || !hasLongDescription ? event.description : truncateText(event.description)}
                               </div>
                               {hasLongDescription && (
