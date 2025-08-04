@@ -403,10 +403,10 @@ function App() {
               transition={{ delay: 0.2, duration: 0.4, ease: 'easeOut' }}
               className="text-center"
             >
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 tracking-tight">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-3 tracking-tight">
                 Event Deleted!
               </h1>
-              <p className="text-2xl md:text-3xl text-white/95 font-medium">Your event has been removed</p>
+              <p className="text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl text-white/95 font-medium">Your event has been removed</p>
             </motion.div>
           </motion.div>
         )}
