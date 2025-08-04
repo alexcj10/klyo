@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Menu, Search, PanelRightOpen, PanelRightClose } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SearchOverlay from './SearchOverlay';
+import AnalyticsButton from './AnalyticsButton';
 import { Event } from '../types';
 
 interface HeaderProps {
@@ -10,6 +11,8 @@ interface HeaderProps {
   isSidebarOpen?: boolean;
   onSearch: (query: string) => void;
   events?: Event[]; // Add events prop for search functionality
+  onAnalyticsClick?: () => void;
+  isAnalyticsActive?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -18,6 +21,8 @@ const Header: React.FC<HeaderProps> = ({
   isSidebarOpen = true,
   onSearch,
   events = [], // Destructure events from props
+  onAnalyticsClick,
+  isAnalyticsActive = false,
 }) => {
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -65,6 +70,13 @@ const Header: React.FC<HeaderProps> = ({
           >
             <Search className="w-5 h-5" />
           </motion.button>
+
+          {onAnalyticsClick && (
+            <AnalyticsButton
+              onClick={onAnalyticsClick}
+              isActive={isAnalyticsActive}
+            />
+          )}
 
           <motion.button
             whileHover={{ scale: 1.05 }}

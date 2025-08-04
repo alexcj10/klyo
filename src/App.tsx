@@ -7,6 +7,7 @@ import TaskSidebar from './components/TaskSidebar';
 import EventModal from './components/EventModal';
 import EventViewModal from './components/EventViewModal';
 import DayViewModal from './components/DayViewModal';
+import AnalyticsModal from './components/AnalyticsModal';
 import { Event, Task } from './types';
 import { mockEvents, mockTasks } from './data/mockData';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -48,6 +49,7 @@ function App() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
   const [showSadAnimation, setShowSadAnimation] = useState(false);
+  const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
 
   // Search query state
   const [searchQuery, setSearchQuery] = useState('');
@@ -226,6 +228,10 @@ function App() {
     }
   };
 
+  const handleAnalyticsClick = () => {
+    setIsAnalyticsModalOpen(true);
+  };
+
   // Render splash while it shows
   if (showSplash) {
     return <SplashScreen onDone={() => setShowSplash(false)} />;
@@ -235,11 +241,13 @@ function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
       <Header
-        onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+        onToggleSidebar={() => setIsMobileSidebarOpen(true)}
         onToggleDesktopSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
         isSidebarOpen={isSidebarOpen}
         onSearch={setSearchQuery}
-        events={events} // Pass events data for search functionality
+        events={events}
+        onAnalyticsClick={handleAnalyticsClick}
+        isAnalyticsActive={isAnalyticsModalOpen}
       />
 
       <motion.main
@@ -369,6 +377,13 @@ function App() {
         onEventClick={handleDayViewEventClick}
         onEventDelete={(event) => handleEventDelete(event.id)}
         onAddEvent={handleDayViewAddEvent}
+      />
+
+      <AnalyticsModal
+        isOpen={isAnalyticsModalOpen}
+        onClose={() => setIsAnalyticsModalOpen(false)}
+        events={events}
+        tasks={tasks}
       />
 
       {/* Sad animation on event delete */}
