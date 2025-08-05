@@ -37,12 +37,12 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             {/* Header */}
             <div className="flex items-center justify-between p-4 sm:p-6 bg-white border-b border-gray-200">
               <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-sm sm:text-base">📊</span>
+                <div className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold text-lg sm:text-xl">📊</span>
                 </div>
                 <div className="min-w-0 flex-1 flex flex-col justify-center">
-                  <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 truncate leading-tight">Analytics Dashboard</h2>
-                  <p className="text-xs sm:text-sm text-gray-600 truncate">Insights into your productivity</p>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 truncate leading-tight">Analytics Dashboard</h2>
+                  <p className="text-sm sm:text-sm text-gray-600 truncate">Insights into your productivity</p>
                 </div>
               </div>
               <motion.button
