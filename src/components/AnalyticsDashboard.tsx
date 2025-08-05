@@ -402,7 +402,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <ComposedChart data={analytics.weeklyActivity}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="day" stroke="#6b7280" fontSize={12} />
-                  <YAxis stroke="#6b7280" fontSize={12} />
+                  <YAxis 
+                    stroke="#6b7280" 
+                    fontSize={12} 
+                    domain={[0, 'dataMax + 1']}
+                    allowDecimals={false}
+                    tickCount={6}
+                  />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
                   <Bar dataKey="events" fill="#8B5CF6" name="Events" radius={[4, 4, 0, 0]} maxBarSize={15} />
