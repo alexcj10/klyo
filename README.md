@@ -1,5 +1,5 @@
 # <p align="center">Organize your day effortlessly with Klyo</p>
-<img width="1920" height="1440" alt="62shots_so" src="https://github.com/user-attachments/assets/5fd16341-b007-491e-9ffd-8d1ebcf6a1ac" />
+<img width="1920" height="1440" alt="31shots_so" src="https://github.com/user-attachments/assets/6d493468-507a-4866-a7b5-839ba0b6fbc6" />
 
 <p align="center">
   <strong>Plan. Prioritize. Progress.</strong><br/>
