@@ -20,15 +20,7 @@ function App() {
   // Splash state
   const [showSplash, setShowSplash] = useState(true);
 
-  // Clear localStorage on first load to ensure clean state for testing
-  React.useEffect(() => {
-    // Force clear localStorage to ensure empty state
-    localStorage.removeItem('klyo-events');
-    localStorage.removeItem('klyo-tasks');
-    console.log('Cleared localStorage - Events and Tasks reset to empty');
-    console.log('Current localStorage events:', localStorage.getItem('klyo-events'));
-    console.log('Current localStorage tasks:', localStorage.getItem('klyo-tasks'));
-  }, []);
+  // Data persistence is now enabled - events and tasks will persist across page refreshes
 
   const [events, setEvents] = useLocalStorage<Event[]>('klyo-events', []);
   const [tasks, setTasks] = useLocalStorage<Task[]>('klyo-tasks', []);
