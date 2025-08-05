@@ -9,9 +9,13 @@ interface AnalyticsModalProps {
   onClose: () => void;
   events: Event[];
   tasks: Task[];
+  onAddEvent?: () => void;
+  onAddTask?: () => void;
 }
 
-const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events, tasks }) => {
+const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events, tasks, onAddEvent, onAddTask }) => {
+  const hasData = events.length > 0 || tasks.length > 0;
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -27,18 +31,18 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="w-full max-w-7xl max-h-[90vh] bg-gray-50 rounded-3xl shadow-2xl overflow-hidden"
+            className="w-full max-w-7xl max-h-[95vh] sm:max-h-[90vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-6 bg-white border-b border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-sm">📊</span>
+            <div className="flex items-center justify-between p-4 sm:p-6 bg-white border-b border-gray-200">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold text-xs sm:text-sm">📊</span>
                 </div>
-                <div>
-                  <h2 className="text-xl font-bold text-gray-800">Analytics Dashboard</h2>
-                  <p className="text-sm text-gray-600">Insights into your productivity</p>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate">Analytics Dashboard</h2>
+                  <p className="text-xs sm:text-sm text-gray-600 truncate">Insights into your productivity</p>
                 </div>
               </div>
               <motion.button
@@ -52,10 +56,8 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             </div>
 
             {/* Content */}
-            <div className="overflow-y-auto max-h-[calc(90vh-80px)] scrollbar-hide">
-              <div className="p-6">
-                <AnalyticsDashboard events={events} tasks={tasks} />
-              </div>
+            <div className={hasData ? "overflow-y-auto max-h-[calc(95vh-100px)] sm:max-h-[calc(90vh-80px)] scrollbar-hide p-4 sm:p-6" : "flex-1 flex items-center justify-center py-4 px-4 sm:px-6 min-h-0"}>
+              <AnalyticsDashboard events={events} tasks={tasks} onAddEvent={onAddEvent} onAddTask={onAddTask} />
             </div>
           </motion.div>
         </motion.div>

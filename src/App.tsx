@@ -20,23 +20,18 @@ function App() {
   // Splash state
   const [showSplash, setShowSplash] = useState(true);
 
-  const [events, setEvents] = useLocalStorage<Event[]>('klyo-events', mockEvents);
-  
-  // EMERGENCY: Function to restore events if they disappear
-  const restoreEvents = () => {
-    console.log('Restoring events from mock data...');
-    setEvents(mockEvents);
-    console.log('Events restored!');
-  };
-  
-  // EMERGENCY: Auto-restore if events are empty
+  // Clear localStorage on first load to ensure clean state for testing
   React.useEffect(() => {
-    if (events.length === 0) {
-      console.log('No events found, auto-restoring...');
-      restoreEvents();
-    }
+    // Force clear localStorage to ensure empty state
+    localStorage.removeItem('klyo-events');
+    localStorage.removeItem('klyo-tasks');
+    console.log('Cleared localStorage - Events and Tasks reset to empty');
+    console.log('Current localStorage events:', localStorage.getItem('klyo-events'));
+    console.log('Current localStorage tasks:', localStorage.getItem('klyo-tasks'));
   }, []);
-  const [tasks, setTasks] = useLocalStorage<Task[]>('klyo-tasks', mockTasks);
+
+  const [events, setEvents] = useLocalStorage<Event[]>('klyo-events', []);
+  const [tasks, setTasks] = useLocalStorage<Task[]>('klyo-tasks', []);
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [viewEvent, setViewEvent] = useState<Event | null>(null);
@@ -232,6 +227,20 @@ function App() {
     setIsAnalyticsModalOpen(true);
   };
 
+  // Analytics button handlers
+  const handleAnalyticsAddEvent = () => {
+    setIsAnalyticsModalOpen(false); // Close analytics modal
+    setSelectedDate(new Date()); // Set current date
+    setSelectedEvent(null);
+    setIsEventModalOpen(true); // Open event modal
+  };
+
+  const handleAnalyticsAddTask = () => {
+    setIsAnalyticsModalOpen(false); // Close analytics modal
+    setIsSidebarOpen(true); // Ensure sidebar is open
+    setIsMobileSidebarOpen(true); // Open mobile sidebar if on mobile
+  };
+
   // Render splash while it shows
   if (showSplash) {
     return <SplashScreen onDone={() => setShowSplash(false)} />;
@@ -384,6 +393,8 @@ function App() {
         onClose={() => setIsAnalyticsModalOpen(false)}
         events={events}
         tasks={tasks}
+        onAddEvent={handleAnalyticsAddEvent}
+        onAddTask={handleAnalyticsAddTask}
       />
 
       {/* Sad animation on event delete */}

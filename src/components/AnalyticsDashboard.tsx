@@ -30,6 +30,8 @@ import { format, startOfWeek, endOfWeek, eachDayOfInterval, isWithinInterval, st
 interface AnalyticsDashboardProps {
   events: Event[];
   tasks: Task[];
+  onAddEvent?: () => void;
+  onAddTask?: () => void;
 }
 
 const COLORS = {
@@ -60,14 +62,18 @@ const COLORS = {
   },
 };
 
-const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }) => {
+const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, onAddEvent, onAddTask }) => {
   const [selectedView, setSelectedView] = useState<'overview' | 'detailed'>('overview');
   const [activeChart, setActiveChart] = useState<string | null>(null);
 
-  // Calculate advanced analytics data
+  // Calculate advanced analytics data with real-time sync and empty state handling
   const analytics = useMemo(() => {
-    // Enhanced category analysis with colors
-    const eventsByCategory = Object.entries(
+    // Check if we have any data at all
+    const hasEvents = events.length > 0;
+    const hasTasks = tasks.length > 0;
+    
+    // Enhanced category analysis with colors - FIXED for empty states
+    const eventsByCategory = hasEvents ? Object.entries(
       events.reduce((acc, event) => {
         acc[event.category] = (acc[event.category] || 0) + 1;
         return acc;
@@ -77,9 +83,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
       value,
       color: COLORS.categoryColors[name as keyof typeof COLORS.categoryColors] || COLORS.gradient[0],
       percentage: ((value / events.length) * 100).toFixed(1),
-    }));
+    })) : [];
 
-    const tasksByCategory = Object.entries(
+    const tasksByCategory = hasTasks ? Object.entries(
       tasks.reduce((acc, task) => {
         acc[task.category] = (acc[task.category] || 0) + 1;
         return acc;
@@ -89,10 +95,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
       value,
       color: COLORS.categoryColors[name as keyof typeof COLORS.categoryColors] || COLORS.gradient[1],
       percentage: ((value / tasks.length) * 100).toFixed(1),
-    }));
+    })) : [];
 
-    // Enhanced priority analysis
-    const eventsByPriority = Object.entries(
+    // Enhanced priority analysis - FIXED for empty states
+    const eventsByPriority = hasEvents ? Object.entries(
       events.reduce((acc, event) => {
         acc[event.priority] = (acc[event.priority] || 0) + 1;
         return acc;
@@ -102,7 +108,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
       value,
       color: COLORS.priorityColors[name as keyof typeof COLORS.priorityColors] || COLORS.gradient[0],
       percentage: ((value / events.length) * 100).toFixed(1),
-    }));
+    })) : [];
 
     // Task completion rate and productivity metrics
     const completedTasks = tasks.filter(task => task.completed).length;
@@ -115,28 +121,30 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
       (Math.min(tasks.length / 15, 1) * 30)
     );
     
-    // Current streak calculation
+    // Current streak calculation - FIXED for empty states
     const currentDate = new Date();
     let currentStreak = 0;
-    for (let i = 0; i < 30; i++) {
-      const checkDate = new Date(currentDate);
-      checkDate.setDate(checkDate.getDate() - i);
-      
-      const hasActivity = events.some(event => 
-        event.date.toDateString() === checkDate.toDateString()
-      ) || tasks.some(task => 
-        task.dueDate && task.dueDate.toDateString() === checkDate.toDateString() && task.completed
-      );
-      
-      if (hasActivity) {
-        currentStreak++;
-      } else {
-        break;
+    if (hasEvents || hasTasks) {
+      for (let i = 0; i < 30; i++) {
+        const checkDate = new Date(currentDate);
+        checkDate.setDate(checkDate.getDate() - i);
+        
+        const hasActivity = events.some(event => 
+          event.date.toDateString() === checkDate.toDateString()
+        ) || tasks.some(task => 
+          task.dueDate && task.dueDate.toDateString() === checkDate.toDateString() && task.completed
+        );
+        
+        if (hasActivity) {
+          currentStreak++;
+        } else {
+          break;
+        }
       }
     }
     
-    // Time distribution analysis
-    const timeDistribution = events.reduce((acc, event) => {
+    // Time distribution analysis - FIXED for empty states
+    const timeDistribution = hasEvents ? events.reduce((acc, event) => {
       const hour = parseInt(event.startTime.split(':')[0]);
       const period = hour < 6 ? 'Early Morning' : 
                     hour < 12 ? 'Morning' : 
@@ -144,12 +152,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
                     hour < 21 ? 'Evening' : 'Night';
       acc[period] = (acc[period] || 0) + 1;
       return acc;
-    }, {} as Record<string, number>);
+    }, {} as Record<string, number>) : {};
     
     const timeDistributionData = Object.entries(timeDistribution).map(([name, value]) => ({
       name,
       value,
-      percentage: ((value / events.length) * 100).toFixed(1),
+      percentage: hasEvents ? ((value / events.length) * 100).toFixed(1) : '0.0',
     }));
 
     // Weekly activity (last 7 days)
@@ -277,6 +285,58 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
     return null;
   };
 
+  // Debug logging to verify data
+  console.log('AnalyticsDashboard - Events:', events.length, events);
+  console.log('AnalyticsDashboard - Tasks:', tasks.length, tasks);
+  
+  // Check if we have any data to display
+  const hasAnyData = events.length > 0 || tasks.length > 0;
+  console.log('AnalyticsDashboard - hasAnyData:', hasAnyData);
+
+  // Empty State Component
+  const EmptyState: React.FC = () => (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex flex-col items-center justify-center py-6 sm:py-12 px-4 sm:px-8 text-center max-w-lg mx-auto"
+    >
+      <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-violet-100 to-purple-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+        <BarChart3 className="w-8 h-8 sm:w-12 sm:h-12 text-violet-400" />
+      </div>
+      <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">No Data Available</h3>
+      <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
+        Start adding events and tasks to see your productivity analytics. Your dashboard will update in real-time as you add content.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onAddEvent}
+          className="bg-violet-50 hover:bg-violet-100 px-4 py-3 sm:py-2 rounded-lg transition-colors cursor-pointer w-full sm:w-auto"
+        >
+          <span className="text-violet-600 font-medium text-sm sm:text-base">📅 Add Events</span>
+        </motion.button>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={onAddTask}
+          className="bg-blue-50 hover:bg-blue-100 px-4 py-3 sm:py-2 rounded-lg transition-colors cursor-pointer w-full sm:w-auto"
+        >
+          <span className="text-blue-600 font-medium text-sm sm:text-base">✅ Add Tasks</span>
+        </motion.button>
+      </div>
+    </motion.div>
+  );
+
+  // If no data, show empty state
+  if (!hasAnyData) {
+    return (
+      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
+        <EmptyState />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3 sm:space-y-4 lg:space-y-6">
 
@@ -391,13 +451,24 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
                     cy="50%"
                     labelLine={false}
                     label={({ name, percentage }) => {
-                      // Show percentages for all categories on mobile, names on desktop
-                      if (window.innerWidth < 640) {
+                      // Improved responsive text rendering
+                      const isSmallScreen = window.innerWidth < 640;
+                      const isMediumScreen = window.innerWidth < 1024;
+                      
+                      if (isSmallScreen) {
+                        // Mobile: Show only percentage
                         return `${percentage}%`;
+                      } else if (isMediumScreen) {
+                        // Tablet: Show short name + percentage
+                        const shortName = name.length > 6 ? name.substring(0, 6) + '...' : name;
+                        return `${shortName} ${percentage}%`;
+                      } else {
+                        // Desktop: Show full name + percentage
+                        return `${name} ${percentage}%`;
                       }
-                      return `${name} ${percentage}%`;
                     }}
-                    outerRadius={window.innerWidth < 640 ? 60 : 80}
+                    outerRadius={window.innerWidth < 640 ? 55 : window.innerWidth < 1024 ? 70 : 80}
+                    innerRadius={window.innerWidth < 640 ? 25 : window.innerWidth < 1024 ? 35 : 40}
                     fill="#8884d8"
                     dataKey="value"
                   >
@@ -459,14 +530,24 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks }
                     cy="50%"
                     labelLine={false}
                     label={({ name, percentage }) => {
-                      // Show percentages for all categories on mobile, names on desktop
-                      if (window.innerWidth < 640) {
+                      // Improved responsive text rendering for priority analysis
+                      const isSmallScreen = window.innerWidth < 640;
+                      const isMediumScreen = window.innerWidth < 1024;
+                      
+                      if (isSmallScreen) {
+                        // Mobile: Show only percentage
                         return `${percentage}%`;
+                      } else if (isMediumScreen) {
+                        // Tablet: Show short name + percentage
+                        const shortName = name.length > 4 ? name.substring(0, 4) + '...' : name;
+                        return `${shortName} ${percentage}%`;
+                      } else {
+                        // Desktop: Show full name + percentage
+                        return `${name} ${percentage}%`;
                       }
-                      return `${name} ${percentage}%`;
                     }}
-                    innerRadius={window.innerWidth < 640 ? 30 : 40}
-                    outerRadius={window.innerWidth < 640 ? 60 : 80}
+                    innerRadius={window.innerWidth < 640 ? 25 : window.innerWidth < 1024 ? 35 : 40}
+                    outerRadius={window.innerWidth < 640 ? 55 : window.innerWidth < 1024 ? 70 : 80}
                     paddingAngle={5}
                     dataKey="value"
                   >
