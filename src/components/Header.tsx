@@ -51,17 +51,30 @@ const Header: React.FC<HeaderProps> = ({
 
         {/* Right side controls */}
         <div className="flex items-center space-x-1 sm:space-x-4 ml-auto">
-          <motion.div whileHover={{ scale: 1.02 }} className="relative hidden md:block">
+          {/* Full search bar - only show on larger screens */}
+          <motion.div whileHover={{ scale: 1.02 }} className="relative hidden xl:block">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
             <input
               type="text"
               placeholder="Search events..."
               readOnly
               onFocus={() => setSearchOpen(true)}
-              className="pl-10 pr-4 py-2 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 md:w-48 lg:w-64"
+              className="pl-10 pr-4 py-2 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 w-48 xl:w-64"
             />
           </motion.div>
 
+          {/* Search icon button - show on medium to large screens */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setSearchOpen(true)}
+            className="hidden md:flex xl:hidden text-gray-600 hover:text-gray-800 p-2 rounded-xl hover:bg-gray-100 transition-all duration-200"
+            title="Search events"
+          >
+            <Search className="w-5 h-5" />
+          </motion.button>
+
+          {/* Mobile search button */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
