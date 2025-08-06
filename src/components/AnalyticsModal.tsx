@@ -31,7 +31,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`w-full ${hasData ? 'max-w-5xl' : 'max-w-lg'} max-h-[95vh] sm:max-h-[90vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden`}
+            className={`w-full ${hasData ? 'max-w-5xl' : 'max-w-lg'} max-h-[85vh] sm:max-h-[90vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -56,8 +56,8 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             </div>
 
             {/* Content */}
-            <div className={hasData ? "overflow-y-auto max-h-[calc(95vh-120px)] sm:max-h-[calc(90vh-100px)] scrollbar-hide pt-6 sm:pt-8" : "flex-1 flex items-center justify-center px-4 sm:px-6"}>
-              <div className={hasData ? "px-4 sm:px-6 pb-4 sm:pb-6" : "w-full flex items-center justify-center min-h-[350px] sm:min-h-[400px]"}>
+            <div className={hasData ? "overflow-y-auto max-h-[calc(85vh-120px)] sm:max-h-[calc(90vh-100px)] scrollbar-hide" : "flex-1 flex items-center justify-center px-4 sm:px-6"}>
+              <div className={hasData ? "px-4 sm:px-6 py-6 sm:py-8" : "w-full flex items-center justify-center min-h-[350px] sm:min-h-[400px]"}>
                 <AnalyticsDashboard events={events} tasks={tasks} onAddEvent={onAddEvent} onAddTask={onAddTask} />
               </div>
             </div>
