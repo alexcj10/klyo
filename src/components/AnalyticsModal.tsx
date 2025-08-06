@@ -23,7 +23,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 pt-8 sm:pt-4 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
@@ -56,7 +56,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             </div>
 
             {/* Content */}
-            <div className={hasData ? "overflow-y-auto max-h-[calc(95vh-100px)] sm:max-h-[calc(90vh-80px)] scrollbar-hide p-4 sm:p-6" : "flex-1 flex items-center justify-center py-4 px-4 sm:px-6 min-h-0"}>
+            <div className={hasData ? "overflow-y-auto max-h-[calc(95vh-100px)] sm:max-h-[calc(90vh-80px)] scrollbar-hide p-4 sm:p-6" : "flex-1 flex items-center justify-center py-4 px-4 sm:px-6 min-h-[300px] sm:min-h-[400px]"}>
               <AnalyticsDashboard events={events} tasks={tasks} onAddEvent={onAddEvent} onAddTask={onAddTask} />
             </div>
           </motion.div>
