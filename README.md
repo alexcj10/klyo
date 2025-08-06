@@ -28,6 +28,9 @@ klyo/
 ├── 🌐 public/               → Static assets & favicons
 ├── 📁 src/
 │   ├── 🧩 components/       → UI Components
+│   │   ├── 📈 AnalyticsButton.tsx      → Analytics button
+│   │   ├── 📊 AnalyticsDashboard.tsx   → Analytics dashboard
+│   │   ├── 📝 AnalyticsModal.tsx       → Analytics modal
 │   │   ├── 📅 CalendarView      → Core scheduler
 │   │   ├── 📋 TaskSidebar       → Task manager
 │   │   ├── ✏️ EventModal        → Add/edit events
