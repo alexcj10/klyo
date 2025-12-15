@@ -15,6 +15,7 @@ export default function AIChat({ events, tasks }: AIChatProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
     const { messages, sendMessage, isLoading, clearChat } = useAIChat(events, tasks);
+    const chatRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
     const scrollToBottom = () => {
@@ -24,6 +25,21 @@ export default function AIChat({ events, tasks }: AIChatProps) {
     useEffect(() => {
         scrollToBottom();
     }, [messages, isOpen]);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (chatRef.current && !chatRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        }
+
+        if (isOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -37,6 +53,7 @@ export default function AIChat({ events, tasks }: AIChatProps) {
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
+                        ref={chatRef}
                         initial={{ opacity: 0, y: 50, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 50, scale: 0.9 }}
