@@ -2,6 +2,27 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Global Scrollbar Overrides */
+*::-webkit-scrollbar {
+  width: 6px !important;
+  height: 6px !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: #ffffff !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1 !important;
+  border-radius: 10px !important;
+  border: 2px solid transparent !important; /* Adds padding effect */
+  background-clip: content-box !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8 !important;
+}
+
 @layer utilities {
   .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
