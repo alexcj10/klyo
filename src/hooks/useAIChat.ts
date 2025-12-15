@@ -8,6 +8,7 @@ export function useAIChat(events: Event[], tasks: Task[]) {
     const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     // Initialize with a welcome message if no session is active or empty
     const welcomeMessage: Message = {
@@ -31,12 +32,15 @@ export function useAIChat(events: Event[], tasks: Task[]) {
                 console.error("Failed to parse chat history", e);
             }
         }
+        setIsInitialized(true);
     }, []);
 
     // Save history to local storage whenever it changes
     useEffect(() => {
-        localStorage.setItem('chatHistory', JSON.stringify(history));
-    }, [history]);
+        if (isInitialized) {
+            localStorage.setItem('chatHistory', JSON.stringify(history));
+        }
+    }, [history, isInitialized]);
 
     // When currentSessionId changes, update messages
     useEffect(() => {
