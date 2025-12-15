@@ -52,7 +52,8 @@ export default function AIChat({ events, tasks }: AIChatProps) {
         function handleClickOutside(event: MouseEvent) {
             if (chatRef.current && !chatRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
-                setEditingSessionId(null); // Reset edit state on close
+                setEditingSessionId(null);
+                startNewChat(); // Reset on close
             }
         }
         if (isOpen) {
@@ -151,7 +152,10 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                                     <History className="w-5 h-5" />
                                 </button>
                                 <button
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        startNewChat();
+                                    }}
                                     className="p-1.5 rounded-lg hover:bg-white/20 transition-colors text-white/90 hover:text-white"
                                 >
                                     <X className="w-5 h-5" />
