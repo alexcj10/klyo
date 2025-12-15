@@ -32,10 +32,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     const calculateMaxEvents = () => {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight;
-      
+
       // More precise calculations for different screen sizes
       let headerHeight, monthNavHeight, dayLabelsHeight, padding, eventHeight, dateHeight, spacing;
-      
+
       if (screenWidth < 640) { // Mobile
         headerHeight = 80;
         monthNavHeight = 60;
@@ -69,30 +69,30 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         dateHeight = 20;
         spacing = 6;
       }
-      
+
       const availableHeight = screenHeight - headerHeight - monthNavHeight - dayLabelsHeight - padding;
       const cellHeight = availableHeight / 6; // 6 rows in calendar
-      
+
       // Account for cell padding
       const cellPadding = screenWidth < 640 ? 4 : screenWidth < 1024 ? 8 : 12;
       const availableEventSpace = cellHeight - dateHeight - spacing - (cellPadding * 2);
-      
+
       // Calculate max events with tighter spacing
       const eventSpacing = screenWidth < 640 ? 1 : 2;
       const maxEvents = Math.floor(availableEventSpace / (eventHeight + eventSpacing));
-      
+
       // Dynamic bounds based on screen size
       const minEvents = screenWidth < 640 ? 2 : 3;
       const maxEventsCap = screenWidth < 640 ? 6 : screenWidth < 1024 ? 8 : 10;
-      
+
       const maxEventsCapped = Math.min(Math.max(maxEvents, minEvents), maxEventsCap);
-      
+
       setMaxEventsPerCell(maxEventsCapped);
     };
 
     calculateMaxEvents();
     window.addEventListener('resize', calculateMaxEvents);
-    
+
     return () => window.removeEventListener('resize', calculateMaxEvents);
   }, []);
 
@@ -103,7 +103,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   // Get events for the current month for list view
-  const monthEvents = events.filter(event => 
+  const monthEvents = events.filter(event =>
     isWithinInterval(event.date, { start: startOfDay(monthStart), end: endOfDay(monthEnd) })
   ).sort((a, b) => a.date.getTime() - b.date.getTime());
 
@@ -118,7 +118,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const getEventsForDate = (date: Date) => {
-    return events.filter(event => 
+    return events.filter(event =>
       format(event.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
     );
   };
@@ -218,7 +218,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                       h-4 sm:h-5 lg:h-5.5 xl:h-6
                       flex items-center
                     `}
-                    style={{ 
+                    style={{
                       backgroundColor: event.color,
                       fontSize: window.innerWidth < 640 ? '10px' : window.innerWidth < 1024 ? '11px' : '12px'
                     }}
@@ -274,16 +274,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             onClick={() => onEventView(event)}
           >
             {/* Color accent bar */}
-            <div 
+            <div
               className="absolute left-0 top-0 bottom-0 w-1"
               style={{ backgroundColor: event.color }}
             ></div>
-            
+
             <div className="p-2 sm:p-3 lg:p-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2 mb-1">
-                    <div 
+                    <div
                       className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full border border-white shadow-sm flex-shrink-0"
                       style={{ backgroundColor: event.color }}
                     ></div>
@@ -297,13 +297,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                       {event.category}
                     </span>
                   </div>
-                  
+
                   {event.description && (
                     <p className="text-gray-600 text-xs sm:text-sm mb-1.5 sm:mb-2 line-clamp-1 whitespace-pre-wrap">
                       {event.description}
                     </p>
                   )}
-                  
+
                   <div className="flex items-center space-x-2 sm:space-x-3 text-xs text-gray-500 flex-wrap sm:flex-nowrap">
                     <div className="flex items-center space-x-1 flex-shrink-0">
                       <span>📅</span>
@@ -338,7 +338,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Inline Action Buttons */}
                 <div className="flex items-center space-x-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                   <motion.button
@@ -378,14 +378,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200/50 overflow-hidden h-full flex flex-col">
       <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-3 sm:px-4 py-3 sm:py-4 border-b border-gray-200/50 flex-shrink-0">
         <div className="flex items-center justify-between gap-x-2 sm:gap-x-4 flex-nowrap">
-          
+
           <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">
             <span className="sm:hidden">{format(currentDate, 'MMM yyyy')}</span>
             <span className="hidden sm:inline">{format(currentDate, 'MMMM yyyy')}</span>
           </h2>
-          
+
           <div className="flex items-center flex-shrink-0 gap-x-1 sm:gap-x-2">
-            
+
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -423,11 +423,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setViewMode('grid')}
                 className={`
-                  p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${
-                  viewMode === 'grid' 
-                    ? 'bg-white shadow-md text-indigo-600 border border-indigo-200/50' 
+                  p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
+                    ? 'bg-white shadow-md text-indigo-600 border border-indigo-200/50'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                }`}
+                  }`}
                 title="Grid View"
               >
                 <Grid3X3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -437,11 +436,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setViewMode('list')}
                 className={`
-                  p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${
-                  viewMode === 'list' 
-                    ? 'bg-white shadow-md text-indigo-600 border border-indigo-200/50' 
+                  p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
+                    ? 'bg-white shadow-md text-indigo-600 border border-indigo-200/50'
                     : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                }`}
+                  }`}
                 title="List View"
               >
                 <List className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -465,9 +463,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={onAddEvent}
-        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 lg:bottom-8 lg:right-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-30"
+        className="fixed bottom-24 right-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white w-[44px] h-[44px] sm:w-14 sm:h-14 flex items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-30"
       >
-        <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
+        <Plus className="w-5 h-5 sm:w-7 sm:h-7" />
       </motion.button>
 
       {deleteConfirmEvent && (

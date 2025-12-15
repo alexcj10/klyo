@@ -12,6 +12,7 @@ import { Event, Task } from './types';
 import { mockEvents, mockTasks } from './data/mockData';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
+import AIChat from './components/AIChat';
 
 // --------- Import the latest SplashScreen -----------
 import SplashScreen from './components/SplashScreen'; // <-- Make sure this is the new file
@@ -72,21 +73,21 @@ function App() {
   // Navigation handler for EventViewModal
   const handleEventNavigation = (direction: 'prev' | 'next') => {
     if (!viewEvent) return;
-    
+
     // Get events from the same month as the current viewed event
     const currentEventDate = viewEvent.date;
     const currentMonth = currentEventDate.getMonth();
     const currentYear = currentEventDate.getFullYear();
-    
+
     const monthEvents = filteredEvents
-      .filter(event => 
-        event.date.getMonth() === currentMonth && 
+      .filter(event =>
+        event.date.getMonth() === currentMonth &&
         event.date.getFullYear() === currentYear
       )
       .sort((a, b) => a.date.getTime() - b.date.getTime());
-    
+
     const currentIndex = monthEvents.findIndex(e => e.id === viewEvent.id);
-    
+
     if (direction === 'prev' && currentIndex > 0) {
       setViewEvent(monthEvents[currentIndex - 1]);
     } else if (direction === 'next' && currentIndex < monthEvents.length - 1) {
@@ -97,14 +98,14 @@ function App() {
   // Get current month events for navigation
   const getCurrentMonthEvents = () => {
     if (!viewEvent) return [];
-    
+
     const currentEventDate = viewEvent.date;
     const currentMonth = currentEventDate.getMonth();
     const currentYear = currentEventDate.getFullYear();
-    
+
     return filteredEvents
-      .filter(event => 
-        event.date.getMonth() === currentMonth && 
+      .filter(event =>
+        event.date.getMonth() === currentMonth &&
         event.date.getFullYear() === currentYear
       )
       .sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -258,9 +259,8 @@ function App() {
         className="flex-1 flex overflow-hidden relative"
       >
         <div
-          className={`flex-1 min-w-0 p-4 lg:p-6 transition-all duration-300 ${
-            isSidebarOpen ? 'lg:mr-80 xl:mr-96' : 'lg:mr-0'
-          }`}
+          className={`flex-1 min-w-0 p-4 lg:p-6 transition-all duration-300 ${isSidebarOpen ? 'lg:mr-80 xl:mr-96' : 'lg:mr-0'
+            }`}
         >
           <CalendarView
             events={filteredEvents}
@@ -334,9 +334,8 @@ function App() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className={`hidden lg:block fixed top-1/2 -translate-y-1/2 z-40 bg-white shadow-lg border border-gray-200/50 rounded-l-xl p-3 transition-all duration-300 ${
-          isSidebarOpen ? 'right-80 xl:right-96' : 'right-0'
-        }`}
+        className={`hidden lg:block fixed top-1/2 -translate-y-1/2 z-40 bg-white shadow-lg border border-gray-200/50 rounded-l-xl p-3 transition-all duration-300 ${isSidebarOpen ? 'right-80 xl:right-96' : 'right-0'
+          }`}
       >
         <motion.div animate={{ rotate: isSidebarOpen ? 0 : 180 }} transition={{ duration: 0.3 }}>
           <ChevronRight className="w-4 h-4 text-gray-600" />
@@ -414,6 +413,7 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
+      <AIChat events={events} tasks={tasks} />
     </div>
   );
 }

@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
+    "@xenova/transformers": "^2.17.2",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.0",
+    "groq-sdk": "^0.37.0",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
