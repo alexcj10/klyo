@@ -289,9 +289,9 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                                                             }`}
                                                     >
                                                         {msg.role === 'ai' && (
-                                                            <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-violet-600/90 tracking-wide uppercase border-b border-violet-100 pb-1">
+                                                            <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-violet-600/90 tracking-wide border-b border-violet-100 pb-1">
                                                                 <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
-                                                                MR. CROCK
+                                                                Mr. Crock
                                                             </div>
                                                         )}
                                                         <div className="markdown-body">
