@@ -1,75 +1,167 @@
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ragQuery } from '../utils/rag';
-import { Event, Task } from '../types';
-
-interface Message {
-    id: string;
-    role: 'user' | 'ai';
-    content: string;
-    timestamp: Date;
-}
+import { Event, Task, Message, Session } from '../types';
 
 export function useAIChat(events: Event[], tasks: Task[]) {
-    const [messages, setMessages] = useState<Message[]>([
-        {
-            id: 'welcome',
-            role: 'ai',
-            content: "Hi! I'm Mr. Crock, your Klyo assistant. Ask me anything about your schedule or tasks!",
-            timestamp: new Date()
-        }
-    ]);
+    const [history, setHistory] = useState<Session[]>([]);
+    const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+
+    // Initialize with a welcome message if no session is active or empty
+    const welcomeMessage: Message = {
+        id: 'welcome',
+        role: 'ai',
+        content: "Hi! I'm Mr. Crock, your Klyo assistant. Ask me anything about your schedule or tasks!",
+        timestamp: new Date()
+    };
+
+    // Load history from local storage on mount
+    useEffect(() => {
+        const savedHistory = localStorage.getItem('chatHistory');
+        if (savedHistory) {
+            try {
+                const parsed = JSON.parse(savedHistory, (key, value) => {
+                    if (key === 'timestamp' || key === 'lastUpdated') return new Date(value);
+                    return value;
+                });
+                setHistory(parsed);
+            } catch (e) {
+                console.error("Failed to parse chat history", e);
+            }
+        }
+    }, []);
+
+    // Save history to local storage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('chatHistory', JSON.stringify(history));
+    }, [history]);
+
+    // When currentSessionId changes, update messages
+    useEffect(() => {
+        if (currentSessionId) {
+            const session = history.find(s => s.id === currentSessionId);
+            if (session) {
+                setMessages(session.messages);
+            }
+        } else {
+            setMessages([welcomeMessage]);
+        }
+    }, [currentSessionId, history]);
+
+
+    const startNewChat = useCallback(() => {
+        setCurrentSessionId(null);
+        setMessages([welcomeMessage]);
+    }, []);
+
+    const loadSession = useCallback((sessionId: string) => {
+        setCurrentSessionId(sessionId);
+    }, []);
+
+    const deleteSession = useCallback((sessionId: string) => {
+        setHistory(prev => {
+            const newHistory = prev.filter(s => s.id !== sessionId);
+            if (currentSessionId === sessionId) {
+                setCurrentSessionId(null);
+                setMessages([welcomeMessage]);
+            }
+            return newHistory;
+        });
+    }, [currentSessionId]);
+
+    const renameSession = useCallback((sessionId: string, newTitle: string) => {
+        setHistory(prev => prev.map(s =>
+            s.id === sessionId ? { ...s, title: newTitle, lastUpdated: new Date() } : s
+        ));
+    }, []);
 
     const sendMessage = useCallback(async (text: string) => {
         if (!text.trim()) return;
 
-        // Add User Message
         const userMsg: Message = {
             id: Date.now().toString(),
             role: 'user',
             content: text,
             timestamp: new Date()
         };
-        setMessages(prev => [...prev, userMsg]);
+
+        // Optimistic update
+        const newMessages = [...messages, userMsg];
+        setMessages(newMessages);
         setIsLoading(true);
 
         try {
             // Call RAG Engine
             const response = await ragQuery(text, events, tasks);
 
-            // Add AI Response
             const aiMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'ai',
                 content: response,
                 timestamp: new Date()
             };
-            setMessages(prev => [...prev, aiMsg]);
+
+            const finalMessages = [...newMessages, aiMsg];
+            setMessages(finalMessages);
+
+            // Update History/Session
+            if (currentSessionId) {
+                setHistory(prev => prev.map(s => {
+                    if (s.id === currentSessionId) {
+                        return {
+                            ...s,
+                            messages: finalMessages,
+                            lastUpdated: new Date(),
+                            // Optional: Update title if it's the first real exchange? Keeping simple for now.
+                        };
+                    }
+                    return s;
+                }));
+            } else {
+                // Create new session
+                const newSessionId = Date.now().toString();
+                const newSession: Session = {
+                    id: newSessionId,
+                    title: text.slice(0, 30) + (text.length > 30 ? '...' : ''), // Simple title generation
+                    messages: finalMessages,
+                    lastUpdated: new Date()
+                };
+                setHistory(prev => [newSession, ...prev]);
+                setCurrentSessionId(newSessionId);
+            }
+
         } catch (error: any) {
             console.error(error);
             const errorMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'ai',
-                content: `Error: ${error.message || error || "Unknown error"}. Check console for details.`,
+                content: `Error: ${error.message || error || "Unknown error"}.`,
                 timestamp: new Date()
             };
             setMessages(prev => [...prev, errorMsg]);
         } finally {
             setIsLoading(false);
         }
-    }, [events, tasks]);
+    }, [events, tasks, messages, currentSessionId]);
 
     const clearChat = useCallback(() => {
-        setMessages([
-            {
-                id: 'welcome',
-                role: 'ai',
-                content: "Hi! I'm Mr. Crock, your Klyo assistant. Ask me anything about your schedule or tasks!",
-                timestamp: new Date()
-            }
-        ]);
-    }, []);
+        // Just resets current view, maybe logic differs? 
+        // Keeping as "reset to welcome" for current implementation matching startNewChat roughly
+        startNewChat();
+    }, [startNewChat]);
 
-    return { messages, sendMessage, isLoading, clearChat };
+    return {
+        messages,
+        sendMessage,
+        isLoading,
+        history,
+        startNewChat,
+        loadSession,
+        deleteSession,
+        renameSession,
+        currentSessionId,
+        clearChat
+    };
 }

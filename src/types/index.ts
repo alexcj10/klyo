@@ -21,3 +21,17 @@ export interface Task {
   estimatedTime?: number; // in minutes
   category: 'work' | 'personal' | 'health' | 'social' | 'other';
 }
+
+export interface Message {
+  id: string;
+  role: 'user' | 'ai';
+  content: string;
+  timestamp: Date;
+}
+
+export interface Session {
+  id: string;
+  title: string;
+  messages: Message[];
+  lastUpdated: Date;
+}

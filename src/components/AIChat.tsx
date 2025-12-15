@@ -1,10 +1,11 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, X, MessageSquare, Trash2, Bot } from 'lucide-react';
+import { Send, X, MessageSquare, History, Plus, Edit2, Check, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAIChat } from '../hooks/useAIChat';
-import { Event, Task } from '../types';
+import { Event, Task, Session } from '../types';
 import crockLogo from '../assets/crock.png';
+import { format } from 'date-fns';
 
 interface AIChatProps {
     events: Event[];
@@ -13,8 +14,26 @@ interface AIChatProps {
 
 export default function AIChat({ events, tasks }: AIChatProps) {
     const [isOpen, setIsOpen] = useState(false);
+    const [showHistory, setShowHistory] = useState(false);
     const [inputValue, setInputValue] = useState('');
-    const { messages, sendMessage, isLoading, clearChat } = useAIChat(events, tasks);
+
+    // Rename state
+    const [editingSessionId, setEditingSessionId] = useState<string | null>(null);
+    const [editTitle, setEditTitle] = useState('');
+    const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
+
+    const {
+        messages,
+        sendMessage,
+        isLoading,
+        history,
+        startNewChat,
+        loadSession,
+        deleteSession,
+        renameSession,
+        currentSessionId
+    } = useAIChat(events, tasks);
+
     const chatRef = useRef<HTMLDivElement>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -23,16 +42,18 @@ export default function AIChat({ events, tasks }: AIChatProps) {
     };
 
     useEffect(() => {
-        scrollToBottom();
-    }, [messages, isOpen]);
+        if (!showHistory && isOpen) {
+            scrollToBottom();
+        }
+    }, [messages, isOpen, showHistory]);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
             if (chatRef.current && !chatRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
+                setEditingSessionId(null); // Reset edit state on close
             }
         }
-
         if (isOpen) {
             document.addEventListener('mousedown', handleClickOutside);
         }
@@ -48,6 +69,49 @@ export default function AIChat({ events, tasks }: AIChatProps) {
         setInputValue('');
     };
 
+    const handleNewChat = () => {
+        startNewChat();
+        setShowHistory(false);
+        setInputValue('');
+        setTimeout(scrollToBottom, 100);
+    };
+
+    const handleLoadSession = (sessionId: string) => {
+        loadSession(sessionId);
+        setShowHistory(false);
+        setTimeout(scrollToBottom, 100);
+    };
+
+    const startEditing = (e: React.MouseEvent, sessionId: string, currentTitle: string) => {
+        e.stopPropagation();
+        setEditingSessionId(sessionId);
+        setEditTitle(currentTitle);
+    };
+
+    const saveTitle = (e: React.MouseEvent | React.FormEvent, sessionId: string) => {
+        e.stopPropagation();
+        if (editTitle.trim()) {
+            renameSession(sessionId, editTitle.trim());
+        }
+        setEditingSessionId(null);
+    };
+
+    const handleDeleteClick = (e: React.MouseEvent, sessionId: string) => {
+        e.stopPropagation();
+        setDeletingSessionId(sessionId);
+    };
+
+    const confirmDelete = (e: React.MouseEvent, sessionId: string) => {
+        e.stopPropagation();
+        deleteSession(sessionId);
+        setDeletingSessionId(null);
+    };
+
+    const cancelDelete = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setDeletingSessionId(null);
+    };
+
     return (
         <>
             <AnimatePresence>
@@ -60,86 +124,217 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                         className="fixed bottom-6 right-6 w-[calc(100vw-48px)] sm:w-96 h-[60vh] sm:h-[500px] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/50 flex flex-col z-50 overflow-hidden"
                     >
                         {/* Header */}
-                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white">
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm z-10">
                             <div className="flex items-center gap-3">
                                 <div className="drop-shadow-md">
-                                    <img src={crockLogo} alt="Mr. Crock" className="w-10 h-10 rounded-full object-cover" />
+                                    <img src={crockLogo} alt="Mr. Crock" className="w-10 h-10 rounded-full object-cover border-2 border-white/20" />
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-sm">Mr. Crock</h3>
-                                    <p className="text-xs text-white/80">Klyo Assistant</p>
+                                <div className="overflow-hidden">
+                                    <h3 className="font-bold text-sm truncate">Mr. Crock</h3>
+                                    <p className="text-xs text-white/80 truncate">Klyo Assistant</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-1">
                                 <button
-                                    onClick={clearChat}
-                                    className="p-1.5 rounded-lg hover:bg-white/20 transition-colors text-white/80 hover:text-white"
-                                    title="Clear Chat"
+                                    onClick={handleNewChat}
+                                    className="p-1.5 rounded-lg hover:bg-white/20 transition-colors text-white/90 hover:text-white"
+                                    title="New Chat"
                                 >
-                                    <Trash2 className="w-4 h-4" />
+                                    <Plus className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => setShowHistory(!showHistory)}
+                                    className={`p-1.5 rounded-lg transition-colors text-white/90 hover:text-white ${showHistory ? 'bg-white/20' : 'hover:bg-white/20'}`}
+                                    title="History"
+                                >
+                                    <History className="w-5 h-5" />
                                 </button>
                                 <button
                                     onClick={() => setIsOpen(false)}
-                                    className="p-1.5 rounded-lg hover:bg-white/20 transition-colors text-white/80 hover:text-white"
+                                    className="p-1.5 rounded-lg hover:bg-white/20 transition-colors text-white/90 hover:text-white"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
 
-                        {/* Messages */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50/50">
-                            {messages.map((msg) => (
-                                <div
-                                    key={msg.id}
-                                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                                >
-                                    <div
-                                        className={`max-w-[80%] p-3 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === 'user'
-                                            ? 'bg-violet-600 text-white rounded-tr-sm'
-                                            : 'bg-white text-slate-700 border border-slate-100 rounded-tl-sm'
-                                            }`}
+                        {/* Content Area */}
+                        <div className="flex-1 overflow-hidden relative flex flex-col bg-slate-50/50">
+                            <AnimatePresence mode="wait">
+                                {showHistory ? (
+                                    <motion.div
+                                        key="history"
+                                        initial={{ opacity: 0, x: 20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: -20 }}
+                                        className="absolute inset-0 overflow-y-auto p-2 sm:p-3"
                                     >
-                                        {msg.role === 'ai' && (
-                                            <div className="flex items-center gap-1 mb-1 text-xs font-semibold text-violet-600/80">
-                                                <img src={crockLogo} className="w-4 h-4 rounded-full object-cover" /> Mr. Crock
-                                            </div>
-                                        )}
-                                        {msg.content}
-                                    </div>
-                                </div>
-                            ))}
-                            {isLoading && (
-                                <div className="flex justify-start">
-                                    <div className="bg-white p-3 rounded-2xl rounded-tl-sm border border-slate-100 shadow-sm flex gap-1">
-                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                                    </div>
-                                </div>
-                            )}
-                            <div ref={messagesEndRef} />
-                        </div>
+                                        <div className="space-y-2">
+                                            {history.length === 0 ? (
+                                                <div className="flex flex-col items-center justify-center h-full pt-20 text-gray-400">
+                                                    <History className="w-12 h-12 mb-2 opacity-50" />
+                                                    <p className="text-sm">No chat history yet</p>
+                                                </div>
+                                            ) : (
+                                                history.map((session: Session) => (
+                                                    <div
+                                                        key={session.id}
+                                                        onClick={() => handleLoadSession(session.id)}
+                                                        className={`group flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${currentSessionId === session.id
+                                                            ? 'bg-violet-50 border-violet-200 shadow-sm'
+                                                            : 'bg-white border-gray-100 hover:border-violet-100 hover:shadow-md'
+                                                            }`}
+                                                    >
+                                                        <div className={`p-2 rounded-lg ${currentSessionId === session.id ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                            <MessageSquare className="w-4 h-4" />
+                                                        </div>
 
-                        {/* Input */}
-                        <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100">
-                            <div className="relative flex items-center">
-                                <input
-                                    type="text"
-                                    value={inputValue}
-                                    onChange={(e) => setInputValue(e.target.value)}
-                                    placeholder="Ask about your schedule..."
-                                    className="w-full bg-slate-100 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 transition-all"
-                                />
-                                <button
-                                    type="submit"
-                                    disabled={!inputValue.trim() || isLoading}
-                                    className="absolute right-2 p-2 bg-violet-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-violet-700 transition-colors shadow-sm"
-                                >
-                                    <Send className="w-4 h-4" />
-                                </button>
-                            </div>
-                        </form>
+                                                        <div className="flex-1 min-w-0">
+                                                            {editingSessionId === session.id ? (
+                                                                <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                                                                    <input
+                                                                        type="text"
+                                                                        value={editTitle}
+                                                                        onChange={(e) => setEditTitle(e.target.value)}
+                                                                        className="flex-1 text-sm px-2 py-1 rounded border border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                                                                        autoFocus
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter') saveTitle(e, session.id);
+                                                                            if (e.key === 'Escape') setEditingSessionId(null);
+                                                                        }}
+                                                                    />
+                                                                    <button
+                                                                        onClick={(e) => saveTitle(e, session.id)}
+                                                                        className="p-1 text-green-600 hover:bg-green-50 rounded"
+                                                                    >
+                                                                        <Check className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <div className="flex items-center justify-between">
+                                                                        <h4 className="font-medium text-sm text-gray-700 truncate pr-2" title={session.title}>
+                                                                            {session.title}
+                                                                        </h4>
+                                                                    </div>
+                                                                    <p className="text-[10px] text-gray-400">
+                                                                        {format(new Date(session.lastUpdated), 'MMM d, h:mm a')}
+                                                                    </p>
+                                                                </>
+                                                            )}
+                                                        </div>
+
+                                                        {editingSessionId !== session.id && (
+                                                            <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                {deletingSessionId === session.id ? (
+                                                                    <div className="flex items-center gap-1 bg-red-50 rounded-lg p-0.5" onClick={e => e.stopPropagation()}>
+                                                                        <button
+                                                                            onClick={(e) => confirmDelete(e, session.id)}
+                                                                            className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                                                            title="Confirm Delete"
+                                                                        >
+                                                                            <Check className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={cancelDelete}
+                                                                            className="p-1 text-gray-500 hover:bg-gray-200 rounded"
+                                                                            title="Cancel"
+                                                                        >
+                                                                            <X className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <>
+                                                                        <button
+                                                                            onClick={(e) => startEditing(e, session.id, session.title)}
+                                                                            className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
+                                                                            title="Rename"
+                                                                        >
+                                                                            <Edit2 className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={(e) => handleDeleteClick(e, session.id)}
+                                                                            className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                                            title="Delete"
+                                                                        >
+                                                                            <Trash2 className="w-3.5 h-3.5" />
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                ) : ( // Chat View
+                                    <motion.div
+                                        key="chat"
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        exit={{ opacity: 0, x: 20 }}
+                                        className="flex flex-col h-full overflow-hidden"
+                                    >
+                                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                                            {messages.map((msg) => (
+                                                <div
+                                                    key={msg.id}
+                                                    className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                                                >
+                                                    <div
+                                                        className={`max-w-[85%] p-3 sm:p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === 'user'
+                                                            ? 'bg-violet-600 text-white rounded-tr-sm'
+                                                            : 'bg-white text-slate-700 border border-slate-100 rounded-tl-sm'
+                                                            }`}
+                                                    >
+                                                        {msg.role === 'ai' && (
+                                                            <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-violet-600/90 tracking-wide uppercase border-b border-violet-100 pb-1">
+                                                                <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
+                                                                MR. CROCK
+                                                            </div>
+                                                        )}
+                                                        <div className="markdown-body">
+                                                            {msg.content}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                            {isLoading && (
+                                                <div className="flex justify-start">
+                                                    <div className="bg-white p-4 rounded-2xl rounded-tl-sm border border-slate-100 shadow-sm flex gap-1.5">
+                                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                    </div>
+                                                </div>
+                                            )}
+                                            <div ref={messagesEndRef} />
+                                        </div>
+
+                                        {/* Input */}
+                                        <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100 z-10">
+                                            <div className="relative flex items-center">
+                                                <input
+                                                    type="text"
+                                                    value={inputValue}
+                                                    onChange={(e) => setInputValue(e.target.value)}
+                                                    placeholder="Ask about your schedule..."
+                                                    className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:bg-white transition-all border border-slate-200 focus:border-violet-300"
+                                                />
+                                                <button
+                                                    type="submit"
+                                                    disabled={!inputValue.trim() || isLoading}
+                                                    className="absolute right-2 p-2 bg-violet-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-violet-700 transition-colors shadow-sm active:scale-95"
+                                                >
+                                                    <Send className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -152,7 +347,7 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                     whileHover={{ scale: 1.1, rotate: 5 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsOpen(true)}
-                    className="fixed bottom-6 right-6 z-50 !bg-transparent p-0 border-none outline-none cursor-pointer transition-transform hover:scale-110 active:scale-95"
+                    className="fixed bottom-6 right-6 z-50 !bg-transparent p-0 border-none outline-none cursor-pointer"
                 >
                     <img
                         src={crockLogo}
