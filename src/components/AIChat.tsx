@@ -1,5 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Send, X, MessageSquare, History, Plus, Edit2, Check, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAIChat } from '../hooks/useAIChat';
@@ -295,7 +296,31 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                                                             </div>
                                                         )}
                                                         <div className="markdown-body">
-                                                            {msg.content}
+                                                            <ReactMarkdown
+                                                                components={{
+                                                                    strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
+                                                                    ul: ({ node, ...props }) => <ul className="list-disc list-outside ml-4 space-y-1 my-2" {...props} />,
+                                                                    ol: ({ node, ...props }) => <ol className="list-decimal list-outside ml-4 space-y-1 my-2" {...props} />,
+                                                                    li: ({ node, ...props }) => <li className="pl-1" {...props} />,
+                                                                    p: ({ node, ...props }) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+                                                                    h1: ({ node, ...props }) => <h1 className="text-lg font-bold mt-3 mb-2" {...props} />,
+                                                                    h2: ({ node, ...props }) => <h2 className="text-base font-bold mt-2 mb-1" {...props} />,
+                                                                    code: ({ node, className, children, ...props }: any) => {
+                                                                        const match = /language-(\w+)/.exec(className || '');
+                                                                        return match ? (
+                                                                            <code className="block bg-gray-100 p-2 rounded-lg my-2 text-xs font-mono overflow-x-auto" {...props}>
+                                                                                {children}
+                                                                            </code>
+                                                                        ) : (
+                                                                            <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono text-violet-600" {...props}>
+                                                                                {children}
+                                                                            </code>
+                                                                        )
+                                                                    }
+                                                                }}
+                                                            >
+                                                                {msg.content}
+                                                            </ReactMarkdown>
                                                         </div>
                                                     </div>
                                                 </div>
