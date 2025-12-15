@@ -121,7 +121,7 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                         initial={{ opacity: 0, y: 50, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 50, scale: 0.9 }}
-                        className="fixed bottom-6 right-6 w-[calc(100vw-48px)] sm:w-96 h-[60vh] sm:h-[500px] bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border border-white/50 flex flex-col z-50 overflow-hidden"
+                        className="fixed z-50 flex flex-col overflow-hidden bg-white/95 backdrop-blur-md shadow-2xl border border-white/50 transition-all duration-300 ease-out bottom-6 left-6 right-6 h-[70vh] rounded-[2rem] sm:left-auto sm:right-6 sm:bottom-6 sm:rounded-2xl sm:w-[450px] sm:h-[75vh] md:h-[80vh]"
                     >
                         {/* Header */}
                         <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm z-10">
@@ -283,7 +283,7 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                                                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                                 >
                                                     <div
-                                                        className={`max-w-[85%] p-3 sm:p-4 rounded-2xl text-sm leading-relaxed shadow-sm ${msg.role === 'user'
+                                                        className={`max-w-[85%] p-3 sm:p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm ${msg.role === 'user'
                                                             ? 'bg-violet-600 text-white rounded-tr-sm'
                                                             : 'bg-white text-slate-700 border border-slate-100 rounded-tl-sm'
                                                             }`}
@@ -320,7 +320,7 @@ export default function AIChat({ events, tasks }: AIChatProps) {
                                                     value={inputValue}
                                                     onChange={(e) => setInputValue(e.target.value)}
                                                     placeholder="Ask about your schedule..."
-                                                    className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:bg-white transition-all border border-slate-200 focus:border-violet-300"
+                                                    className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:bg-white transition-all border border-slate-200 focus:border-violet-300"
                                                 />
                                                 <button
                                                     type="submit"
