@@ -111,15 +111,15 @@ export async function ragQuery(
     if (!GROQ_KEY) return "Please configure your VITE_GROQ_KEY to use Mr. Crock AI.";
     if (!question || typeof question !== 'string') return "I didn't quite catch that. Could you say it again?";
 
-    // Simple Chit-Chat Check
-    const lowerQ = question.toLowerCase().trim();
-    if (["hi", "hello", "hey", "hola", "yo"].includes(lowerQ.replace(/[^\w]/g, ''))) {
-        return "Hello there! I'm Mr. Crock, your advanced Klyo assistant. How can I help with your schedule today?";
-    }
+    // Simple Chit-Chat Check - REMOVED to allow LLM to handle greetings with context awareness
+    // const lowerQ = question.toLowerCase().trim();
+    // if (["hi", "hello", "hey", "hola", "yo"].includes(lowerQ.replace(/[^\w]/g, ''))) {
+    //     return "Hello there! I'm Mr. Crock, your advanced Klyo assistant. How can I help with your schedule today?";
+    // }
 
     // 0. Prepare Data
     const items = normalizeData(events, tasks);
-    if (items.length === 0) return "I don't see any events or tasks in your schedule yet.";
+    // Note: We continue even if items is empty to allow for general conversation
 
     // --- 0.5 SMART EXPANDER ---
     // Expand query logic inline or helper
@@ -194,6 +194,7 @@ export async function ragQuery(
 
     // --- 2.5 STRICT FILTERING FOR DATES ("TODAY", "MONTH") ---
     const today = new Date();
+    const lowerQ = question.toLowerCase(); // Re-declare for use here since we commented out the earlier block
     const isAskingToday = /\b(today|tonight)\b/i.test(question);
 
     // Detect Month mentions (e.g., "August", "in Aug", "this month")
@@ -247,27 +248,31 @@ export async function ragQuery(
                 messages: [
                     {
                         role: "system",
-                        content: `You are Mr. Crock (Klyo Edition).
-                        You are an intelligent calendar assistant.
+                        content: `You are Mr. Crock (Klyo Edition), a witty and helpful AI assistant for the user's personal productivity.
                         
                         Current Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         
-                        Context (Events/Tasks):
+                        CONTEXT RULES (CRITICAL):
+                        - The 'Context' below represents the USER'S schedule (Events and Tasks).
+                        - These are NOT your events. You are an AI assistant; you do not have exams, meetings, or chores.
+                        - If the user asks personal questions about YOU (e.g., "How are you?", "How's your day?"), answer creatively as an AI assistant (e.g. "I'm functioning perfectly and ready to help you organize your day!").
+                        - If the user asks about THEIR schedule (e.g., "What's on my plate?", "How's my day looking?" or just "How is my day"), use the Context to answer.
+                        - If the user just says "Hi" or "Hello", greet them warmly and mention 1-2 upcoming highlights from the context if any, or ask how you can help.
+
+                        Context (User's Schedule):
                         ${contextString}
                         
                         Instructions:
-                        1. Answer the user's question purely based on the context.
-                        2. ALWAYS provide the following details for every event found:
-                           - Category
-                           - Priority
-                           - Date
-                           - Time (or "All Day")
-                        3. If multiple events match, list them clearly using bullet points.
-                        4. DATE AWARENESS:
+                        1. Answer the user's question purely based on the context for schedule queries.
+                        2. Be concise, friendly, and structured.
+                        3. DATE AWARENESS:
                            - If user says "TODAY" or "THIS WEEK", STRICTLY compare event dates with Current Date.
                            - Do NOT show events from previous months unless explicitly asked.
                            - If user says "THIS MONTH", show only events from ${new Date().toLocaleDateString('en-US', { month: 'long' })}.
-                        5. Be concise and friendly.`
+                        4. FORMATTING:
+                           - Use bullet points for lists.
+                           - Bold important details like **Time** and **Task Name**.
+                        `
                     },
                     {
                         role: "user",
