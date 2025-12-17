@@ -109,6 +109,7 @@ export async function ragQuery(
     tasks: Task[]
 ): Promise<string> {
     if (!GROQ_KEY) return "Please configure your VITE_GROQ_KEY to use Mr. Crock AI.";
+    if (!question || typeof question !== 'string') return "I didn't quite catch that. Could you say it again?";
 
     // Simple Chit-Chat Check
     const lowerQ = question.toLowerCase().trim();
@@ -183,7 +184,6 @@ export async function ragQuery(
     if (candidates.length > 0) {
         try {
             const reranked = await rerankItems(question, candidates);
-            // Put reranked items first
             const rerankedIds = new Set(reranked.map(r => r.id));
             const others = candidates.filter(c => !rerankedIds.has(c.id));
             candidates = [...reranked, ...others];
@@ -192,11 +192,48 @@ export async function ragQuery(
         }
     }
 
-    // --- 3. GENERATION ---
-    const topCandidates = candidates.slice(0, 10);
-    if (topCandidates.length === 0) return "I couldn't find a match in your schedule.";
+    // --- 2.5 STRICT FILTERING FOR DATES ("TODAY", "MONTH") ---
+    const today = new Date();
+    const isAskingToday = /\b(today|tonight)\b/i.test(question);
 
-    const contextString = topCandidates.map(c => `- ${c.content}`).join("\n");
+    // Detect Month mentions (e.g., "August", "in Aug", "this month")
+    const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+    const shortMonths = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
+    // Check against the valid lowerQ defined at the start of the function
+    let targetMonthIndex = -1;
+
+    if (lowerQ.includes("this month")) {
+        targetMonthIndex = today.getMonth();
+    } else {
+        // Check for specific month names
+        targetMonthIndex = months.findIndex(m => lowerQ.includes(m));
+        if (targetMonthIndex === -1) {
+            targetMonthIndex = shortMonths.findIndex(m => lowerQ.includes(m));
+        }
+    }
+
+    if (isAskingToday) {
+        const todayStr = today.toISOString().split('T')[0];
+        candidates = candidates.filter(c => c.date && c.date.startsWith(todayStr));
+    } else if (targetMonthIndex !== -1) {
+        // Filter by month
+        candidates = candidates.filter(c => {
+            if (!c.date) return false;
+            const d = new Date(c.date);
+            return d.getMonth() === targetMonthIndex;
+        });
+    }
+
+    const totalFound = candidates.length;
+
+    // --- 3. GENERATION ---
+    // Increased limit to 50 to handle "count" questions better without pagination
+    const topCandidates = candidates.slice(0, 50);
+
+    const contextString = topCandidates.length > 0
+        ? topCandidates.map(c => `- ${c.content}`).join("\n")
+        : "No events found matching the specific date criteria.";
 
     try {
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -213,6 +250,8 @@ export async function ragQuery(
                         content: `You are Mr. Crock (Klyo Edition).
                         You are an intelligent calendar assistant.
                         
+                        Current Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                        
                         Context (Events/Tasks):
                         ${contextString}
                         
@@ -224,9 +263,20 @@ export async function ragQuery(
                            - Date
                            - Time (or "All Day")
                         3. If multiple events match, list them clearly using bullet points.
-                        4. Be concise and friendly.`
+                        4. DATE AWARENESS:
+                           - If user says "TODAY" or "THIS WEEK", STRICTLY compare event dates with Current Date.
+                           - Do NOT show events from previous months unless explicitly asked.
+                           - If user says "THIS MONTH", show only events from ${new Date().toLocaleDateString('en-US', { month: 'long' })}.
+                        5. Be concise and friendly.`
                     },
-                    { role: "user", content: question }
+                    {
+                        role: "user",
+                        content: `Current Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.
+                        
+                        System Note: The user might be asking for a count. I have strictly filtered the database and found exactly ${totalFound} matching events/tasks for this query.
+                        
+                        Question: ${question}`
+                    }
                 ]
             })
         });
