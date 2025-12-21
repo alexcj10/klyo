@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Plus, Grid3X3, List, Edit3, Trash2 } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek, startOfDay, endOfDay, isWithinInterval } from 'date-fns';
 import { Event } from '../types';
@@ -12,6 +12,7 @@ interface CalendarViewProps {
   onAddEvent: () => void;
   onDayViewOpen: (date: Date) => void;
   onEventDelete: (event: Event) => void;
+  isSidebarOpen?: boolean;
 }
 
 const CalendarView: React.FC<CalendarViewProps> = ({
@@ -21,7 +22,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onDateClick,
   onAddEvent,
   onDayViewOpen,
-  onEventDelete
+  onEventDelete,
+  isSidebarOpen
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -459,14 +461,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         {viewMode === 'grid' ? renderGridView() : renderListView()}
       </motion.div>
 
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        onClick={onAddEvent}
-        className="fixed bottom-24 right-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white w-[44px] h-[44px] sm:w-14 sm:h-14 flex items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-30"
-      >
-        <Plus className="w-5 h-5 sm:w-7 sm:h-7" />
-      </motion.button>
+      <AnimatePresence>
+        {!isSidebarOpen && (
+          <motion.button
+            initial={{ scale: 0, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0, opacity: 0, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onAddEvent}
+            className="fixed bottom-24 right-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white w-[44px] h-[44px] sm:w-14 sm:h-14 flex items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-30"
+          >
+            <Plus className="w-5 h-5 sm:w-7 sm:h-7" />
+          </motion.button>
+        )}
+      </AnimatePresence>
 
       {deleteConfirmEvent && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">

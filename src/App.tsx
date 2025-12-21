@@ -270,6 +270,7 @@ function App() {
             onAddEvent={handleAddEvent}
             onDayViewOpen={handleDayViewOpen}
             onEventDelete={(event) => handleEventDelete(event.id)}
+            isSidebarOpen={isSidebarOpen || isMobileSidebarOpen}
           />
         </div>
 
@@ -413,7 +414,11 @@ function App() {
           </motion.div>
         )}
       </AnimatePresence>
-      <AIChat events={events} tasks={tasks} />
+      <AIChat
+        events={events}
+        tasks={tasks}
+        isSidebarOpen={isSidebarOpen || isMobileSidebarOpen}
+      />
     </div>
   );
 }
