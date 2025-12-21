@@ -71,7 +71,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
     // Check if we have any data at all
     const hasEvents = events.length > 0;
     const hasTasks = tasks.length > 0;
-    
+
     // Enhanced category analysis with colors - FIXED for empty states
     const eventsByCategory = hasEvents ? Object.entries(
       events.reduce((acc, event) => {
@@ -113,14 +113,14 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
     // Task completion rate and productivity metrics
     const completedTasks = tasks.filter(task => task.completed).length;
     const completionRate = tasks.length > 0 ? (completedTasks / tasks.length) * 100 : 0;
-    
+
     // Productivity score calculation (0-100)
     const productivityScore = Math.round(
-      (completionRate * 0.4) + 
-      (Math.min(events.length / 10, 1) * 30) + 
+      (completionRate * 0.4) +
+      (Math.min(events.length / 10, 1) * 30) +
       (Math.min(tasks.length / 15, 1) * 30)
     );
-    
+
     // Current streak calculation - FIXED for empty states
     const currentDate = new Date();
     let currentStreak = 0;
@@ -128,13 +128,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
       for (let i = 0; i < 30; i++) {
         const checkDate = new Date(currentDate);
         checkDate.setDate(checkDate.getDate() - i);
-        
-        const hasActivity = events.some(event => 
+
+        const hasActivity = events.some(event =>
           event.date.toDateString() === checkDate.toDateString()
-        ) || tasks.some(task => 
+        ) || tasks.some(task =>
           task.dueDate && task.dueDate.toDateString() === checkDate.toDateString() && task.completed
         );
-        
+
         if (hasActivity) {
           currentStreak++;
         } else {
@@ -142,18 +142,18 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
         }
       }
     }
-    
+
     // Time distribution analysis - FIXED for empty states
     const timeDistribution = hasEvents ? events.reduce((acc, event) => {
       const hour = parseInt(event.startTime.split(':')[0]);
-      const period = hour < 6 ? 'Early Morning' : 
-                    hour < 12 ? 'Morning' : 
-                    hour < 17 ? 'Afternoon' : 
-                    hour < 21 ? 'Evening' : 'Night';
+      const period = hour < 6 ? 'Early Morning' :
+        hour < 12 ? 'Morning' :
+          hour < 17 ? 'Afternoon' :
+            hour < 21 ? 'Evening' : 'Night';
       acc[period] = (acc[period] || 0) + 1;
       return acc;
     }, {} as Record<string, number>) : {};
-    
+
     const timeDistributionData = Object.entries(timeDistribution).map(([name, value]) => ({
       name,
       value,
@@ -165,13 +165,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
     const weekStart = startOfWeek(today);
     const weekEnd = endOfWeek(today);
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
-    
+
     const weeklyActivity = weekDays.map(day => {
-      const dayEvents = events.filter(event => 
+      const dayEvents = events.filter(event =>
         event.date.toDateString() === day.toDateString()
       ).length;
-      
-      const dayTasks = tasks.filter(task => 
+
+      const dayTasks = tasks.filter(task =>
         task.dueDate && task.dueDate.toDateString() === day.toDateString()
       ).length;
 
@@ -190,12 +190,12 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
       date.setMonth(date.getMonth() - i);
       const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
       const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 0);
-      
-      const monthEvents = events.filter(event => 
+
+      const monthEvents = events.filter(event =>
         isWithinInterval(event.date, { start: monthStart, end: monthEnd })
       ).length;
-      
-      const monthTasks = tasks.filter(task => 
+
+      const monthTasks = tasks.filter(task =>
         task.dueDate && isWithinInterval(task.dueDate, { start: monthStart, end: monthEnd })
       ).length;
 
@@ -221,6 +221,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
     };
   }, [events, tasks]);
 
+  // Compact StatCard - optimized for all screen sizes
   const StatCard: React.FC<{
     title: string;
     value: string | number;
@@ -230,23 +231,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
     onClick?: () => void;
   }> = ({ title, value, subtitle, icon, color, onClick }) => (
     <motion.div
-      whileHover={{ scale: 1.02, y: -2 }}
+      whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      className={`bg-gradient-to-br ${color} p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl text-white shadow-lg cursor-pointer relative overflow-hidden`}
+      className={`bg-gradient-to-br ${color} p-2.5 sm:p-3 lg:p-4 rounded-xl text-white shadow-md cursor-pointer relative overflow-hidden`}
     >
-      <div className="absolute inset-0 bg-white/5 backdrop-blur-sm" />
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
-          <div className="p-1.5 sm:p-2 bg-white/20 rounded-lg">
-            {icon}
-          </div>
-          <div className="text-right">
-            <div className="text-lg sm:text-xl lg:text-2xl font-bold">{value}</div>
-            <div className="text-xs sm:text-sm opacity-90">{title}</div>
-          </div>
+      <div className="absolute inset-0 bg-white/5" />
+      <div className="relative z-10 flex items-center gap-2 sm:gap-3">
+        <div className="p-1.5 sm:p-2 bg-white/20 rounded-lg shrink-0">
+          {icon}
         </div>
-        {subtitle && <div className="text-xs sm:text-sm opacity-80">{subtitle}</div>}
+        <div className="min-w-0 flex-1">
+          <div className="text-base sm:text-lg lg:text-xl font-bold leading-tight truncate">{value}</div>
+          <div className="text-[10px] sm:text-xs opacity-90 truncate">{title}</div>
+        </div>
       </div>
     </motion.div>
   );
@@ -257,11 +255,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
         <button
           key={view}
           onClick={() => setSelectedView(view)}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 ${
-            selectedView === view
-              ? 'bg-white text-gray-800 shadow-sm'
-              : 'text-gray-600 hover:text-gray-800'
-          }`}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex-1 ${selectedView === view
+            ? 'bg-white text-gray-800 shadow-sm'
+            : 'text-gray-600 hover:text-gray-800'
+            }`}
         >
           {view.charAt(0).toUpperCase() + view.slice(1)}
         </button>
@@ -288,7 +285,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
   // Debug logging to verify data
   console.log('AnalyticsDashboard - Events:', events.length, events);
   console.log('AnalyticsDashboard - Tasks:', tasks.length, tasks);
-  
+
   // Check if we have any data to display
   const hasAnyData = events.length > 0 || tasks.length > 0;
   console.log('AnalyticsDashboard - hasAnyData:', hasAnyData);
@@ -343,8 +340,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
       {/* View Toggle */}
       <ViewToggle />
 
-      {/* Enhanced Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4">
+      {/* Compact Stats Grid - 2x2 on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         <StatCard
           title="Productivity Score"
           value={`${analytics.productivityScore}%`}
@@ -402,9 +399,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <ComposedChart data={analytics.weeklyActivity}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="day" stroke="#6b7280" fontSize={12} />
-                  <YAxis 
-                    stroke="#6b7280" 
-                    fontSize={12} 
+                  <YAxis
+                    stroke="#6b7280"
+                    fontSize={12}
                     domain={[0, 'dataMax + 1']}
                     allowDecimals={false}
                     tickCount={6}
@@ -467,13 +464,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value: number, name: string, props: any) => [
                       `${value} (${props.payload.percentage}%)`,
                       name
                     ]}
                   />
-                  <Legend 
+                  <Legend
                     wrapperStyle={{ fontSize: '12px' }}
                     iconType="circle"
                     formatter={(value: string, entry: any) => {
@@ -539,13 +536,13 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                       <Cell key={`priority-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip 
+                  <Tooltip
                     formatter={(value: number, name: string, props: any) => [
                       `${value} (${props.payload.percentage}%)`,
                       name
                     ]}
                   />
-                  <Legend 
+                  <Legend
                     wrapperStyle={{ fontSize: '12px' }}
                     iconType="circle"
                     formatter={(value: string, entry: any) => {
@@ -599,7 +596,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
       </AnimatePresence>
 
 
-    </div>
+    </div >
   );
 };
 
