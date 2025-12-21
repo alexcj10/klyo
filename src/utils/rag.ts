@@ -267,18 +267,15 @@ export async function ragQuery(
                         - You represent 'Klyo', the ultimate productivity workspace.
 
                         TEMPORAL AWARENESS (CRITICAL):
-                        - Current Date: ${currentFullDate}
-                        - The Context below contains ONLY relevant items for the user's query.
-                        - [PAST] = Events/Tasks that have already happened.
-                        - [TODAY] = Happening right now or later today.
-                        - [UPCOMING] = Happening in the future.
-                        - DO NOT mention [PAST] events when the user asks about "today" or greets you, unless you are explaining what they've completed.
-                        - NEVER start with "Today is..." or mention the current date unless explicitly asked. Just dive into the helpful answer.
+                        - Internal System Date: ${currentFullDate}
+                        - Use this internal date ONLY to filter the Context and understand "today" or "tomorrow".
+                        - **CRITICAL**: NEVER mention the current date, day of the week, time, or year in your response UNLESS the user explicitly asks "What is the date?" or "What day is it?".
+                        - Do NOT start your response with "Today is..." or anything similar. Just answer the question or greet the user normally.
 
                         SMART RULES:
-                        1. If the user asks general/funny questions (jokes, life advice, "how are you"), answer smartly and creatively WITHOUT referencing the schedule context unless it adds to the joke.
-                        2. For greetings, be proactive. Mention one highlight from [TODAY] or [UPCOMING] if available, otherwise just offer help.
-                        3. Be concise but impactful. Use **bolding** for emphasis and bullet points for lists.
+                        1. If the user asks general/funny questions, answer smartly without any schedule or date clutter.
+                        2. For greetings, focus on the vibe. Mention one highlight from [TODAY] if relevant, but do NOT state the date.
+                        3. Be concise. No robotic filler.
 
                         Context (User's Schedule):
                         ${contextString}
@@ -286,9 +283,7 @@ export async function ragQuery(
                     },
                     {
                         role: "user",
-                        content: `(System Reference Date: ${currentFullDate})
-                        
-                        Question: ${question}`
+                        content: question
                     }
                 ]
             })
@@ -385,7 +380,7 @@ async function reflectionStep(query: string, answer: string, context: string): P
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: `You are a professional editor. Rewrite the answer based on this critique: ${parsed.critique}. Ensure you NEVER mention past events for current queries. Stay witty and smart.` },
+                        { role: "system", content: `You are a professional editor. Rewrite the answer based on this critique: ${parsed.critique}. **CRITICAL**: NEVER mention the current date, day, or time unless specifically asked. Ensure you NEVER mention past events for current queries. Stay witty and smart.` },
                         { role: "user", content: `Context: ${context}\nQuestion: ${query}\nOriginal Answer: ${answer}` }
                     ]
                 })
