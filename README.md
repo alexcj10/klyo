@@ -1,115 +1,113 @@
-# <p align="center">Organize your day effortlessly with Klyo</p>
-<img width="1920" height="1440" alt="31shots_so" src="https://github.com/user-attachments/assets/6d493468-507a-4866-a7b5-839ba0b6fbc6" />
+# <p align="center"> <img src="src/assets/crock.png" width="80" height="80" alt="Klyo Logo" /><br/>Klyo: The Intelligent Workspace</p>
 
 <p align="center">
-  <strong>Plan. Prioritize. Progress.</strong><br/>
-  Minimal UI ✦ Blazing fast ✦ Powered by TypeScript + Tailwind + Vite
+  <strong>Get more done without the stress.</strong><br/>
+  Klyo is a simple, all-in-one place for your calendar, tasks, and <strong>Mr. Crock AI</strong> assistant.
+</p>
+
+<p align="center">
+  <img width="100%" alt="Klyo App Preview" src="https://github.com/user-attachments/assets/6d493468-507a-4866-a7b5-839ba0b6fbc6" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Powered%20By-Groq-orange?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Stack-React%20%2B%20TypeScript-blue?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/UI-Tailwind%20%2B%20Framer-fuchsia?style=for-the-badge" />
 </p>
 
 ---
 
-## ⚡ Quick Start
+## 🌟 The Klyo Experience
 
-```bash
-git clone https://github.com/alexcj10/klyo.git
-cd klyo
-npm install
-npm run dev
-```
+Klyo isn't just a calendar; it's a unified environment designed to reduce cognitive load and keep you in the flow.
 
-> 🌍 Visit [localhost:5173](http://localhost:5173) to see it in action.
+### 🐊 Mr. Crock RAG AI
+Meet your new executive assistant. Mr. Crock isn't a standard chatbot—he's powered by a **Hybrid Retrieval-Augmented Generation (RAG)** engine.
+*   **Context Aware**: He knows your schedule better than you do.
+*   **Smart Filtering**: He distinguishes between past, present, and future events with strict temporal logic.
+*   **Blazing Fast**: Integrated with **Groq llama-3.3-70b** for near-instant responses.
+*   **Witty & Adaptable**: Whether you need a serious briefing or a witty joke, Mr. Crock adapts his tone to yours.
+
+### 📅 Dynamic Calendar View
+A fluid, interactive calendar that supports multiple views (Month, Day, Analytics) and features smooth transitions powered by Framer Motion.
+
+### 📊 Intelligent Analytics
+Visualize your productivity. Track your performance, category distributions, and completion rates with our built-in analytics suite.
+
+### 📋 Unified Task Sidebar
+A persistence-enabled manager for your to-dos, allowing you to prioritize and execute without leaving your main workspace.
 
 ---
 
-## 🧭 Project Layout
+## 🛠️ Technical Excellence
+
+Klyo is built on a modern, high-performance stack:
+
+*   **Frontend**: React 18 + Vite (for lightning-fast HMR)
+*   **Intelligence**: Groq SDK + Custom Hybrid RAG (Vector Similarity + Lexical Search)
+*   **Styling**: Tailwind CSS (Glassmorphic UI)
+*   **Animations**: Framer Motion (Fluid interactions)
+*   **Icons**: Lucide React
+*   **State**: Custom Hooks with LocalStorage persistence
+
+---
+
+## 🚀 Getting Started
+
+Experience Klyo locally in minutes.
+
+### Prerequisites
+*   Node.js (v18+)
+*   Groq API Key (Set in `.env` as `VITE_GROQ_KEY`)
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/alexcj10/klyo.git
+
+# Enter the directory
+cd klyo
+
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+```
+
+---
+
+## 📂 Architecture
 
 ```
 klyo/
-├── 🌐 public/               → Static assets & favicons
 ├── 📁 src/
-│   ├── 🧩 components/       → UI Components
-│   │   ├── 📈 AnalyticsButton.tsx      → Analytics button
-│   │   ├── 📊 AnalyticsDashboard.tsx   → Analytics dashboard
-│   │   ├── 📝 AnalyticsModal.tsx       → Analytics modal
-│   │   ├── 📅 CalendarView      → Core scheduler
-│   │   ├── 📋 TaskSidebar       → Task manager
-│   │   ├── ✏️ EventModal        → Add/edit events
-│   │   ├── 👁️ EventViewModal    → View event details
-│   │   ├── 📊 DayViewModal      → Daily breakdown
-│   │   ├── 🎯 Header            → Top navigation
-│   │   ├── 🔍 SearchOverlay     → Command palette
-│   │   └── 🎬 SplashScreen      → App intro
-│   ├── 📊 data/             → Mock data & constants
-│   ├── 🪝 hooks/            → Custom React hooks
-│   ├── 🎯 types/            → TypeScript definitions
-│   ├── 🛠️ utils/            → Utility helpers
-│   ├── 🚀 App.tsx           → Root layout
-│   └── 🎯 main.tsx          → App entry
-├── 📋 package.json          → Metadata & scripts
-├── ⚙️ vite.config.ts        → Vite configuration
-├── 🎨 tailwind.config.js    → Tailwind setup
-└── 📖 README.md            → Documentation
+│   ├── 🧩 components/   → Modular React components (Calendar, Mr. Crock, Sidebar)
+│   ├── 🛠️ utils/        → The RAG engine, similarity logic, and date helpers
+│   ├── 📊 data/         → Data schemas and initial mock states
+│   ├── 🪝 hooks/        → Advanced state management & persistence
+│   └── 🎯 types/        → Strict TypeScript definitions
+└── 📋 project_config/  → Vite, Tailwind, and Environment setups
 ```
 
 ---
 
 ## 🤝 Contribution Guide
 
-### 🧱 Workflow
+We love professional collaboration! 🥂
 
-| Step | Description  | Command                                     |
-| ---- | ------------ | ------------------------------------------- |
-| 1️⃣  | Fork project | Click "Fork" on GitHub                      |
-| 2️⃣  | Clone repo   | `git clone <your-fork-url>`                 |
-| 3️⃣  | New feature  | `git checkout -b feature/awesome`           |
-| 4️⃣  | Code & test  | Make it perfect 💅                          |
-| 5️⃣  | Commit       | `git commit -m "feat: add awesome feature"` |
-| 6️⃣  | Push         | `git push origin feature/awesome`           |
-| 7️⃣  | PR           | Open a Pull Request 📬                      |
-
----
-
-### 🧠 Code Standards
-
-* ✅ Follow established conventions
-* ✨ Use semantic names (clear, contextual)
-* 💡 Type everything (TypeScript FTW)
-* 📚 Comment tricky logic blocks
-* ♻️ Modularize logic into utils/hooks/components
-* 🧪 Write tests for important features
+1.  **Fork** the repository and create your feature branch.
+2.  **Code** with high standards: Clean, Type-Safe, and Documented.
+3.  **Commit** using [Conventional Commits](https://www.conventionalcommits.org/):
+    *   `feat:` (New feature)
+    *   `fix:` (Bug fix)
+    *   `docs:` (Documentation)
+    *   `refactor:` (Code improvement)
+4.  **PR** with a clear description and testing results.
 
 ---
 
-### 🔖 Commit Naming (Conventional Commits)
-
-| Type        | Emoji | Purpose                         | Example                             |
-| ----------- | ----- | ------------------------------- | ----------------------------------- |
-| `feat:`     | ✨     | New feature                     | `feat: add dark mode`               |
-| `fix:`      | 🐛    | Bug fix                         | `fix: resolve modal crash`          |
-| `docs:`     | 📝    | Documentation updates           | `docs: add API usage section`       |
-| `style:`    | 🎨    | Code style changes (no logic)   | `style: format with prettier`       |
-| `refactor:` | 🔧    | Code restructure (no features)  | `refactor: optimize date parsing`   |
-| `test:`     | ✅     | Add/update tests                | `test: add tests for calendar view` |
-| `chore:`    | 🔁    | Misc changes (builds/deps/etc.) | `chore: bump tailwind to v3.4`      |
-
----
-
-### 🐞 Reporting Bugs
-
-Please include:
-
-* ✅ Clear problem description
-* 📸 Screenshots or screen recording
-* 🔁 Reproduction steps
-* 🌐 Environment (browser/OS/version)
-
----
-
-### 💡 Suggesting Features
-
-To propose enhancements:
-
-* 🎯 Describe the feature clearly
-* 📍 Explain the use case and benefit
-* 🖼️ Include mockups if relevant
-* 💬 Suggest how it could be implemented
+<p align="center">
+  Built with ❤️ by the Klyo Team.<br/>
+  <em>"Plan. Prioritize. Progress."</em>
+</p>
