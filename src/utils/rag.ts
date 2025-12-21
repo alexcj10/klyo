@@ -25,14 +25,19 @@ export interface RagItem {
 
 function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
     const items: RagItem[] = [];
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
 
     // Process Events
     events.forEach(e => {
         const d = new Date(e.date);
-        const timeString = e.isAllDay ? "All Day" : `${e.startTime}-${e.endTime}`;
+        const itemDateStr = d.toISOString().split('T')[0];
 
-        // Index BOTH short and long formats for maximum recall
-        // e.g. "Monday Mon October Oct 15 2025"
+        let relativeStatus = "[UPCOMING]";
+        if (itemDateStr === todayStr) relativeStatus = "[TODAY]";
+        else if (d < now) relativeStatus = "[PAST]";
+
+        const timeString = e.isAllDay ? "All Day" : `${e.startTime}-${e.endTime}`;
         const fullDay = d.toLocaleDateString('en-US', { weekday: 'long' });
         const shortDay = d.toLocaleDateString('en-US', { weekday: 'short' });
         const fullMonth = d.toLocaleDateString('en-US', { month: 'long' });
@@ -41,14 +46,14 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
 
         const dateStr = `${fullDay} (${shortDay}), ${fullMonth} (${shortMonth}) ${dayYear}`;
 
-        const text = `Event: ${e.title}. Category: ${e.category}. Priority: ${e.priority}. Date: ${dateStr} ${timeString}. Details: ${e.description || 'None'}`;
+        const text = `${relativeStatus} Event: ${e.title}. Category: ${e.category}. Priority: ${e.priority}. Date: ${dateStr} ${timeString}. Details: ${e.description || 'None'}`;
         items.push({
             id: `evt-${e.id}`,
             type: 'event',
             title: e.title,
             content: text,
             date: d.toISOString(),
-            priority: e.priority, // Ensure these are passed
+            priority: e.priority,
             category: e.category,
             original: e
         });
@@ -57,8 +62,16 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
     // Process Tasks
     tasks.forEach(t => {
         let dateStr = 'No Due Date';
+        let relativeStatus = "[GENERAL]";
+
         if (t.dueDate) {
             const d = new Date(t.dueDate);
+            const itemDateStr = d.toISOString().split('T')[0];
+
+            relativeStatus = "[UPCOMING]";
+            if (itemDateStr === todayStr) relativeStatus = "[TODAY]";
+            else if (d < now) relativeStatus = "[PAST]";
+
             const fullDay = d.toLocaleDateString('en-US', { weekday: 'long' });
             const shortDay = d.toLocaleDateString('en-US', { weekday: 'short' });
             const fullMonth = d.toLocaleDateString('en-US', { month: 'long' });
@@ -67,7 +80,7 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
             dateStr = `${fullDay} (${shortDay}), ${fullMonth} (${shortMonth}) ${dayYear}`;
         }
 
-        const text = `Task: ${t.title}. Category: ${t.category}. Priority: ${t.priority}. Due: ${dateStr}. Status: ${t.completed ? 'Done' : 'Pending'}. Details: ${t.description || 'None'}`;
+        const text = `${relativeStatus} Task: ${t.title}. Category: ${t.category}. Priority: ${t.priority}. Due: ${dateStr}. Status: ${t.completed ? 'Done' : 'Pending'}. Details: ${t.description || 'None'}`;
         items.push({
             id: `tsk-${t.id}`,
             type: 'task',
@@ -111,18 +124,16 @@ export async function ragQuery(
     if (!GROQ_KEY) return "Please configure your VITE_GROQ_KEY to use Mr. Crock AI.";
     if (!question || typeof question !== 'string') return "I didn't quite catch that. Could you say it again?";
 
-    // Simple Chit-Chat Check - REMOVED to allow LLM to handle greetings with context awareness
-    // const lowerQ = question.toLowerCase().trim();
-    // if (["hi", "hello", "hey", "hola", "yo"].includes(lowerQ.replace(/[^\w]/g, ''))) {
-    //     return "Hello there! I'm Mr. Crock, your advanced Klyo assistant. How can I help with your schedule today?";
-    // }
-
     // 0. Prepare Data
     const items = normalizeData(events, tasks);
-    // Note: We continue even if items is empty to allow for general conversation
+    const lowerQ = question.toLowerCase().trim();
+
+    // Temporal Intent Detection
+    const isAskingAboutPast = /\b(yesterday|previous|before|last|past|histor|done|completed)\b/i.test(lowerQ);
+    const isGreeting = /\b(hi|hello|hey|hola|yo|good morning|good evening|good afternoon)\b/i.test(lowerQ);
+    const isAskingAboutTodayNow = /\b(today|now|currently|looking for|plans|plate)\b/i.test(lowerQ) || isGreeting;
 
     // --- 0.5 SMART EXPANDER ---
-    // Expand query logic inline or helper
     let searchQueries = [question];
     try {
         const expanded = await expandQueryLogic(question);
@@ -132,8 +143,6 @@ export async function ragQuery(
     }
 
     // --- 1. HYBRID RETRIEVAL ---
-    // Generate embeddings (using the newly pasted simplified embed.ts)
-    // Since embedText is synchronous now (based on user paste), we can map directly
     const queryEmbeds = searchQueries.map(q => embedText(q));
 
     items.forEach(item => {
@@ -142,7 +151,6 @@ export async function ragQuery(
         }
     });
 
-    // Prepare keywords
     const stopWords = new Set(['a', 'an', 'the', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'and', 'or', 'is', 'are', 'was', 'were']);
     const allQueryTerms = new Set<string>();
     searchQueries.forEach(q => {
@@ -152,26 +160,31 @@ export async function ragQuery(
 
     // Score Items
     let ranked = items.map(item => {
-        // A. Vector Score
         const vectorScore = Math.max(...queryEmbeds.map(qEmb => cosineSimilarity(qEmb, item.embedding || [])));
-
-        // B. Lexical Score
         let lexicalScore = 0;
         const contentLower = item.content.toLowerCase();
         queryTerms.forEach(term => {
             if (contentLower.includes(term)) lexicalScore += 1.0;
         });
 
-        // C. Title Boost
         if (queryTerms.some(term => item.title.toLowerCase().includes(term))) {
             lexicalScore += 2.0;
         }
 
-        // D. Recency (Dates close to today get a boost if query implies time)
         let recencyScore = 0;
         if (item.date) {
-            const daysDiff = Math.abs((new Date(item.date).getTime() - Date.now()) / (1000 * 3600 * 24));
-            if (daysDiff < 7) recencyScore = 1.0; // Coming up or just happened
+            const timeDiff = new Date(item.date).getTime() - Date.now();
+            const daysDiff = Math.abs(timeDiff / (1000 * 3600 * 24));
+
+            // Boost UPCOMING and TODAY items if not asking about past
+            if (!isAskingAboutPast) {
+                if (item.content.includes("[TODAY]")) recencyScore += 5.0;
+                if (item.content.includes("[UPCOMING]") && daysDiff < 3) recencyScore += 3.0;
+                if (item.content.includes("[PAST]")) recencyScore -= 10.0; // Heavy penalty for past events
+            } else {
+                // If asking about past, boost PAST items
+                if (item.content.includes("[PAST]")) recencyScore += 5.0;
+            }
         }
 
         return { item, score: (vectorScore * 10) + lexicalScore + recencyScore };
@@ -180,7 +193,11 @@ export async function ragQuery(
     // --- 2. ORACLE RERANKER ---
     let candidates = ranked.slice(0, 15).map(r => r.item);
 
-    // If we have candidates, let the LLM pick the best ones
+    // STRICT FILTERING: If asking about TODAY/NOW/GREETING, strip PAST events entirely
+    if (isAskingAboutTodayNow && !isAskingAboutPast) {
+        candidates = candidates.filter(c => !c.content.includes("[PAST]"));
+    }
+
     if (candidates.length > 0) {
         try {
             const reranked = await rerankItems(question, candidates);
@@ -192,22 +209,16 @@ export async function ragQuery(
         }
     }
 
-    // --- 2.5 STRICT FILTERING FOR DATES ("TODAY", "MONTH") ---
     const today = new Date();
-    const lowerQ = question.toLowerCase(); // Re-declare for use here since we commented out the earlier block
     const isAskingToday = /\b(today|tonight)\b/i.test(question);
 
-    // Detect Month mentions (e.g., "August", "in Aug", "this month")
     const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
     const shortMonths = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
-    // Check against the valid lowerQ defined at the start of the function
     let targetMonthIndex = -1;
-
     if (lowerQ.includes("this month")) {
         targetMonthIndex = today.getMonth();
     } else {
-        // Check for specific month names
         targetMonthIndex = months.findIndex(m => lowerQ.includes(m));
         if (targetMonthIndex === -1) {
             targetMonthIndex = shortMonths.findIndex(m => lowerQ.includes(m));
@@ -218,7 +229,6 @@ export async function ragQuery(
         const todayStr = today.toISOString().split('T')[0];
         candidates = candidates.filter(c => c.date && c.date.startsWith(todayStr));
     } else if (targetMonthIndex !== -1) {
-        // Filter by month
         candidates = candidates.filter(c => {
             if (!c.date) return false;
             const d = new Date(c.date);
@@ -229,14 +239,15 @@ export async function ragQuery(
     const totalFound = candidates.length;
 
     // --- 3. GENERATION ---
-    // Increased limit to 50 to handle "count" questions better without pagination
     const topCandidates = candidates.slice(0, 50);
 
     const contextString = topCandidates.length > 0
         ? topCandidates.map(c => `- ${c.content}`).join("\n")
-        : "No events found matching the specific date criteria.";
+        : (isAskingAboutTodayNow ? "No upcoming events scheduled for today." : "No matching information found in your schedule.");
 
     try {
+        const currentFullDate = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -248,37 +259,34 @@ export async function ragQuery(
                 messages: [
                     {
                         role: "system",
-                        content: `You are Mr. Crock (Klyo Edition), a witty and helpful AI assistant for the user's personal productivity.
-                        
-                        Current Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                        
-                        CONTEXT RULES (CRITICAL):
-                        - The 'Context' below represents the USER'S schedule (Events and Tasks).
-                        - These are NOT your events. You are an AI assistant; you do not have exams, meetings, or chores.
-                        - If the user asks personal questions about YOU (e.g., "How are you?", "How's your day?"), answer creatively as an AI assistant (e.g. "I'm functioning perfectly and ready to help you organize your day!").
-                        - If the user asks about THEIR schedule (e.g., "What's on my plate?", "How's my day looking?" or just "How is my day"), use the Context to answer.
-                        - If the user just says "Hi" or "Hello", greet them warmly and mention 1-2 upcoming highlights from the context if any, or ask how you can help.
+                        content: `You are Mr. Crock (Klyo Edition), a highly intelligent, witty, and versatile AI assistant. Your goal is to be both a precise schedule expert and a charismatic companion.
+
+                        PERSONALITY & TONE:
+                        - Adapt your vibe to the user. Be funny if they are casual, professional if they are serious, and warm if they are friendly.
+                        - You are witty, confident, and never robotic.
+                        - You represent 'Klyo', the ultimate productivity workspace.
+
+                        TEMPORAL AWARENESS (CRITICAL):
+                        - Current Date: ${currentFullDate}
+                        - The Context below contains ONLY relevant items for the user's query.
+                        - [PAST] = Events/Tasks that have already happened.
+                        - [TODAY] = Happening right now or later today.
+                        - [UPCOMING] = Happening in the future.
+                        - DO NOT mention [PAST] events when the user asks about "today" or greets you, unless you are explaining what they've completed.
+                        - NEVER start with "Today is..." or mention the current date unless explicitly asked. Just dive into the helpful answer.
+
+                        SMART RULES:
+                        1. If the user asks general/funny questions (jokes, life advice, "how are you"), answer smartly and creatively WITHOUT referencing the schedule context unless it adds to the joke.
+                        2. For greetings, be proactive. Mention one highlight from [TODAY] or [UPCOMING] if available, otherwise just offer help.
+                        3. Be concise but impactful. Use **bolding** for emphasis and bullet points for lists.
 
                         Context (User's Schedule):
                         ${contextString}
-                        
-                        Instructions:
-                        1. Answer the user's question purely based on the context for schedule queries.
-                        2. Be concise, friendly, and structured.
-                        3. DATE AWARENESS:
-                           - If user says "TODAY" or "THIS WEEK", STRICTLY compare event dates with Current Date.
-                           - Do NOT show events from previous months unless explicitly asked.
-                           - If user says "THIS MONTH", show only events from ${new Date().toLocaleDateString('en-US', { month: 'long' })}.
-                        4. FORMATTING:
-                           - Use bullet points for lists.
-                           - Bold important details like **Time** and **Task Name**.
                         `
                     },
                     {
                         role: "user",
-                        content: `Current Date: ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}.
-                        
-                        System Note: The user might be asking for a count. I have strictly filtered the database and found exactly ${totalFound} matching events/tasks for this query.
+                        content: `(System Reference Date: ${currentFullDate})
                         
                         Question: ${question}`
                     }
@@ -292,14 +300,12 @@ export async function ragQuery(
         if (!answer) throw new Error("No answer from AI");
 
         // --- 4. REFLECTION CORE (Self-Correction) ---
-        // Only run for complex queries/answers
         if (answer.length > 100 || question.length > 20) {
             const improvedAnswer = await reflectionStep(question, answer, contextString);
             if (improvedAnswer) return improvedAnswer;
         }
 
         return answer;
-
     } catch (e: any) {
         console.error("Groq Failure:", e);
         return `Error: ${e.message || "AI Service Failed"}. Check console.`;
@@ -372,15 +378,15 @@ async function reflectionStep(query: string, answer: string, context: string): P
         const parsed = JSON.parse(data.choices[0].message.content);
 
         if (parsed.score < 80) {
-            // Rewrite
+            // Rewrite with improved instructions
             const rwRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
                 headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: `Rewrite based on critique: ${parsed.critique}. Use Context.` },
-                        { role: "user", content: `Context: ${context}\nQuestion: ${query}` }
+                        { role: "system", content: `You are a professional editor. Rewrite the answer based on this critique: ${parsed.critique}. Ensure you NEVER mention past events for current queries. Stay witty and smart.` },
+                        { role: "user", content: `Context: ${context}\nQuestion: ${query}\nOriginal Answer: ${answer}` }
                     ]
                 })
             });
