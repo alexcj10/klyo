@@ -456,36 +456,30 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => {
-                      // Improved responsive text rendering
-                      const isSmallScreen = window.innerWidth < 640;
-                      const isMediumScreen = window.innerWidth < 1024;
-                      
-                      if (isSmallScreen) {
-                        // Mobile: Show only percentage
-                        return `${percentage}%`;
-                      } else if (isMediumScreen) {
-                        // Tablet: Show short name + percentage
-                        const shortName = name.length > 6 ? name.substring(0, 6) + '...' : name;
-                        return `${shortName} ${percentage}%`;
-                      } else {
-                        // Desktop: Show full name + percentage
-                        return `${name} ${percentage}%`;
-                      }
-                    }}
-                    outerRadius={window.innerWidth < 640 ? 55 : window.innerWidth < 1024 ? 70 : 80}
-                    innerRadius={window.innerWidth < 640 ? 25 : window.innerWidth < 1024 ? 35 : 40}
+                    label={false}
+                    outerRadius={window.innerWidth < 640 ? 60 : window.innerWidth < 1024 ? 75 : 85}
+                    innerRadius={window.innerWidth < 640 ? 30 : window.innerWidth < 1024 ? 40 : 45}
                     fill="#8884d8"
                     dataKey="value"
+                    paddingAngle={2}
                   >
                     {analytics.eventsByCategory.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    formatter={(value: number, name: string, props: any) => [
+                      `${value} (${props.payload.percentage}%)`,
+                      name
+                    ]}
+                  />
                   <Legend 
                     wrapperStyle={{ fontSize: '12px' }}
                     iconType="circle"
+                    formatter={(value: string, entry: any) => {
+                      const item = analytics.eventsByCategory.find(c => c.name === value);
+                      return item ? `${value} (${item.percentage}%)` : value;
+                    }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -535,36 +529,29 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     cx="50%"
                     cy="50%"
                     labelLine={false}
-                    label={({ name, percentage }) => {
-                      // Improved responsive text rendering for priority analysis
-                      const isSmallScreen = window.innerWidth < 640;
-                      const isMediumScreen = window.innerWidth < 1024;
-                      
-                      if (isSmallScreen) {
-                        // Mobile: Show only percentage
-                        return `${percentage}%`;
-                      } else if (isMediumScreen) {
-                        // Tablet: Show short name + percentage
-                        const shortName = name.length > 4 ? name.substring(0, 4) + '...' : name;
-                        return `${shortName} ${percentage}%`;
-                      } else {
-                        // Desktop: Show full name + percentage
-                        return `${name} ${percentage}%`;
-                      }
-                    }}
-                    innerRadius={window.innerWidth < 640 ? 25 : window.innerWidth < 1024 ? 35 : 40}
-                    outerRadius={window.innerWidth < 640 ? 55 : window.innerWidth < 1024 ? 70 : 80}
-                    paddingAngle={5}
+                    label={false}
+                    innerRadius={window.innerWidth < 640 ? 30 : window.innerWidth < 1024 ? 40 : 45}
+                    outerRadius={window.innerWidth < 640 ? 60 : window.innerWidth < 1024 ? 75 : 85}
+                    paddingAngle={3}
                     dataKey="value"
                   >
                     {analytics.eventsByPriority.map((entry, index) => (
                       <Cell key={`priority-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip />
+                  <Tooltip 
+                    formatter={(value: number, name: string, props: any) => [
+                      `${value} (${props.payload.percentage}%)`,
+                      name
+                    ]}
+                  />
                   <Legend 
                     wrapperStyle={{ fontSize: '12px' }}
                     iconType="circle"
+                    formatter={(value: string, entry: any) => {
+                      const item = analytics.eventsByPriority.find(c => c.name === value);
+                      return item ? `${value} (${item.percentage}%)` : value;
+                    }}
                   />
                 </PieChart>
               </ResponsiveContainer>
