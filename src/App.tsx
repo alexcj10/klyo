@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import Header from './components/Header';
@@ -38,6 +38,16 @@ function App() {
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
   const [showSadAnimation, setShowSadAnimation] = useState(false);
   const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
+  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
+
+  // Responsive check
+  useEffect(() => {
+    const handleResize = () => setIsLargeScreen(window.innerWidth >= 1024);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isActuallySidebarOpen = isLargeScreen ? isSidebarOpen : isMobileSidebarOpen;
 
   // Search query state
   const [searchQuery, setSearchQuery] = useState('');
@@ -270,7 +280,7 @@ function App() {
             onAddEvent={handleAddEvent}
             onDayViewOpen={handleDayViewOpen}
             onEventDelete={(event) => handleEventDelete(event.id)}
-            isSidebarOpen={isSidebarOpen || isMobileSidebarOpen}
+            isSidebarOpen={isActuallySidebarOpen}
           />
         </div>
 
@@ -417,7 +427,7 @@ function App() {
       <AIChat
         events={events}
         tasks={tasks}
-        isSidebarOpen={isSidebarOpen || isMobileSidebarOpen}
+        isSidebarOpen={isActuallySidebarOpen}
       />
     </div>
   );
