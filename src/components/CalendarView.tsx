@@ -128,7 +128,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   // Month View Component
   const MonthView = () => (
-    <div className="flex flex-col flex-1 min-h-0 overflow-y-auto sm:overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-gray-100">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
@@ -145,11 +145,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         ))}
       </div>
 
-      {/* Calendar Grid */}
+      {/* Calendar Grid - Fills available space */}
       <div
-        className="grid grid-cols-7 sm:flex-1"
+        className="grid grid-cols-7 flex-1"
         style={{
-          gridTemplateRows: `repeat(${numWeeks}, minmax(65px, 1fr))`
+          gridTemplateRows: `repeat(${numWeeks}, 1fr)`
         }}
       >
         {monthData.map((date, index) => {
@@ -194,7 +194,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               </div>
 
               {/* Events */}
-              <div className="flex-1 space-y-0.5 overflow-hidden">
+              <div className="flex-1 space-y-0.5 min-h-0 overflow-hidden">
                 {dayEvents.slice(0, maxEvents).map((event) => (
                   <motion.div
                     key={event.id}
@@ -208,9 +208,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   >
                     <div
                       className={`
-                        px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-medium
+                        px-1 py-0.5 rounded text-[9px] sm:text-[10px] font-medium
                         truncate cursor-pointer transition-all
-                        hover:shadow-sm
+                        hover:shadow-sm leading-tight
                       `}
                       style={{
                         backgroundColor: `${event.color}15`,
@@ -219,26 +219,26 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                       }}
                     >
                       {!event.isAllDay && (
-                        <span className="opacity-70 mr-1">{event.startTime}</span>
+                        <span className="opacity-70 mr-0.5">{event.startTime}</span>
                       )}
                       {event.title}
                     </div>
                   </motion.div>
                 ))}
-
-                {/* More Events Indicator */}
-                {dayEvents.length > maxEvents && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onDayViewOpen(date);
-                    }}
-                    className="text-[10px] sm:text-xs text-blue-600 font-medium px-1.5 py-0.5 hover:bg-blue-50 rounded transition-colors w-full text-left"
-                  >
-                    +{dayEvents.length - maxEvents} more
-                  </button>
-                )}
               </div>
+
+              {/* More Events Indicator - Outside overflow container */}
+              {dayEvents.length > maxEvents && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDayViewOpen(date);
+                  }}
+                  className="text-[9px] sm:text-[10px] text-blue-600 font-semibold px-1 hover:bg-blue-50 rounded transition-colors text-left flex-shrink-0 leading-tight"
+                >
+                  +{dayEvents.length - maxEvents}
+                </button>
+              )}
             </motion.div>
           );
         })}
@@ -328,45 +328,52 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden h-full flex flex-col">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden h-full flex flex-col relative">
       {/* Header - Clean Mobile Design */}
-      <div className="px-3 sm:px-6 py-3 border-b border-gray-100 flex-shrink-0">
+      <div className="px-2 sm:px-6 py-3 border-b border-gray-100 flex-shrink-0">
         {/* Mobile: Centered nav layout */}
         <div className="flex items-center justify-between">
           {/* Navigation Arrows + Title */}
-          <div className="flex items-center space-x-2 sm:space-x-3 flex-1">
+          <div className="flex items-center flex-1 min-w-0">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={navigatePrev}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
             >
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </motion.button>
 
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={goToToday}
-              className="flex-1 sm:flex-none text-center"
-            >
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                {viewMode === 'month'
-                  ? format(currentDate, 'MMMM yyyy')
-                  : `Week of ${format(startOfWeek(currentDate), 'MMM d')}`
-                }
-              </h2>
-            </motion.button>
+            <h2 className="text-base sm:text-xl font-bold text-gray-900 flex-1 text-center whitespace-nowrap truncate px-1">
+              {viewMode === 'month'
+                ? format(currentDate, 'MMM yyyy')
+                : `${format(startOfWeek(currentDate), 'MMM d')}`
+              }
+            </h2>
+
+            {/* Inline Today indicator - shows when not on current month */}
+            {format(currentDate, 'yyyy-MM') !== format(new Date(), 'yyyy-MM') && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={goToToday}
+                className="text-[10px] sm:text-xs text-blue-600 font-semibold px-2 py-0.5 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors flex-shrink-0 mr-1"
+              >
+                Today
+              </motion.button>
+            )}
 
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={navigateNext}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
             >
               <ChevronRight className="w-5 h-5 text-gray-600" />
             </motion.button>
           </div>
 
           {/* View Toggle - Simple Pills */}
-          <div className="flex items-center bg-gray-100 rounded-full p-0.5 ml-2">
+          <div className="flex items-center bg-gray-100 rounded-full p-0.5 ml-1 flex-shrink-0">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setViewMode('month')}
@@ -398,6 +405,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           </div>
         </div>
       </div>
+
+
 
       {/* Calendar Content */}
       <AnimatePresence mode="wait">
