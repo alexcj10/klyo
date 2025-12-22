@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle, Circle, Clock, Plus, Filter, Calendar, Trash2, Edit3, List, Star, AlertCircle } from 'lucide-react';
+import { CheckCircle, Circle, Clock, Plus, Calendar, Trash2, Edit3, List, AlertCircle } from 'lucide-react';
 import { Task, Event } from '../types';
 import { format } from 'date-fns';
 
@@ -13,7 +13,6 @@ interface TaskSidebarProps {
   onEventClick: (event: Event) => void;
   onEventView: (event: Event) => void;
   onEventDelete: (event: Event) => void;
-  onClose?: () => void;
 }
 
 const TaskSidebar: React.FC<TaskSidebarProps> = ({
@@ -25,12 +24,12 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
   onEventClick,
   onEventView,
   onEventDelete,
-  onClose
 }) => {
   const [activeTab, setActiveTab] = useState<'tasks' | 'events'>('tasks');
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
   const [isAddingTask, setIsAddingTask] = useState(false);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskDate, setNewTaskDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [newTaskCategory, setNewTaskCategory] = useState<Task['category']>('personal');
   const [newTaskPriority, setNewTaskPriority] = useState<Task['priority']>('medium');
   const [sortBy, setSortBy] = useState<'priority' | 'date' | 'category'>('priority');
@@ -104,13 +103,13 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
 
       // Ensure event.date is treated as a Date object for comparison
       const eventDate = event.date instanceof Date ? event.date : new Date(event.date);
-      
+
       return eventDate >= today && eventDate <= weekFromNow;
     })
     .sort((a, b) => {
-        const dateA = a.date instanceof Date ? a.date.getTime() : new Date(a.date).getTime();
-        const dateB = b.date instanceof Date ? b.date.getTime() : new Date(b.date).getTime();
-        return dateA - dateB;
+      const dateA = a.date instanceof Date ? a.date.getTime() : new Date(a.date).getTime();
+      const dateB = b.date instanceof Date ? b.date.getTime() : new Date(b.date).getTime();
+      return dateA - dateB;
     });
 
 
@@ -121,9 +120,10 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
         priority: newTaskPriority,
         completed: false,
         category: newTaskCategory,
-        dueDate: new Date(),
+        dueDate: new Date(newTaskDate),
       });
       setNewTaskTitle('');
+      setNewTaskDate(new Date().toISOString().split('T')[0]);
       setIsAddingTask(false);
     }
   };
@@ -170,7 +170,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
     const completed = tasks.filter(t => t.completed).length;
     const pending = total - completed;
     const completionRate = total > 0 ? Math.round((completed / total) * 100) : 0;
-    
+
     return { total, completed, pending, completionRate };
   };
 
@@ -193,7 +193,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                 <span className="text-gray-600">Progress</span>
                 <div className="flex items-center space-x-2">
                   <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
                       style={{ width: `${stats.completionRate}%` }}
                     ></div>
@@ -219,8 +219,8 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
               onClick={() => setActiveTab(key as typeof activeTab)}
               className={`
                 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-300 flex-1 flex items-center justify-center space-x-2
-                ${activeTab === key 
-                  ? 'bg-white text-indigo-600 shadow-lg shadow-indigo-500/20 border border-indigo-100' 
+                ${activeTab === key
+                  ? 'bg-white text-indigo-600 shadow-lg shadow-indigo-500/20 border border-indigo-100'
                   : 'text-gray-600 hover:bg-white/50 hover:text-gray-800'
                 }
               `}
@@ -229,8 +229,8 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
               <span>{label}</span>
               <span className={`
                 px-2 py-0.5 rounded-full text-xs font-medium
-                ${activeTab === key 
-                  ? 'bg-indigo-100 text-indigo-700' 
+                ${activeTab === key
+                  ? 'bg-indigo-100 text-indigo-700'
                   : 'bg-gray-200 text-gray-600'
                 }
               `}>
@@ -257,8 +257,8 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                   onClick={() => setFilter(key as typeof filter)}
                   className={`
                     px-3 py-2 rounded-lg text-xs font-semibold transition-all duration-300 flex-1 text-center
-                    ${filter === key 
-                      ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' 
+                    ${filter === key
+                      ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30'
                       : 'bg-white/70 text-gray-600 hover:bg-white border border-gray-200/50'
                     }
                   `}
@@ -297,89 +297,97 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
         )}
       </div>
 
-      {/* Add Task Form */}
-      <AnimatePresence>
-        {isAddingTask && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className="border-b border-gray-200/30 bg-gradient-to-br from-white to-gray-50/50 mx-4 lg:mx-5 rounded-xl mb-3 shadow-sm"
-          >
-            <div className="p-4 space-y-3">
-              <div>
-                <input
-                  type="text"
-                  placeholder="What needs to be done?"
-                  value={newTaskTitle}
-                  onChange={(e) => {
-                    if (e.target.value.length <= 100) {
-                      setNewTaskTitle(e.target.value);
-                    }
-                  }}
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
-                  maxLength={100}
-                  className="w-full px-4 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm placeholder-gray-400 transition-all duration-200"
-                  autoFocus
-                />
-                <div className="flex justify-end mt-1">
-                  <span className={`text-xs ${
-                    newTaskTitle.length > 90 ? 'text-red-500' : 'text-gray-400'
-                  }`}>
-                    {newTaskTitle.length}/100
-                  </span>
+      {/* Tasks/Events List and Add Form */}
+      <div className="flex-1 overflow-y-auto px-4 lg:px-5 pb-4 scrollbar-hide">
+        {/* Add Task Form */}
+        <AnimatePresence>
+          {isAddingTask && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="border-b border-gray-200/30 bg-gradient-to-br from-white to-gray-50/50 rounded-xl mb-4 shadow-sm relative z-20"
+            >
+              <div className="p-4 space-y-3">
+                <div>
+                  <input
+                    type="text"
+                    placeholder="What needs to be done?"
+                    value={newTaskTitle}
+                    onChange={(e) => {
+                      if (e.target.value.length <= 100) {
+                        setNewTaskTitle(e.target.value);
+                      }
+                    }}
+                    onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
+                    maxLength={100}
+                    className="w-full px-4 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm placeholder-gray-400 transition-all duration-200"
+                    autoFocus
+                  />
+                  <div className="flex justify-end mt-1">
+                    <span className={`text-xs ${newTaskTitle.length > 90 ? 'text-red-500' : 'text-gray-400'
+                      }`}>
+                      {newTaskTitle.length}/100
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="col-span-2">
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1 block">Due Date</label>
+                    <input
+                      type="date"
+                      value={newTaskDate}
+                      onChange={(e) => setNewTaskDate(e.target.value)}
+                      className="w-full px-4 py-2.5 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm transition-all duration-200"
+                    />
+                  </div>
+                  <select
+                    value={newTaskCategory}
+                    onChange={(e) => setNewTaskCategory(e.target.value as Task['category'])}
+                    className="px-2 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm min-w-0 truncate"
+                  >
+                    <option value="work">💼 Work</option>
+                    <option value="personal">🏠 Personal</option>
+                    <option value="health">🏃‍♂️ Health</option>
+                    <option value="social">👥 Social</option>
+                    <option value="other">📝 Other</option>
+                  </select>
+                  <select
+                    value={newTaskPriority}
+                    onChange={(e) => setNewTaskPriority(e.target.value as Task['priority'])}
+                    className="px-2 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm min-w-0 truncate"
+                  >
+                    <option value="low">🟢 Low</option>
+                    <option value="medium">🟡 Medium</option>
+                    <option value="high">🔴 High</option>
+                  </select>
+                </div>
+                <div className="flex space-x-3 pt-2">
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleAddTask}
+                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 text-sm font-medium"
+                  >
+                    Add Task
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02, y: -1 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      setIsAddingTask(false);
+                      setNewTaskTitle('');
+                    }}
+                    className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 bg-white rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 text-sm font-medium"
+                  >
+                    Cancel
+                  </motion.button>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <select
-                  value={newTaskCategory}
-                  onChange={(e) => setNewTaskCategory(e.target.value as Task['category'])}
-                  className="px-2 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm min-w-0 truncate"
-                >
-                  <option value="work">💼 Work</option>
-                  <option value="personal">🏠 Personal</option>
-                  <option value="health">🏃‍♂️ Health</option>
-                  <option value="social">👥 Social</option>
-                  <option value="other">📝 Other</option>
-                </select>
-                <select
-                  value={newTaskPriority}
-                  onChange={(e) => setNewTaskPriority(e.target.value as Task['priority'])}
-                  className="px-2 py-3 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm min-w-0 truncate"
-                >
-                  <option value="low">🟢 Low</option>
-                  <option value="medium">🟡 Medium</option>
-                  <option value="high">🔴 High</option>
-                </select>
-              </div>
-              <div className="flex space-x-3 pt-2">
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleAddTask}
-                  className="flex-1 px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-300 text-sm font-medium"
-                >
-                  Add Task
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02, y: -1 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    setIsAddingTask(false);
-                    setNewTaskTitle('');
-                  }}
-                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-600 bg-white rounded-lg hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 text-sm font-medium"
-                >
-                  Cancel
-                </motion.button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      {/* Tasks/Events List */}
-      <div className="flex-1 overflow-y-auto px-4 lg:px-5 pb-4 scrollbar-hide">
         <AnimatePresence mode="wait">
           {activeTab === 'tasks' && (
             <motion.div
@@ -402,10 +410,9 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                     className="p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 group relative overflow-hidden"
                   >
                     {/* Priority accent line */}
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${
-                      task.priority === 'high' ? 'bg-red-500' : 
+                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${task.priority === 'high' ? 'bg-red-500' :
                       task.priority === 'medium' ? 'bg-amber-500' : 'bg-emerald-500'
-                    }`}></div>
+                      }`}></div>
 
                     <div className="flex items-start space-x-3 pl-2">
                       <motion.button
@@ -466,12 +473,26 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                               </div>
                             )}
                           </div>
-                          {task.dueDate && (
-                            <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
-                              <Calendar className="w-3 h-3" />
-                              <span>{new Date(task.dueDate).toLocaleDateString()}</span>
-                            </div>
-                          )}
+                          {task.dueDate && (() => {
+                            const d = new Date(task.dueDate);
+                            const today = new Date();
+                            const tomorrow = new Date(today);
+                            tomorrow.setDate(today.getDate() + 1);
+
+                            let label = format(d, 'MMM d');
+                            if (d.toDateString() === today.toDateString()) label = "Today";
+                            else if (d.toDateString() === tomorrow.toDateString()) label = "Tomorrow";
+
+                            const isOverdue = !task.completed && d < today && d.toDateString() !== today.toDateString();
+
+                            return (
+                              <div className={`flex items-center space-x-1 text-[10px] sm:text-xs px-2 py-1 rounded-lg border ${isOverdue ? 'bg-red-50 text-red-600 border-red-100' : 'bg-gray-50 text-gray-500 border-gray-100'
+                                }`}>
+                                <Calendar className="w-3 h-3" />
+                                <span className="font-medium">{label}</span>
+                              </div>
+                            );
+                          })()}
                         </div>
                       </div>
                     </div>
@@ -481,7 +502,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
             </motion.div>
           )}
         </AnimatePresence>
-        
+
         {activeTab === 'events' && (
           /* Events List */
           <div className="space-y-2">
@@ -497,18 +518,18 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                   className="bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 group relative overflow-hidden"
                 >
                   {/* Color accent bar */}
-                  <div 
+                  <div
                     className="absolute left-0 top-0 bottom-0 w-1"
                     style={{ backgroundColor: event.color }}
                   ></div>
-                  
+
                   <div className="p-4 pl-6">
                     <div className="flex items-start space-x-3 cursor-pointer" onClick={() => onEventView(event)}>
-                      <div 
+                      <div
                         className="w-3 h-3 rounded-full mt-1.5 border-2 border-white shadow-lg"
                         style={{ backgroundColor: event.color }}
                       ></div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="font-semibold text-sm leading-relaxed text-gray-800">
@@ -579,7 +600,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
             </AnimatePresence>
           </div>
         )}
-        
+
         {/* Empty States */}
         {((activeTab === 'tasks' && sortedAndFilteredTasks.length === 0) || (activeTab === 'events' && upcomingEvents.length === 0)) && (
           <motion.div
@@ -589,7 +610,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
           >
             {activeTab === 'tasks' ? (
               <>
-                <motion.div 
+                <motion.div
                   className="text-6xl lg:text-7xl mb-6"
                   animate={{ rotate: [0, -10, 10, 0] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
@@ -620,7 +641,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
               </>
             ) : (
               <>
-                <motion.div 
+                <motion.div
                   className="text-6xl lg:text-7xl mb-6"
                   animate={{ scale: [1, 1.1, 1] }}
                   transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}

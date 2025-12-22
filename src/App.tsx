@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import Header from './components/Header';
@@ -9,7 +9,6 @@ import EventViewModal from './components/EventViewModal';
 import DayViewModal from './components/DayViewModal';
 import AnalyticsModal from './components/AnalyticsModal';
 import { Event, Task } from './types';
-import { mockEvents, mockTasks } from './data/mockData';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
 import AIChat from './components/AIChat';
@@ -332,7 +331,6 @@ function App() {
                   onEventClick={handleEventClick}
                   onEventView={handleEventView}
                   onEventDelete={(event) => handleEventDelete(event.id)}
-                  onClose={() => setIsMobileSidebarOpen(false)}
                 />
               </motion.div>
             </motion.div>
