@@ -13,13 +13,9 @@ import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
 import AIChat from './components/AIChat';
 
-// --------- Import the latest SplashScreen -----------
-import SplashScreen from './components/SplashScreen'; // <-- Make sure this is the new file
+// --------- Data Persistence -----------
 
 function App() {
-  // Splash state
-  const [showSplash, setShowSplash] = useState(true);
-
   // Data persistence is now enabled - events and tasks will persist across page refreshes
 
   const [events, setEvents] = useLocalStorage<Event[]>('klyo-events', []);
@@ -262,10 +258,6 @@ function App() {
     setIsMobileSidebarOpen(true); // Open mobile sidebar if on mobile
   };
 
-  // Render splash while it shows
-  if (showSplash) {
-    return <SplashScreen onDone={() => setShowSplash(false)} />;
-  }
 
   // --------- MAIN APP UI ---------
   return (
