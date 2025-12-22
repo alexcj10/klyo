@@ -47,11 +47,14 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
     const displayCities = React.useMemo(() => {
         if (!cities || !Array.isArray(cities)) return [];
 
-        // 1. Deduplicate
+        // 1. Deduplicate by city + country
         const uniqueMap = new Map<string, typeof cities[0]>();
         cities.forEach(item => {
-            if (item && item.city && !uniqueMap.has(item.city)) {
-                uniqueMap.set(item.city, item);
+            if (item && item.city && item.country) {
+                const key = `${item.city}-${item.country}`;
+                if (!uniqueMap.has(key)) {
+                    uniqueMap.set(key, item);
+                }
             }
         });
         const unique = Array.from(uniqueMap.values());
@@ -207,6 +210,7 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                                                         src={`https://flagcdn.com/${countryCode}.svg`}
                                                         alt={city.country}
                                                         className="w-full h-full object-cover"
+                                                        style={{ imageRendering: 'auto' }} // Ensures smooth HD rendering for SVGs
                                                     />
                                                 ) : (
                                                     <span>{city.flag}</span>
