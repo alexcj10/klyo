@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft,
@@ -113,22 +113,41 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     setDeleteConfirmEvent(null);
   };
 
-  // Responsive event limit
-  const getMaxEvents = () => {
-    if (typeof window === 'undefined') return 3;
-    if (window.innerWidth < 640) return 2;
-    if (window.innerWidth < 1024) return 3;
-    return 4;
-  };
-
-  const maxEvents = getMaxEvents();
-
   // Calculate number of weeks for proper grid
   const numWeeks = Math.ceil(monthData.length / 7);
 
+  // Dynamic max events based on screen space
+  const [maxEvents, setMaxEvents] = useState(3);
+
+  useEffect(() => {
+    const calculateMaxEvents = () => {
+      const height = window.innerHeight;
+      const width = window.innerWidth;
+
+      // Approximate header heights (Main Header + Calendar Navigation + Weekday Headers)
+      const headHeight = width < 640 ? 140 : 180;
+      const availableHeight = height - headHeight;
+      const cellHeight = availableHeight / numWeeks;
+
+      // Reserve space for date number (28px) and some padding/margin (8px)
+      // Each event bar is roughly 16px (mobile) to 18px (desktop)
+      const eventHeight = width < 640 ? 15 : 18;
+      const reservedSpace = width < 640 ? 32 : 44;
+
+      const count = Math.floor((cellHeight - reservedSpace) / eventHeight);
+
+      // Enforce a minimum of 1 event and a reasonable max
+      setMaxEvents(Math.max(1, Math.min(count, 12)));
+    };
+
+    calculateMaxEvents();
+    window.addEventListener('resize', calculateMaxEvents);
+    return () => window.removeEventListener('resize', calculateMaxEvents);
+  }, [numWeeks]);
+
   // Month View Component
   const MonthView = () => (
-    <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
+    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-gray-100">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
@@ -145,11 +164,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         ))}
       </div>
 
-      {/* Calendar Grid - Fills available space */}
+      {/* Calendar Grid - Strictly non-expanding grid */}
       <div
-        className="grid grid-cols-7 flex-1"
+        className="grid grid-cols-7 flex-1 min-h-0"
         style={{
-          gridTemplateRows: `repeat(${numWeeks}, 1fr)`
+          gridTemplateRows: `repeat(${numWeeks}, minmax(0, 1fr))`
         }}
       >
         {monthData.map((date, index) => {
@@ -166,25 +185,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               transition={{ delay: index * 0.005 }}
               onClick={() => onDateClick(date)}
               className={`
-                border-b border-r border-gray-100
-                p-1 sm:p-2 cursor-pointer
-                transition-all duration-200 flex flex-col
+                p-1 sm:p-2 border-r border-b border-gray-100 last:border-r-0 flex flex-col min-h-0 overflow-hidden
                 ${!isCurrentMonth ? 'bg-gray-50/50' : 'bg-white'}
-                ${isWeekend && isCurrentMonth ? 'bg-gray-50/30' : ''}
-                hover:bg-blue-50/50
+                ${isWeekend ? 'bg-gray-50/30' : ''}
+                hover:bg-blue-50/30 transition-colors cursor-pointer group
               `}
             >
               {/* Date Number */}
-              <div className="flex items-center justify-between mb-1">
+              <div className="flex justify-between items-start mb-1">
                 <span
                   className={`
-                    inline-flex items-center justify-center
-                    w-6 h-6 sm:w-7 sm:h-7 text-xs sm:text-sm font-medium rounded-full
-                    transition-colors
+                    text-[10px] sm:text-xs font-semibold w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full transition-colors
                     ${isCurrentDay
-                      ? 'bg-red-500 text-white'
+                      ? 'bg-blue-500 text-white'
                       : isCurrentMonth
-                        ? 'text-gray-900 hover:bg-gray-100'
+                        ? 'text-gray-900 group-hover:bg-gray-100'
                         : 'text-gray-400'
                     }
                   `}
@@ -193,52 +208,45 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 </span>
               </div>
 
-              {/* Events */}
-              <div className="flex-1 space-y-0.5 min-h-0 overflow-hidden">
-                {dayEvents.slice(0, maxEvents).map((event) => (
+              {/* Events Container - Strictly limited */}
+              <div className="flex-1 flex flex-col min-h-0 space-y-0.5 overflow-hidden">
+                {dayEvents.slice(0, dayEvents.length > maxEvents ? maxEvents - 1 : maxEvents).map((event) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
                     onClick={(e) => {
                       e.stopPropagation();
                       onDayViewOpen(date);
                     }}
-                    className="group relative"
+                    className="cursor-pointer flex-shrink-0"
                   >
                     <div
-                      className={`
-                        px-1 py-0.5 rounded text-[9px] sm:text-[10px] font-medium
-                        truncate cursor-pointer transition-all
-                        hover:shadow-sm leading-tight
-                      `}
+                      className="px-1 py-0.5 rounded text-[8px] sm:text-[9px] md:text-[10px] font-medium truncate hover:opacity-80 transition-opacity leading-tight"
                       style={{
                         backgroundColor: `${event.color}15`,
                         color: event.color,
                         borderLeft: `2px solid ${event.color}`
                       }}
                     >
-                      {!event.isAllDay && (
-                        <span className="opacity-70 mr-0.5">{event.startTime}</span>
-                      )}
-                      {event.title}
+                      <span className="truncate">{event.title}</span>
                     </div>
                   </motion.div>
                 ))}
-              </div>
 
-              {/* More Events Indicator - Outside overflow container */}
-              {dayEvents.length > maxEvents && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDayViewOpen(date);
-                  }}
-                  className="text-[9px] sm:text-[10px] text-blue-600 font-semibold px-1 hover:bg-blue-50 rounded transition-colors text-left flex-shrink-0 leading-tight"
-                >
-                  +{dayEvents.length - maxEvents}
-                </button>
-              )}
+                {/* More Events Indicator - Always stays in bounds */}
+                {dayEvents.length > maxEvents && (
+                  <div
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onDayViewOpen(date);
+                    }}
+                    className="mt-0.5 text-[8px] sm:text-[9px] text-blue-600 font-bold px-0.5 hover:text-blue-700 transition-colors flex-shrink-0 whitespace-nowrap cursor-pointer"
+                  >
+                    +{dayEvents.length - (maxEvents - 1)} more
+                  </div>
+                )}
+              </div>
             </motion.div>
           );
         })}
