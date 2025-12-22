@@ -381,7 +381,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Weekly Activity Overview
               </h3>
-              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 185 : 250}>
                 <ComposedChart data={analytics.weeklyActivity}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="day" stroke="#6b7280" fontSize={12} />
@@ -409,7 +409,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <Target className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Productivity Score
               </h3>
-              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 185 : 250}>
                 <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" data={[{
                   name: 'Productivity',
                   value: analytics.productivityScore,
@@ -432,7 +432,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <PieChartIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Category Distribution
               </h3>
-              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 185 : 250}>
                 <PieChart>
                   <Pie
                     data={analytics.eventsByCategory}
@@ -485,7 +485,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Time Distribution
               </h3>
-              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 185 : 250}>
                 <BarChart data={analytics.timeDistributionData} layout="horizontal">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis type="number" stroke="#6b7280" fontSize={12} />
@@ -505,7 +505,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <Award className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Priority Analysis
               </h3>
-              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 185 : 250}>
                 <PieChart>
                   <Pie
                     data={analytics.eventsByPriority}
@@ -549,7 +549,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 6-Month Productivity Trends
               </h3>
-              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 185 : 250}>
                 <AreaChart data={analytics.monthlyTrends}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                   <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
