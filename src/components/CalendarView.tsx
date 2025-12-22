@@ -353,8 +353,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
             <h2 className="text-base sm:text-xl font-bold text-gray-900 flex-1 text-center whitespace-nowrap truncate px-1">
               {viewMode === 'month'
-                ? format(currentDate, 'MMM yyyy')
-                : `${format(startOfWeek(currentDate), 'MMM d')}`
+                ? format(currentDate, 'MMMM yyyy')
+                : `${format(startOfWeek(currentDate), 'MMMM d')}`
               }
             </h2>
 
