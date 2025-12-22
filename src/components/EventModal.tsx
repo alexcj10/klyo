@@ -108,11 +108,11 @@ const EventModal: React.FC<EventModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] sm:max-h-[75vh] lg:max-h-[85vh] overflow-hidden border border-gray-200"
+          className="bg-white rounded-2xl shadow-2xl w-[94%] sm:w-full max-w-[340px] sm:max-w-lg max-h-[70vh] sm:max-h-[75vh] lg:max-h-[85vh] overflow-hidden border border-gray-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b border-gray-200/50">
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b border-gray-200/50">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-800">
                 {event ? 'Edit Event' : 'Create Event'}
@@ -178,8 +178,8 @@ const EventModal: React.FC<EventModalProps> = ({
 
           {/* Form */}
           <div className={`overflow-y-auto scrollbar-hide ${deleteConfirmEvent
-              ? 'max-h-[calc(80vh-220px)] sm:max-h-[calc(75vh-220px)] lg:max-h-[calc(85vh-220px)]'
-              : 'max-h-[calc(80vh-140px)] sm:max-h-[calc(75vh-140px)] lg:max-h-[calc(85vh-140px)]'
+            ? 'max-h-[calc(70vh-220px)] sm:max-h-[calc(75vh-220px)] lg:max-h-[calc(85vh-220px)]'
+            : 'max-h-[calc(70vh-140px)] sm:max-h-[calc(75vh-140px)] lg:max-h-[calc(85vh-140px)]'
             }`}>
             <form onSubmit={handleSubmit} className="p-4 sm:p-5 lg:p-6 space-y-3 sm:space-y-4">
               {/* Title */}
@@ -197,7 +197,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     }
                   }}
                   maxLength={100}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter event title..."
                 />
                 <div className="flex justify-end mt-1">
@@ -217,7 +217,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter event description..."
                 />
               </div>
@@ -234,7 +234,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     required
                     value={formatDateForInput(formData.date)}
                     onChange={(e) => setFormData({ ...formData, date: parseDateFromInput(e.target.value) })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   />
                 </div>
               </div>
@@ -246,7 +246,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   id="allDay"
                   checked={formData.isAllDay}
                   onChange={(e) => setFormData({ ...formData, isAllDay: e.target.checked })}
-                  className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="allDay" className="text-sm text-gray-700">
                   All day event
@@ -267,7 +267,7 @@ const EventModal: React.FC<EventModalProps> = ({
                         required
                         value={formData.startTime}
                         onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       />
                     </div>
                   </div>
@@ -282,7 +282,7 @@ const EventModal: React.FC<EventModalProps> = ({
                         required
                         value={formData.endTime}
                         onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       />
                     </div>
                   </div>
@@ -299,7 +299,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value as Event['category'] })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="work">Work</option>
                     <option value="personal">Personal</option>
@@ -320,7 +320,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   <select
                     value={formData.priority}
                     onChange={(e) => setFormData({ ...formData, priority: e.target.value as Event['priority'] })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
