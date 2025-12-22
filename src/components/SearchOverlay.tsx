@@ -195,9 +195,21 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
 
   useEffect(() => {
     if (open) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
       // Focus after overlay appears
       const t = setTimeout(() => inputRef.current?.focus(), 150);
-      return () => clearTimeout(t);
+      return () => {
+        clearTimeout(t);
+        document.documentElement.style.overflow = '';
+        document.body.style.overflow = '';
+        document.body.style.overscrollBehavior = '';
+      };
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
     }
   }, [open]);
 
@@ -288,7 +300,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
               >
                 {foundEvents.length > 0 && (
                   <div
-                    className="max-h-[60vh] overflow-y-auto pr-2 space-y-3 [&::-webkit-scrollbar]:hidden"
+                    className="max-h-[60vh] overflow-y-auto pr-2 space-y-3 [&::-webkit-scrollbar]:hidden overscroll-contain"
                     style={{
                       scrollbarWidth: 'none',
                       msOverflowStyle: 'none'
@@ -309,8 +321,8 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                             <h4 className="font-bold text-base sm:text-lg md:text-xl text-gray-800 flex-1 min-w-0 truncate pr-2" title={event.title}>{event.title}</h4>
                             <div className="flex gap-2 flex-shrink-0">
                               <span className={`px-2 py-1 text-xs rounded font-medium whitespace-nowrap ${event.priority === 'high' ? 'bg-red-100 text-red-700' :
-                                  event.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                                    'bg-green-100 text-green-700'
+                                event.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                  'bg-green-100 text-green-700'
                                 }`}>
                                 {event.priority}
                               </span>

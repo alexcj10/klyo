@@ -298,7 +298,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
       </div>
 
       {/* Tasks/Events List and Add Form */}
-      <div className="flex-1 overflow-y-auto px-4 lg:px-5 pb-4 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto px-4 lg:px-5 pb-4 scrollbar-hide overscroll-contain">
         {/* Add Task Form */}
         <AnimatePresence>
           {isAddingTask && (

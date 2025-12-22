@@ -46,6 +46,25 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Body Scroll Lock when overlays are open
+  useEffect(() => {
+    const needsLock = isMobileSidebarOpen || isEventModalOpen || isEventViewModalOpen || isDayViewModalOpen || isAnalyticsModalOpen;
+    if (needsLock) {
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      document.body.style.overscrollBehavior = 'none';
+    } else {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+      document.body.style.overscrollBehavior = '';
+    }
+
+    return () => {
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    };
+  }, [isMobileSidebarOpen, isEventModalOpen, isEventViewModalOpen, isDayViewModalOpen, isAnalyticsModalOpen]);
+
   const isActuallySidebarOpen = isLargeScreen ? isSidebarOpen : isMobileSidebarOpen;
 
   // Search query state
@@ -250,7 +269,7 @@ function App() {
 
   // --------- MAIN APP UI ---------
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
+    <div className="h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col overflow-hidden fixed inset-0">
       <Header
         onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         onToggleDesktopSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -265,7 +284,7 @@ function App() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex-1 flex overflow-hidden relative"
+        className="flex-1 flex overflow-hidden relative min-h-0"
       >
         <div
           className={`flex-1 min-w-0 p-4 lg:p-6 transition-all duration-300 ${isSidebarOpen ? 'lg:mr-80 xl:mr-96' : 'lg:mr-0'
@@ -311,7 +330,7 @@ function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden overscroll-contain"
               onClick={() => setIsMobileSidebarOpen(false)}
             >
               <motion.div

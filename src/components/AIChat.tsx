@@ -57,11 +57,22 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                 startNewChat(); // Reset on close
             }
         }
+
         if (isOpen) {
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.overflow = 'hidden';
+            document.body.style.overscrollBehavior = 'none';
             document.addEventListener('mousedown', handleClickOutside);
+        } else {
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+            document.body.style.overscrollBehavior = '';
         }
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.documentElement.style.overflow = '';
+            document.body.style.overflow = '';
+            document.body.style.overscrollBehavior = '';
         };
     }, [isOpen]);
 
@@ -282,7 +293,7 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                         exit={{ opacity: 0, x: 20 }}
                                         className="flex flex-col h-full overflow-hidden"
                                     >
-                                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                                        <div className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
                                             {messages.map((msg) => (
                                                 <div
                                                     key={msg.id}
