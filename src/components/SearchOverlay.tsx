@@ -65,7 +65,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth();
-    
+
     // Month names mapping
     const monthNames = {
       'january': 0, 'jan': 0,
@@ -101,7 +101,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
       const day = parseInt(day1 || day2);
       const monthName = month1 || month2;
       const monthIndex = monthNames[monthName as keyof typeof monthNames];
-      
+
       if (monthIndex !== undefined && day >= 1 && day <= 31) {
         return {
           type: 'date' as const,
@@ -152,39 +152,39 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
   // Enhanced search function
   const searchEvents = (query: string): Event[] => {
     const searchParams = parseSearchQuery(query);
-    
+
     switch (searchParams.type) {
       case 'date':
         return events.filter(event => {
           const eventDate = new Date(event.date);
           return eventDate.getFullYear() === searchParams.targetDate.getFullYear() &&
-                 eventDate.getMonth() === searchParams.targetDate.getMonth() &&
-                 eventDate.getDate() === searchParams.targetDate.getDate();
+            eventDate.getMonth() === searchParams.targetDate.getMonth() &&
+            eventDate.getDate() === searchParams.targetDate.getDate();
         });
-        
+
       case 'dayOfWeek':
         return events.filter(event => {
           const eventDate = new Date(event.date);
           return eventDate.getDay() === searchParams.dayOfWeek &&
-                 eventDate.getMonth() === searchParams.month &&
-                 eventDate.getFullYear() === searchParams.year;
+            eventDate.getMonth() === searchParams.month &&
+            eventDate.getFullYear() === searchParams.year;
         });
-        
+
       case 'month':
         return events.filter(event => {
           const eventDate = new Date(event.date);
           return eventDate.getMonth() === searchParams.month &&
-                 eventDate.getFullYear() === searchParams.year;
+            eventDate.getFullYear() === searchParams.year;
         });
-        
+
       case 'dayNumber':
         return events.filter(event => {
           const eventDate = new Date(event.date);
           return eventDate.getDate() === searchParams.day &&
-                 eventDate.getMonth() === searchParams.month &&
-                 eventDate.getFullYear() === searchParams.year;
+            eventDate.getMonth() === searchParams.month &&
+            eventDate.getFullYear() === searchParams.year;
         });
-        
+
       case 'title':
       default:
         return events.filter(event =>
@@ -228,7 +228,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
     if (e.key === 'Enter' && query.trim()) {
       // Use smart search function
       const matchingEvents = searchEvents(query.trim());
-      
+
       if (matchingEvents.length > 0) {
         setFoundEvents(matchingEvents);
         setNotFound(false);
@@ -241,13 +241,13 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
 
   return (
     <AnimatePresence>
-        {open && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-start justify-center pt-[15vh]"
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-          >
+      {open && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-start justify-center pt-[8vh]"
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+        >
           {/* Backdrop */}
           <motion.div
             variants={backdropVariants}
@@ -287,7 +287,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                 className="mt-4 w-full"
               >
                 {foundEvents.length > 0 && (
-                  <div 
+                  <div
                     className="max-h-[60vh] overflow-y-auto pr-2 space-y-3 [&::-webkit-scrollbar]:hidden"
                     style={{
                       scrollbarWidth: 'none',
@@ -302,17 +302,16 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                     {foundEvents.map((event, index) => {
                       const isExpanded = expandedEvents.has(event.id);
                       const hasLongDescription = event.description && event.description.length > 150;
-                      
+
                       return (
                         <div key={`${event.id}-${index}`} className="p-3 sm:p-4 rounded-xl bg-white/90 backdrop-blur-md border border-gray-200 shadow-lg hover:shadow-xl transition-shadow duration-200">
                           <div className="flex items-start justify-between gap-2 sm:gap-4 mb-2">
                             <h4 className="font-bold text-base sm:text-lg md:text-xl text-gray-800 flex-1 min-w-0 truncate pr-2" title={event.title}>{event.title}</h4>
                             <div className="flex gap-2 flex-shrink-0">
-                              <span className={`px-2 py-1 text-xs rounded font-medium whitespace-nowrap ${
-                                event.priority === 'high' ? 'bg-red-100 text-red-700' :
-                                event.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                                'bg-green-100 text-green-700'
-                              }`}>
+                              <span className={`px-2 py-1 text-xs rounded font-medium whitespace-nowrap ${event.priority === 'high' ? 'bg-red-100 text-red-700' :
+                                  event.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                                    'bg-green-100 text-green-700'
+                                }`}>
                                 {event.priority}
                               </span>
                               <span className="px-2 py-1 text-xs rounded bg-blue-100 text-blue-700 whitespace-nowrap">
@@ -343,7 +342,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                     })}
                   </div>
                 )}
-                
+
                 {notFound && (
                   <div className="p-4 rounded-xl bg-red-50 border border-red-200 shadow-lg">
                     <div className="text-red-600 font-semibold text-center">
