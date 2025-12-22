@@ -278,9 +278,23 @@ export async function ragQuery(
     // --- 3. GENERATION ---
     const topCandidates = candidates.slice(0, 50);
 
+    // --- 3. SMART LOOKAHEAD (Next 24-48 hours) ---
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    const tomorrowStr = tomorrow.toLocaleDateString('en-CA');
+    const lookaheadItems = (isAskingAboutTodayNow || isAskingToday) ? items.filter(item => {
+        if (!item.date) return false;
+        const dStr = new Date(item.date).toLocaleDateString('en-CA');
+        return dStr === tomorrowStr && (item.priority === 'high' || item.type === 'event');
+    }).slice(0, 3) : [];
+
     const contextString = topCandidates.length > 0
         ? topCandidates.map(c => `- ${c.content}`).join("\n")
         : (isAskingAboutTodayNow ? "No upcoming events or tasks scheduled for today." : "No matching information found in your schedule.");
+
+    const lookaheadString = lookaheadItems.length > 0
+        ? "\nLookahead (Tomorrow's Important Items):\n" + lookaheadItems.map(c => `- ${c.content}`).join("\n")
+        : "";
 
     try {
         const currentFullDate = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -312,13 +326,15 @@ export async function ragQuery(
 
                         CONTENT RULES:
                         1. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
-                        2. BE SMART & HELPFUL: If you see something really important (like a high-priority event while they asked for tasks), feel free to add a "By the way" or "Don't forget" reminder. This is what makes you Klyo's smartest assistant.
-                        3. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
-                        4. ONLY use information strictly found in your Context.
-                        5. For general greetings, mention one highlight (event or high-priority task).
-
-                        Context (User's Schedule):
+                        2. PROACTIVE "LOOKAHEAD" SMARTNESS: You have access to "Lookahead" context for tomorrow. If you see something important coming up (like an early morning event or high-priority task), add a smart reminder like "By the way, you have [Event] tomorrow morning—don't forget to prepare tonight!"
+                        3. BE SMART & HELPFUL: Always identify high-priority items. 
+                        4. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
+                        5. ONLY use information strictly found in your Context.
+                        
+                        Context (User's Schedule Today/Target):
                         ${contextString}
+
+                        ${lookaheadString}
                         `
                     },
                     {
