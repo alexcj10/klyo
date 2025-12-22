@@ -338,7 +338,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden h-full flex flex-col relative">
       {/* Header - Clean Mobile Design */}
-      <div className="px-2 sm:px-6 py-3 border-b border-gray-100 flex-shrink-0">
+      <div className="px-2 sm:px-6 py-3 border-b border-blue-200 flex-shrink-0 bg-blue-100/70 backdrop-blur-sm">
         {/* Mobile: Centered nav layout */}
         <div className="flex items-center justify-between">
           {/* Navigation Arrows + Title */}
