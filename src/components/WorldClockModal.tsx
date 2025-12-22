@@ -81,13 +81,45 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
         }
     };
 
-    const getDayNightStatus = (timezone: string) => {
+    const getTimeInfo = (timezone: string) => {
         try {
             const cityTime = new Date(time.toLocaleString('en-US', { timeZone: timezone }));
             const hours = cityTime.getHours();
-            return hours >= 6 && hours < 18 ? 'day' : 'night';
+
+            let period = 'Night';
+            let status: 'day' | 'night' = 'night';
+
+            if (hours >= 5 && hours < 12) {
+                period = 'Morning';
+                status = 'day';
+            } else if (hours >= 12 && hours < 17) {
+                period = 'Afternoon';
+                status = 'day';
+            } else if (hours >= 17 && hours < 21) {
+                period = 'Evening';
+                status = 'night';
+            } else {
+                period = 'Night';
+                status = 'night';
+            }
+
+            // Calculate offset relative to local time
+            const now = new Date();
+            const targetStr = now.toLocaleString('en-US', { timeZone: timezone });
+            const target = new Date(targetStr);
+            const local = new Date(now.toLocaleString('en-US'));
+
+            const diffMs = target.getTime() - local.getTime();
+            const diffHours = Math.round((diffMs / (1000 * 60 * 60)) * 2) / 2;
+
+            let offsetLabel = 'Local';
+            if (diffHours !== 0) {
+                offsetLabel = `${diffHours > 0 ? '+' : ''}${diffHours}h`;
+            }
+
+            return { period, status, offsetLabel };
         } catch (e) {
-            return 'day';
+            return { period: 'Day', status: 'day' as const, offsetLabel: '' };
         }
     };
 
@@ -158,7 +190,7 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                         {/* City List */}
                         <div className="flex-1 overflow-y-auto px-4 py-3 scrollbar-hide space-y-2">
                             {displayCities.map((city, index) => {
-                                const status = getDayNightStatus(city.timezone);
+                                const { period, status, offsetLabel } = getTimeInfo(city.timezone);
                                 const countryCode = flagToCountryCode(city.flag);
                                 return (
                                     <motion.div
@@ -169,7 +201,7 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                                         className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 hover:shadow-md transition-all group flex items-center justify-between"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl shadow-sm border border-gray-100 overflow-hidden relative group-hover:scale-110 transition-transform">
+                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl shadow-sm border border-gray-100 overflow-hidden relative group-hover:scale-110 transition-transform text-2xl">
                                                 {countryCode ? (
                                                     <img
                                                         src={`https://flagcdn.com/${countryCode}.svg`}
@@ -184,8 +216,11 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                                                 )}
                                             </div>
                                             <div className="min-w-0">
-                                                <h4 className="font-bold text-gray-800 text-sm truncate">{city.city}</h4>
                                                 <div className="flex items-center gap-1.5">
+                                                    <h4 className="font-bold text-gray-800 text-sm truncate">{city.city}</h4>
+                                                    <span className="text-[10px] text-blue-500/80 font-bold bg-blue-50/50 px-1 rounded uppercase tracking-tighter">{offsetLabel}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 mt-0.5">
                                                     <span className="text-[10px] text-gray-500 uppercase tracking-tight">{city.country}</span>
                                                     <div className={`w-1 h-1 rounded-full ${status === 'day' ? 'bg-amber-400' : 'bg-indigo-400'}`} />
                                                     {status === 'day' ? <Sun className="w-2.5 h-2.5 text-amber-500" /> : <Moon className="w-2.5 h-2.5 text-indigo-500" />}
@@ -201,7 +236,7 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                                             </div>
                                             <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-tighter ${status === 'day' ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'
                                                 }`}>
-                                                {status === 'day' ? 'Morning' : 'Evening'}
+                                                {period}
                                             </span>
                                         </div>
                                     </motion.div>
