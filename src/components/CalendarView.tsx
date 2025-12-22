@@ -123,9 +123,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   const maxEvents = getMaxEvents();
 
+  // Calculate number of weeks for proper grid
+  const numWeeks = Math.ceil(monthData.length / 7);
+
   // Month View Component
   const MonthView = () => (
-    <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
+    <div className="flex flex-col flex-1 min-h-0 overflow-y-auto sm:overflow-hidden">
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-gray-100">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
@@ -143,7 +146,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7">
+      <div
+        className="grid grid-cols-7 sm:flex-1"
+        style={{
+          gridTemplateRows: `repeat(${numWeeks}, minmax(65px, 1fr))`
+        }}
+      >
         {monthData.map((date, index) => {
           const dayEvents = getEventsForDate(date);
           const isCurrentMonth = isSameMonth(date, currentDate);
@@ -158,7 +166,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               transition={{ delay: index * 0.005 }}
               onClick={() => onDateClick(date)}
               className={`
-                min-h-[80px] sm:min-h-[90px] lg:min-h-[110px]
                 border-b border-r border-gray-100
                 p-1 sm:p-2 cursor-pointer
                 transition-all duration-200 flex flex-col
@@ -323,20 +330,18 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden h-full flex flex-col">
       {/* Header */}
-      <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex-shrink-0">
-        <div className="flex items-center justify-between">
+      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           {/* Left: Title */}
-          <div className="flex items-center space-x-3">
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-              {viewMode === 'month'
-                ? format(currentDate, 'MMMM yyyy')
-                : `Week of ${format(startOfWeek(currentDate), 'MMM d')}`
-              }
-            </h2>
-          </div>
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
+            {viewMode === 'month'
+              ? format(currentDate, 'MMM yyyy')
+              : `Week of ${format(startOfWeek(currentDate), 'MMM d')}`
+            }
+          </h2>
 
           {/* Right: Controls */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             {/* Today Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -368,13 +373,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             </div>
 
             {/* View Toggle */}
-            <div className="hidden sm:flex items-center bg-gray-100 rounded-lg p-0.5">
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setViewMode('month')}
                 className={`
-                  px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
+                  px-2 sm:px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
                   ${viewMode === 'month'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -382,14 +387,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 `}
               >
                 <LayoutGrid className="w-4 h-4" />
-                <span>Month</span>
+                <span className="hidden sm:inline">Month</span>
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setViewMode('week')}
                 className={`
-                  px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
+                  px-2 sm:px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
                   ${viewMode === 'week'
                     ? 'bg-white text-gray-900 shadow-sm'
                     : 'text-gray-600 hover:text-gray-900'
@@ -397,7 +402,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 `}
               >
                 <Rows3 className="w-4 h-4" />
-                <span>Week</span>
+                <span className="hidden sm:inline">Week</span>
               </motion.button>
             </div>
           </div>
