@@ -1,4 +1,3 @@
-import React from 'react';
 import { motion } from 'framer-motion';
 import { BarChart3 } from 'lucide-react';
 
@@ -15,13 +14,13 @@ const AnalyticsButton: React.FC<AnalyticsButtonProps> = ({ onClick, isActive = f
       onClick={onClick}
       className={`
         flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200
-        ${isActive 
-          ? 'bg-gradient-to-r from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-500/25' 
+        ${isActive
+          ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/25'
           : 'bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md border border-gray-200/50'
         }
       `}
     >
-      <BarChart3 className={`w-4 h-4 ${isActive ? 'text-white' : 'text-violet-500'}`} />
+      <BarChart3 className={`w-4 h-4 ${isActive ? 'text-white' : 'text-blue-500'}`} />
       <span className="hidden sm:inline">Analytics</span>
     </motion.button>
   );

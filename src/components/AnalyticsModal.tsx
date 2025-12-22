@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
+import { X, BarChart3 } from 'lucide-react';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import { Event, Task } from '../types';
 
@@ -34,15 +34,15 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             className={`w-full ${hasData ? 'max-w-5xl' : 'max-w-lg'} max-h-[85vh] sm:max-h-[90vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:p-6 bg-white border-b border-gray-200">
-              <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-                <div className="w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-r from-violet-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-lg sm:text-xl">📊</span>
+            {/* Header - Compact */}
+            <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 bg-white border-b border-gray-100">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div className="min-w-0 flex-1 flex flex-col justify-center">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 truncate leading-tight">Analytics Dashboard</h2>
-                  <p className="text-sm sm:text-sm text-gray-600 truncate">Insights into your productivity</p>
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate leading-tight">Analytics</h2>
+                  <p className="text-xs text-gray-500 truncate">Activity insights</p>
                 </div>
               </div>
               <motion.button

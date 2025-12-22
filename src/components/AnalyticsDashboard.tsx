@@ -12,20 +12,16 @@ import {
   PieChart,
   Pie,
   Cell,
-  LineChart,
-  Line,
   Area,
   AreaChart,
   RadialBarChart,
   RadialBar,
   ComposedChart,
-  Scatter,
-  ScatterChart,
-  ZAxis,
+  Line,
 } from 'recharts';
-import { Calendar, CheckCircle, Clock, TrendingUp, BarChart3, PieChart as PieChartIcon, Target, Activity, Zap, Award } from 'lucide-react';
+import { CheckCircle, Clock, TrendingUp, BarChart3, PieChart as PieChartIcon, Target, Activity, Zap, Award } from 'lucide-react';
 import { Event, Task } from '../types';
-import { format, startOfWeek, endOfWeek, eachDayOfInterval, isWithinInterval, startOfMonth, endOfMonth, differenceInDays } from 'date-fns';
+import { format, startOfWeek, endOfWeek, eachDayOfInterval, isWithinInterval } from 'date-fns';
 
 interface AnalyticsDashboardProps {
   events: Event[];
@@ -35,25 +31,25 @@ interface AnalyticsDashboardProps {
 }
 
 const COLORS = {
-  primary: ['#8B5CF6', '#A78BFA', '#C4B5FD', '#DDD6FE', '#EDE9FE'],
+  primary: ['#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE', '#EFF6FF'],
   secondary: ['#06B6D4', '#67E8F9', '#A5F3FC', '#CFFAFE', '#ECFEFF'],
   accent: ['#F59E0B', '#FCD34D', '#FDE68A', '#FEF3C7', '#FFFBEB'],
   success: ['#10B981', '#6EE7B7', '#A7F3D0', '#D1FAE5', '#ECFDF5'],
   danger: ['#EF4444', '#FCA5A5', '#FECACA', '#FEE2E2', '#FEF2F2'],
-  gradient: ['#8B5CF6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444'],
+  gradient: ['#3B82F6', '#06B6D4', '#10B981', '#F59E0B', '#EF4444'],
   advanced: {
-    purple: ['#6366F1', '#8B5CF6', '#A855F7', '#C084FC', '#DDD6FE'],
+    purple: ['#3B82F6', '#60A5FA', '#93C5FD', '#BFDBFE', '#EFF6FF'],
     blue: ['#0EA5E9', '#06B6D4', '#22D3EE', '#67E8F9', '#A5F3FC'],
     green: ['#059669', '#10B981', '#34D399', '#6EE7B7', '#A7F3D0'],
     orange: ['#EA580C', '#F59E0B', '#FBBF24', '#FCD34D', '#FDE68A'],
     red: ['#DC2626', '#EF4444', '#F87171', '#FCA5A5', '#FECACA'],
   },
   categoryColors: {
-    work: '#6366F1',
+    work: '#3B82F6',
     personal: '#10B981',
     health: '#F59E0B',
     social: '#EC4899',
-    other: '#8B5CF6',
+    other: '#3B82F6',
   },
   priorityColors: {
     high: '#EF4444',
@@ -64,7 +60,6 @@ const COLORS = {
 
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, onAddEvent, onAddTask }) => {
   const [selectedView, setSelectedView] = useState<'overview' | 'detailed'>('overview');
-  const [activeChart, setActiveChart] = useState<string | null>(null);
 
   // Calculate advanced analytics data with real-time sync and empty state handling
   const analytics = useMemo(() => {
@@ -225,11 +220,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
   const StatCard: React.FC<{
     title: string;
     value: string | number;
-    subtitle?: string;
     icon: React.ReactNode;
     color: string;
     onClick?: () => void;
-  }> = ({ title, value, subtitle, icon, color, onClick }) => (
+  }> = ({ title, value, icon, color, onClick }) => (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
@@ -297,8 +291,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
       animate={{ opacity: 1, y: 0 }}
       className="flex flex-col items-center justify-center py-6 sm:py-12 px-4 sm:px-8 text-center max-w-lg mx-auto"
     >
-      <div className="w-16 h-16 sm:w-24 sm:h-24 bg-gradient-to-br from-violet-100 to-purple-100 rounded-full flex items-center justify-center mb-4 sm:mb-6">
-        <BarChart3 className="w-8 h-8 sm:w-12 sm:h-12 text-violet-400" />
+      <div className="w-16 h-16 sm:w-24 sm:h-24 bg-blue-50 rounded-full flex items-center justify-center mb-4 sm:mb-6">
+        <BarChart3 className="w-8 h-8 sm:w-12 sm:h-12 text-blue-400" />
       </div>
       <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">No Data Available</h3>
       <p className="text-sm sm:text-base text-gray-600 mb-4 sm:mb-6 leading-relaxed">
@@ -309,9 +303,9 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onAddEvent}
-          className="bg-violet-50 hover:bg-violet-100 px-4 py-3 sm:py-2 rounded-lg transition-colors cursor-pointer w-full sm:w-auto"
+          className="bg-blue-50 hover:bg-blue-100 px-4 py-3 sm:py-2 rounded-lg transition-colors cursor-pointer w-full sm:w-auto"
         >
-          <span className="text-violet-600 font-medium text-sm sm:text-base">📅 Add Events</span>
+          <span className="text-blue-600 font-medium text-sm sm:text-base">📅 Add Events</span>
         </motion.button>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -345,34 +339,26 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
         <StatCard
           title="Productivity Score"
           value={`${analytics.productivityScore}%`}
-          subtitle="Based on completion & activity"
           icon={<Target className="w-4 h-4 sm:w-5 sm:h-5" />}
-          color="from-violet-500 to-purple-600"
-          onClick={() => setActiveChart('productivity')}
+          color="from-blue-500 to-blue-600"
         />
         <StatCard
           title="Current Streak"
           value={`${analytics.currentStreak} days`}
-          subtitle="Consecutive active days"
           icon={<Zap className="w-4 h-4 sm:w-5 sm:h-5" />}
           color="from-emerald-500 to-teal-600"
-          onClick={() => setActiveChart('streak')}
         />
         <StatCard
           title="Task Completion"
           value={`${analytics.completedTasks}/${analytics.totalTasks}`}
-          subtitle={`${analytics.completionRate.toFixed(1)}% completion rate`}
           icon={<CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
           color="from-blue-500 to-cyan-600"
-          onClick={() => setActiveChart('completion')}
         />
         <StatCard
           title="Weekly Total"
           value={analytics.weeklyActivity.reduce((sum, day) => sum + day.total, 0)}
-          subtitle="Events & Tasks this week"
           icon={<Activity className="w-4 h-4 sm:w-5 sm:h-5" />}
           color="from-amber-500 to-orange-600"
-          onClick={() => setActiveChart('weekly')}
         />
       </div>
 
@@ -392,7 +378,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 col-span-1 lg:col-span-2"
             >
               <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
+                <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Weekly Activity Overview
               </h3>
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
@@ -408,7 +394,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                   />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
-                  <Bar dataKey="events" fill="#8B5CF6" name="Events" radius={[4, 4, 0, 0]} maxBarSize={15} />
+                  <Bar dataKey="events" fill="#3B82F6" name="Events" radius={[4, 4, 0, 0]} maxBarSize={15} />
                   <Line type="monotone" dataKey="total" stroke="#F59E0B" strokeWidth={3} name="Total" />
                 </ComposedChart>
               </ResponsiveContainer>
@@ -420,16 +406,16 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
               <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Productivity Score
               </h3>
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
                 <RadialBarChart cx="50%" cy="50%" innerRadius="60%" outerRadius="90%" data={[{
                   name: 'Productivity',
                   value: analytics.productivityScore,
-                  fill: '#8B5CF6'
+                  fill: '#3B82F6'
                 }]}>
-                  <RadialBar dataKey="value" cornerRadius={10} fill="#8B5CF6" />
+                  <RadialBar dataKey="value" cornerRadius={10} fill="#3B82F6" />
                   <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" className="text-2xl font-bold fill-gray-800">
                     {analytics.productivityScore}%
                   </text>
@@ -443,7 +429,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
               <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                <PieChartIcon className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
+                <PieChartIcon className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Category Distribution
               </h3>
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
@@ -473,7 +459,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                   <Legend
                     wrapperStyle={{ fontSize: '12px' }}
                     iconType="circle"
-                    formatter={(value: string, entry: any) => {
+                    formatter={(value: string) => {
                       const item = analytics.eventsByCategory.find(c => c.name === value);
                       return item ? `${value} (${item.percentage}%)` : value;
                     }}
@@ -496,7 +482,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
               <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Time Distribution
               </h3>
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
@@ -516,7 +502,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
             >
               <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                <Award className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
+                <Award className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 Priority Analysis
               </h3>
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
@@ -545,7 +531,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                   <Legend
                     wrapperStyle={{ fontSize: '12px' }}
                     iconType="circle"
-                    formatter={(value: string, entry: any) => {
+                    formatter={(value: string) => {
                       const item = analytics.eventsByPriority.find(c => c.name === value);
                       return item ? `${value} (${item.percentage}%)` : value;
                     }}
@@ -560,7 +546,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100 col-span-1 lg:col-span-2"
             >
               <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-violet-500" />
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
                 6-Month Productivity Trends
               </h3>
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 225 : 250}>
@@ -574,8 +560,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     type="monotone"
                     dataKey="events"
                     stackId="1"
-                    stroke="#8B5CF6"
-                    fill="#8B5CF6"
+                    stroke="#3B82F6"
+                    fill="#3B82F6"
                     fillOpacity={0.6}
                     name="Events"
                   />
