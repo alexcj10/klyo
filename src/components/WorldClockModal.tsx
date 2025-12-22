@@ -18,6 +18,13 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
         return () => clearInterval(timer);
     }, []);
 
+    // Reset search when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            setSearchQuery('');
+        }
+    }, [isOpen]);
+
     // Helper to convert emoji flag to ISO country code for FlagCDN
     const flagToCountryCode = (flagEmoji: string) => {
         if (!flagEmoji || flagEmoji.length < 2) return null;
