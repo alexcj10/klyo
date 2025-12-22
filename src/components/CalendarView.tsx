@@ -1,7 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Plus, Grid3X3, List, Edit3, Trash2 } from 'lucide-react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isToday, startOfWeek, endOfWeek, startOfDay, endOfDay, isWithinInterval } from 'date-fns';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  LayoutGrid,
+  Rows3,
+  Trash2
+} from 'lucide-react';
+import {
+  format,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isToday,
+  startOfWeek,
+  endOfWeek,
+  addMonths,
+  subMonths,
+  addWeeks,
+  subWeeks,
+  isSameDay,
+  setHours,
+  setMinutes
+} from 'date-fns';
 import { Event } from '../types';
 
 interface CalendarViewProps {
@@ -15,9 +38,10 @@ interface CalendarViewProps {
   isSidebarOpen?: boolean;
 }
 
+type ViewMode = 'month' | 'week';
+
 const CalendarView: React.FC<CalendarViewProps> = ({
   events,
-  onEventClick,
   onEventView,
   onDateClick,
   onAddEvent,
@@ -26,120 +50,58 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   isSidebarOpen
 }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [deleteConfirmEvent, setDeleteConfirmEvent] = React.useState<Event | null>(null);
-  const [maxEventsPerCell, setMaxEventsPerCell] = React.useState(2);
+  const [viewMode, setViewMode] = useState<ViewMode>('month');
+  const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
 
-  React.useEffect(() => {
-    const calculateMaxEvents = () => {
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
+  // Navigation handlers
+  const navigatePrev = () => {
+    if (viewMode === 'month') {
+      setCurrentDate(subMonths(currentDate, 1));
+    } else {
+      setCurrentDate(subWeeks(currentDate, 1));
+    }
+  };
 
-      // More precise calculations for different screen sizes
-      let headerHeight, monthNavHeight, dayLabelsHeight, padding, eventHeight, dateHeight, spacing;
-
-      if (screenWidth < 640) { // Mobile
-        headerHeight = 80;
-        monthNavHeight = 60;
-        dayLabelsHeight = 32;
-        padding = 16;
-        eventHeight = 16; // Smaller events on mobile
-        dateHeight = 16;
-        spacing = 2;
-      } else if (screenWidth < 1024) { // Tablet
-        headerHeight = 100;
-        monthNavHeight = 60;
-        dayLabelsHeight = 36;
-        padding = 24;
-        eventHeight = 20;
-        dateHeight = 18;
-        spacing = 4;
-      } else if (screenWidth < 1280) { // Desktop
-        headerHeight = 120;
-        monthNavHeight = 60;
-        dayLabelsHeight = 40;
-        padding = 32;
-        eventHeight = 22;
-        dateHeight = 20;
-        spacing = 4;
-      } else { // Large desktop
-        headerHeight = 120;
-        monthNavHeight = 60;
-        dayLabelsHeight = 44;
-        padding = 40;
-        eventHeight = 24;
-        dateHeight = 20;
-        spacing = 6;
-      }
-
-      const availableHeight = screenHeight - headerHeight - monthNavHeight - dayLabelsHeight - padding;
-      const cellHeight = availableHeight / 6; // 6 rows in calendar
-
-      // Account for cell padding
-      const cellPadding = screenWidth < 640 ? 4 : screenWidth < 1024 ? 8 : 12;
-      const availableEventSpace = cellHeight - dateHeight - spacing - (cellPadding * 2);
-
-      // Calculate max events with tighter spacing
-      const eventSpacing = screenWidth < 640 ? 1 : 2;
-      const maxEvents = Math.floor(availableEventSpace / (eventHeight + eventSpacing));
-
-      // Dynamic bounds based on screen size
-      const minEvents = screenWidth < 640 ? 2 : 3;
-      const maxEventsCap = screenWidth < 640 ? 6 : screenWidth < 1024 ? 8 : 10;
-
-      const maxEventsCapped = Math.min(Math.max(maxEvents, minEvents), maxEventsCap);
-
-      setMaxEventsPerCell(maxEventsCapped);
-    };
-
-    calculateMaxEvents();
-    window.addEventListener('resize', calculateMaxEvents);
-
-    return () => window.removeEventListener('resize', calculateMaxEvents);
-  }, []);
-
-  const monthStart = startOfMonth(currentDate);
-  const monthEnd = endOfMonth(currentDate);
-  const calendarStart = startOfWeek(monthStart);
-  const calendarEnd = endOfWeek(monthEnd);
-  const calendarDays = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
-
-  // Get events for the current month for list view
-  const monthEvents = events.filter(event =>
-    isWithinInterval(event.date, { start: startOfDay(monthStart), end: endOfDay(monthEnd) })
-  ).sort((a, b) => a.date.getTime() - b.date.getTime());
-
-  const navigateMonth = (direction: 'prev' | 'next') => {
-    const newDate = new Date(currentDate);
-    newDate.setMonth(currentDate.getMonth() + (direction === 'next' ? 1 : -1));
-    setCurrentDate(newDate);
+  const navigateNext = () => {
+    if (viewMode === 'month') {
+      setCurrentDate(addMonths(currentDate, 1));
+    } else {
+      setCurrentDate(addWeeks(currentDate, 1));
+    }
   };
 
   const goToToday = () => {
     setCurrentDate(new Date());
   };
 
+  // Get events for a specific date
   const getEventsForDate = (date: Date) => {
-    return events.filter(event =>
-      format(event.date, 'yyyy-MM-dd') === format(date, 'yyyy-MM-dd')
-    );
+    return events.filter(event => {
+      const eventDate = event.date instanceof Date ? event.date : new Date(event.date);
+      return isSameDay(eventDate, date);
+    });
   };
 
-  const getCategoryColorClass = (category: string) => {
-    const colors = {
-      work: 'text-blue-600 bg-blue-50 border-blue-200',
-      personal: 'text-purple-600 bg-purple-50 border-purple-200',
-      health: 'text-emerald-600 bg-emerald-50 border-emerald-200',
-      social: 'text-orange-600 bg-orange-50 border-orange-200',
-      other: 'text-gray-600 bg-gray-50 border-gray-200'
-    };
-    return colors[category as keyof typeof colors] || colors.other;
-  };
+  // Month view data
+  const monthData = useMemo(() => {
+    const monthStart = startOfMonth(currentDate);
+    const monthEnd = endOfMonth(currentDate);
+    const calendarStart = startOfWeek(monthStart, { weekStartsOn: 0 });
+    const calendarEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
+    return eachDayOfInterval({ start: calendarStart, end: calendarEnd });
+  }, [currentDate]);
 
-  const handleDeleteClick = (event: Event) => {
-    setDeleteConfirmEvent(event);
-  };
+  // Week view data
+  const weekData = useMemo(() => {
+    const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+    const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
+    return eachDayOfInterval({ start: weekStart, end: weekEnd });
+  }, [currentDate]);
 
+  // Hours for week view
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+
+  // Delete handlers
   const handleConfirmDelete = () => {
     if (deleteConfirmEvent) {
       onEventDelete(deleteConfirmEvent);
@@ -151,371 +113,374 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     setDeleteConfirmEvent(null);
   };
 
-  const renderGridView = () => (
-    <>
-      {/* Days of Week Header - Optimized spacing */}
-      <div className="grid grid-cols-7 bg-gray-50/50 border-b border-gray-200/50 flex-shrink-0">
-        {['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'].map((day) => (
-          <div key={day} className="px-0.5 sm:px-1 lg:px-2 py-1.5 sm:py-2 lg:py-3 text-center text-xs sm:text-sm font-medium text-gray-600">
-            <span className="md:hidden">{day.slice(0, 1)}</span>
-            <span className="hidden md:inline lg:hidden">{day.slice(0, 3)}</span>
-            <span className="hidden lg:inline">{day}</span>
+  // Responsive event limit
+  const getMaxEvents = () => {
+    if (typeof window === 'undefined') return 3;
+    if (window.innerWidth < 640) return 2;
+    if (window.innerWidth < 1024) return 3;
+    return 4;
+  };
+
+  const maxEvents = getMaxEvents();
+
+  // Month View Component
+  const MonthView = () => (
+    <div className="flex flex-col flex-1 min-h-0 overflow-y-auto">
+      {/* Day Headers */}
+      <div className="grid grid-cols-7 border-b border-gray-100">
+        {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
+          <div
+            key={day}
+            className={`
+              py-3 text-center text-xs font-semibold uppercase tracking-wider
+              ${idx === 0 || idx === 6 ? 'text-gray-400' : 'text-gray-600'}
+            `}
+          >
+            <span className="hidden sm:inline">{day}</span>
+            <span className="sm:hidden">{day[0]}</span>
           </div>
         ))}
       </div>
 
-      {/* Calendar Grid - Optimized for maximum event display */}
-      <div className="grid grid-cols-7 gap-0 flex-1 min-h-0 auto-rows-fr">
-        {calendarDays.map((date, index) => {
+      {/* Calendar Grid */}
+      <div className="grid grid-cols-7">
+        {monthData.map((date, index) => {
           const dayEvents = getEventsForDate(date);
           const isCurrentMonth = isSameMonth(date, currentDate);
           const isCurrentDay = isToday(date);
+          const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
           return (
             <motion.div
               key={date.toISOString()}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.01 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: index * 0.005 }}
               onClick={() => onDateClick(date)}
               className={`
-                min-h-[60px] sm:min-h-[80px] lg:min-h-[120px] xl:min-h-[140px] 
-                p-0.5 sm:p-1 lg:p-1.5 xl:p-2 border-b border-r border-gray-200/50 cursor-pointer
-                hover:bg-gray-50 transition-colors duration-200 flex flex-col
-                ${!isCurrentMonth ? 'bg-gray-50/50' : ''}
-                ${isCurrentDay ? 'bg-indigo-50/50' : ''}
+                min-h-[80px] sm:min-h-[90px] lg:min-h-[110px]
+                border-b border-r border-gray-100
+                p-1 sm:p-2 cursor-pointer
+                transition-all duration-200 flex flex-col
+                ${!isCurrentMonth ? 'bg-gray-50/50' : 'bg-white'}
+                ${isWeekend && isCurrentMonth ? 'bg-gray-50/30' : ''}
+                hover:bg-blue-50/50
               `}
             >
-              {/* Date header - Minimized spacing */}
-              <div className="flex items-center justify-between mb-0.5 sm:mb-1 flex-shrink-0 h-4 sm:h-5">
-                <span className={`
-                  text-xs sm:text-sm lg:text-base font-medium leading-none
-                  ${!isCurrentMonth ? 'text-gray-400' : 'text-gray-700'}
-                  ${isCurrentDay ? 'text-indigo-600 font-semibold' : ''}
-                `}>
+              {/* Date Number */}
+              <div className="flex items-center justify-between mb-1">
+                <span
+                  className={`
+                    inline-flex items-center justify-center
+                    w-6 h-6 sm:w-7 sm:h-7 text-xs sm:text-sm font-medium rounded-full
+                    transition-colors
+                    ${isCurrentDay
+                      ? 'bg-red-500 text-white'
+                      : isCurrentMonth
+                        ? 'text-gray-900 hover:bg-gray-100'
+                        : 'text-gray-400'
+                    }
+                  `}
+                >
                   {format(date, 'd')}
                 </span>
-                {isCurrentDay && (
-                  <div className="w-1 sm:w-1.5 h-1 sm:h-1.5 bg-indigo-500 rounded-full flex-shrink-0"></div>
-                )}
               </div>
 
-              {/* Events container - Optimized spacing */}
-              <div className="space-y-0.5 flex-1 min-h-0 overflow-hidden">
-                {dayEvents.slice(0, maxEventsPerCell).map((event, eventIndex) => (
+              {/* Events */}
+              <div className="flex-1 space-y-0.5 overflow-hidden">
+                {dayEvents.slice(0, maxEvents).map((event) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, x: -10 }}
+                    initial={{ opacity: 0, x: -5 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: eventIndex * 0.05 }}
                     onClick={(e) => {
                       e.stopPropagation();
                       onDayViewOpen(date);
                     }}
-                    className={`
-                      px-1 sm:px-1.5 py-0.5 rounded sm:rounded-md 
-                      text-xs font-medium text-white leading-tight
-                      cursor-pointer hover:shadow-md transition-all duration-200
-                      block w-full overflow-hidden whitespace-nowrap
-                      h-4 sm:h-5 lg:h-5.5 xl:h-6
-                      flex items-center
-                    `}
-                    style={{
-                      backgroundColor: event.color,
-                      fontSize: window.innerWidth < 640 ? '10px' : window.innerWidth < 1024 ? '11px' : '12px'
-                    }}
-                    title={`${event.title} - Click to view day details`}
+                    className="group relative"
                   >
-                    <span className="block truncate leading-none whitespace-nowrap overflow-hidden text-ellipsis">
+                    <div
+                      className={`
+                        px-1.5 py-0.5 rounded text-[10px] sm:text-xs font-medium
+                        truncate cursor-pointer transition-all
+                        hover:shadow-sm
+                      `}
+                      style={{
+                        backgroundColor: `${event.color}15`,
+                        color: event.color,
+                        borderLeft: `2px solid ${event.color}`
+                      }}
+                    >
+                      {!event.isAllDay && (
+                        <span className="opacity-70 mr-1">{event.startTime}</span>
+                      )}
                       {event.title}
-                    </span>
+                    </div>
                   </motion.div>
                 ))}
-                {dayEvents.length > maxEventsPerCell && (
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+
+                {/* More Events Indicator */}
+                {dayEvents.length > maxEvents && (
+                  <button
                     onClick={(e) => {
                       e.stopPropagation();
                       onDayViewOpen(date);
                     }}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 px-1 cursor-pointer font-medium hover:bg-indigo-50 rounded transition-all duration-200 whitespace-nowrap overflow-hidden text-ellipsis h-4 sm:h-5 flex items-center leading-none"
-                    style={{ fontSize: window.innerWidth < 640 ? '9px' : '10px' }}
+                    className="text-[10px] sm:text-xs text-blue-600 font-medium px-1.5 py-0.5 hover:bg-blue-50 rounded transition-colors w-full text-left"
                   >
-                    +{dayEvents.length - maxEventsPerCell} more
-                  </motion.div>
+                    +{dayEvents.length - maxEvents} more
+                  </button>
                 )}
               </div>
             </motion.div>
           );
         })}
       </div>
-    </>
+    </div>
   );
 
-  const renderListView = () => (
-    <div className="flex-1 overflow-y-auto p-2 sm:p-3 lg:p-4 space-y-1.5 sm:space-y-2">
-      {monthEvents.length === 0 ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-center py-8 text-gray-500"
-        >
-          <div className="text-4xl mb-2">📅</div>
-          <p className="font-medium">No events this month</p>
-          <p className="text-sm">Click on a date to add an event</p>
-        </motion.div>
-      ) : (
-        monthEvents.map((event, index) => (
-          <motion.div
-            key={event.id}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05 }}
-            className="bg-white border border-gray-200/50 rounded-lg overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all duration-200 group relative cursor-pointer"
-            onClick={() => onEventView(event)}
-          >
-            {/* Color accent bar */}
+  // Week View Component
+  const WeekView = () => (
+    <div className="flex flex-col flex-1 min-h-0 overflow-auto">
+      {/* Header with days */}
+      <div className="grid grid-cols-8 border-b border-gray-200 sticky top-0 bg-white z-10">
+        <div className="p-2 border-r border-gray-100" /> {/* Time column header */}
+        {weekData.map((date) => {
+          const isCurrentDay = isToday(date);
+          return (
             <div
-              className="absolute left-0 top-0 bottom-0 w-1"
-              style={{ backgroundColor: event.color }}
-            ></div>
-
-            <div className="p-2 sm:p-3 lg:p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-1">
-                    <div
-                      className="w-2 sm:w-2.5 h-2 sm:h-2.5 rounded-full border border-white shadow-sm flex-shrink-0"
-                      style={{ backgroundColor: event.color }}
-                    ></div>
-                    <h3 className="font-semibold text-gray-800 text-sm lg:text-base truncate">
-                      {event.title}
-                    </h3>
-                    <span className={`
-                      px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-medium border flex-shrink-0
-                      ${getCategoryColorClass(event.category)}
-                    `}>
-                      {event.category}
-                    </span>
-                  </div>
-
-                  {event.description && (
-                    <p className="text-gray-600 text-xs sm:text-sm mb-1.5 sm:mb-2 line-clamp-1 whitespace-pre-wrap">
-                      {event.description}
-                    </p>
-                  )}
-
-                  <div className="flex items-center space-x-2 sm:space-x-3 text-xs text-gray-500 flex-wrap sm:flex-nowrap">
-                    <div className="flex items-center space-x-1 flex-shrink-0">
-                      <span>📅</span>
-                      <span className="whitespace-nowrap">
-                        <span className="hidden sm:inline">{format(event.date, 'MMM d, yyyy')}</span>
-                        <span className="sm:hidden">{format(event.date, 'MMM d')}</span>
-                      </span>
-                    </div>
-                    {!event.isAllDay && (
-                      <div className="flex items-center space-x-1 flex-shrink-0">
-                        <span>🕐</span>
-                        <span className="whitespace-nowrap">
-                          <span className="hidden sm:inline">{event.startTime} - {event.endTime}</span>
-                          <span className="sm:hidden">{event.startTime}</span>
-                        </span>
-                      </div>
-                    )}
-                    {event.isAllDay && (
-                      <div className="flex items-center space-x-1 flex-shrink-0">
-                        <span>📌</span>
-                        <span className="whitespace-nowrap">
-                          <span className="hidden sm:inline">All day</span>
-                          <span className="sm:hidden">All</span>
-                        </span>
-                      </div>
-                    )}
-                    <div className="flex items-center space-x-1 flex-shrink-0">
-                      <span>⚡</span>
-                      <span className="capitalize whitespace-nowrap">
-                        {event.priority}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Inline Action Buttons */}
-                <div className="flex items-center space-x-1 ml-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEventClick(event);
-                    }}
-                    className="text-indigo-500 hover:text-indigo-700 transition-colors duration-200 p-1 sm:p-1.5 rounded-md hover:bg-indigo-50"
-                    title="Edit Event"
-                  >
-                    <Edit3 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleDeleteClick(event);
-                    }}
-                    className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1 sm:p-1.5 rounded-md hover:bg-red-50"
-                    title="Delete Event"
-                  >
-                    <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  </motion.button>
-                </div>
+              key={date.toISOString()}
+              className="p-2 text-center border-r border-gray-100 last:border-r-0"
+            >
+              <div className="text-xs text-gray-500 font-medium uppercase">
+                {format(date, 'EEE')}
+              </div>
+              <div
+                className={`
+                  text-lg sm:text-xl font-semibold mt-1
+                  ${isCurrentDay ? 'text-red-500' : 'text-gray-900'}
+                `}
+              >
+                {format(date, 'd')}
               </div>
             </div>
-          </motion.div>
-        ))
-      )}
+          );
+        })}
+      </div>
+
+      {/* Time Grid */}
+      <div className="flex-1">
+        {hours.map((hour) => (
+          <div key={hour} className="grid grid-cols-8 border-b border-gray-100 min-h-[48px]">
+            {/* Time Label */}
+            <div className="p-1 text-xs text-gray-400 text-right pr-2 border-r border-gray-100">
+              {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
+            </div>
+
+            {/* Day Columns */}
+            {weekData.map((date) => {
+              const dayEvents = getEventsForDate(date).filter(event => {
+                if (event.isAllDay) return hour === 0;
+                const eventHour = parseInt(event.startTime.split(':')[0]);
+                return eventHour === hour;
+              });
+
+              return (
+                <div
+                  key={`${date.toISOString()}-${hour}`}
+                  onClick={() => {
+                    const clickedDateTime = setMinutes(setHours(date, hour), 0);
+                    onDateClick(clickedDateTime);
+                  }}
+                  className="border-r border-gray-100 last:border-r-0 p-0.5 hover:bg-blue-50/30 cursor-pointer transition-colors relative"
+                >
+                  {dayEvents.map((event) => (
+                    <div
+                      key={event.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEventView(event);
+                      }}
+                      className="text-[10px] sm:text-xs p-1 rounded truncate cursor-pointer hover:shadow-sm"
+                      style={{
+                        backgroundColor: `${event.color}20`,
+                        color: event.color,
+                        borderLeft: `2px solid ${event.color}`
+                      }}
+                    >
+                      {event.title}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
     </div>
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200/50 overflow-hidden h-full flex flex-col">
-      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-3 sm:px-4 py-3 sm:py-4 border-b border-gray-200/50 flex-shrink-0">
-        <div className="flex items-center justify-between gap-x-2 sm:gap-x-4 flex-nowrap">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden h-full flex flex-col">
+      {/* Header */}
+      <div className="px-4 sm:px-6 py-4 border-b border-gray-100 flex-shrink-0">
+        <div className="flex items-center justify-between">
+          {/* Left: Title */}
+          <div className="flex items-center space-x-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+              {viewMode === 'month'
+                ? format(currentDate, 'MMMM yyyy')
+                : `Week of ${format(startOfWeek(currentDate), 'MMM d')}`
+              }
+            </h2>
+          </div>
 
-          <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">
-            <span className="sm:hidden">{format(currentDate, 'MMM yyyy')}</span>
-            <span className="hidden sm:inline">{format(currentDate, 'MMMM yyyy')}</span>
-          </h2>
-
-          <div className="flex items-center flex-shrink-0 gap-x-1 sm:gap-x-2">
-
+          {/* Right: Controls */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            {/* Today Button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={goToToday}
-              className="px-2 sm:px-3 lg:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-medium text-indigo-600 hover:bg-white/50 rounded-xl transition-colors duration-200"
-              title="Go to Today"
+              className="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
             >
               Today
             </motion.button>
 
-            <div className="flex items-center">
+            {/* Navigation */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigateMonth('prev')}
-                className="p-1.5 sm:p-2 rounded-xl hover:bg-white/50 transition-colors duration-200"
-                title="Previous Month"
+                onClick={navigatePrev}
+                className="p-1.5 hover:bg-white rounded-md transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                <ChevronLeft className="w-4 h-4 text-gray-600" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => navigateMonth('next')}
-                className="p-1.5 sm:p-2 rounded-xl hover:bg-white/50 transition-colors duration-200"
-                title="Next Month"
+                onClick={navigateNext}
+                className="p-1.5 hover:bg-white rounded-md transition-colors"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                <ChevronRight className="w-4 h-4 text-gray-600" />
               </motion.button>
             </div>
 
-            <div className="flex bg-white/70 rounded-xl p-0.5 sm:p-1 shadow-sm border border-white/50">
+            {/* View Toggle */}
+            <div className="hidden sm:flex items-center bg-gray-100 rounded-lg p-0.5">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setViewMode('grid')}
+                onClick={() => setViewMode('month')}
                 className={`
-                  p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'grid'
-                    ? 'bg-white shadow-md text-indigo-600 border border-indigo-200/50'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                  }`}
-                title="Grid View"
+                  px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
+                  ${viewMode === 'month'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                  }
+                `}
               >
-                <Grid3X3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <LayoutGrid className="w-4 h-4" />
+                <span>Month</span>
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => setViewMode('list')}
+                onClick={() => setViewMode('week')}
                 className={`
-                  p-1.5 sm:p-2 rounded-lg transition-all duration-200 ${viewMode === 'list'
-                    ? 'bg-white shadow-md text-indigo-600 border border-indigo-200/50'
-                    : 'text-gray-600 hover:text-gray-800 hover:bg-white/50'
-                  }`}
-                title="List View"
+                  px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
+                  ${viewMode === 'week'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                  }
+                `}
               >
-                <List className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <Rows3 className="w-4 h-4" />
+                <span>Week</span>
               </motion.button>
             </div>
           </div>
         </div>
       </div>
 
-      <motion.div
-        key={viewMode}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-        className="flex-1 flex flex-col min-h-0"
-      >
-        {viewMode === 'grid' ? renderGridView() : renderListView()}
-      </motion.div>
+      {/* Calendar Content */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={viewMode}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="flex-1 flex flex-col min-h-0 overflow-hidden"
+        >
+          {viewMode === 'month' ? <MonthView /> : <WeekView />}
+        </motion.div>
+      </AnimatePresence>
 
+      {/* Floating Add Button */}
       <AnimatePresence>
         {!isSidebarOpen && (
           <motion.button
-            initial={{ scale: 0, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0, opacity: 0, y: 20 }}
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onAddEvent}
-            className="fixed bottom-24 right-6 bg-gradient-to-r from-indigo-500 to-purple-600 text-white w-[44px] h-[44px] sm:w-14 sm:h-14 flex items-center justify-center rounded-full shadow-lg hover:shadow-xl transition-all duration-200 z-30"
+            className="fixed bottom-24 right-6 bg-blue-500 hover:bg-blue-600 text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg hover:shadow-xl transition-all z-30 flex items-center justify-center"
           >
-            <Plus className="w-5 h-5 sm:w-7 sm:h-7" />
+            <Plus className="w-6 h-6" />
           </motion.button>
         )}
       </AnimatePresence>
 
-      {deleteConfirmEvent && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteConfirmEvent && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={handleCancelDelete}
           >
-            <div className="text-center">
-              <div className="w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                <Trash2 className="w-6 h-6 text-red-600" />
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full"
+            >
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Delete Event</h3>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Delete Event
-              </h3>
+
               <p className="text-gray-600 mb-6">
-                Are you sure you want to delete this event?
+                Are you sure you want to delete "{deleteConfirmEvent.title}"? This action cannot be undone.
               </p>
+
               <div className="flex space-x-3">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={handleCancelDelete}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors"
                 >
                   Cancel
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                </button>
+                <button
                   onClick={handleConfirmDelete}
-                  className="flex-1 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors duration-200"
+                  className="flex-1 px-4 py-2.5 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors"
                 >
                   Delete
-                </motion.button>
+                </button>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </div>
   );
 };

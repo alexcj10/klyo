@@ -10,7 +10,7 @@ interface HeaderProps {
   onToggleDesktopSidebar?: () => void;
   isSidebarOpen?: boolean;
   onSearch: (query: string) => void;
-  events?: Event[]; // Add events prop for search functionality
+  events?: Event[];
   onAnalyticsClick?: () => void;
   isAnalyticsActive?: boolean;
 }
@@ -20,7 +20,7 @@ const Header: React.FC<HeaderProps> = ({
   onToggleDesktopSidebar,
   isSidebarOpen = true,
   onSearch,
-  events = [], // Destructure events from props
+  events = [],
   onAnalyticsClick,
   isAnalyticsActive = false,
 }) => {
@@ -31,99 +31,91 @@ const Header: React.FC<HeaderProps> = ({
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        // Kept solid white background (bg-white)
-        // Added backdrop-blur-md for a "frosted glass" effect on content scrolled beneath
-        // Added a slightly stronger shadow (shadow-md) for better definition
-        className="bg-white backdrop-blur-md border-b border-gray-200/40 dark:border-gray-700/50 px-3 sm:px-4 py-2 sm:py-3 sticky top-0 z-50 shadow-md min-h-14 sm:h-16 flex items-center relative"
+        transition={{ duration: 0.4 }}
+        className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 px-4 sm:px-6 py-3 sticky top-0 z-50 shadow-sm"
       >
-        {/* Left side spacer - hidden on mobile for centering */}
-        <div className="hidden sm:flex items-center space-x-1 sm:space-x-4 flex-1">
-          {/* Left side content if needed */}
-        </div>
+        <div className="flex items-center justify-between max-w-[1800px] mx-auto">
+          {/* Logo */}
+          <div className="flex items-center">
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+              <span className="text-gray-900">Kl</span>
+              <span className="text-blue-500">y</span>
+              <span className="text-gray-900">o</span>
+            </h1>
+          </div>
 
-        {/* Centered title */}
-        <div className="absolute left-1/2 transform -translate-x-1/2">
-          <h1 className="text-xl sm:text-2xl font-extrabold bg-gradient-to-r from-indigo-500 to-purple-600 bg-clip-text text-transparent select-none animate-fade-in whitespace-nowrap">
-            Klyo
-          </h1>
-        </div>
+          {/* Right Controls */}
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            {/* Search Bar - Desktop */}
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              className="relative hidden lg:block"
+            >
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Search events..."
+                readOnly
+                onFocus={() => setSearchOpen(true)}
+                className="pl-10 pr-4 py-2 bg-gray-50 hover:bg-gray-100 rounded-xl border-0 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all w-48 xl:w-64 text-sm"
+              />
+            </motion.div>
 
-        {/* Right side controls */}
-        <div className="flex items-center space-x-1 sm:space-x-4 ml-auto">
-          {/* Full search bar - only show on larger screens */}
-          <motion.div whileHover={{ scale: 1.02 }} className="relative hidden xl:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search events..."
-              readOnly
-              onFocus={() => setSearchOpen(true)}
-              className="pl-10 pr-4 py-2 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 w-48 xl:w-64"
-            />
-          </motion.div>
+            {/* Search Icon - Tablet/Mobile */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setSearchOpen(true)}
+              className="lg:hidden p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+              title="Search"
+            >
+              <Search className="w-5 h-5" />
+            </motion.button>
 
-          {/* Search icon button - show on medium to large screens */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setSearchOpen(true)}
-            className="hidden md:flex xl:hidden text-gray-600 hover:text-gray-800 p-2 rounded-xl hover:bg-gray-100 transition-all duration-200"
-            title="Search events"
-          >
-            <Search className="w-5 h-5" />
-          </motion.button>
-
-          {/* Mobile search button */}
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setSearchOpen(true)}
-            className="md:hidden text-gray-600 hover:text-gray-800 p-2 rounded-xl hover:bg-gray-100 transition-all duration-200"
-          >
-            <Search className="w-5 h-5" />
-          </motion.button>
-
-          {onAnalyticsClick && (
-            <AnalyticsButton
-              onClick={onAnalyticsClick}
-              isActive={isAnalyticsActive}
-            />
-          )}
-
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onToggleDesktopSidebar}
-            title={isSidebarOpen ? 'Hide Tasks' : 'Show Tasks'}
-            className="hidden lg:flex items-center text-gray-600 hover:text-gray-800 p-2 rounded-xl hover:bg-gray-100 transition-all duration-200"
-          >
-            {isSidebarOpen ? (
-              <PanelRightClose className="w-5 h-5" />
-            ) : (
-              <PanelRightOpen className="w-5 h-5" />
+            {/* Analytics Button */}
+            {onAnalyticsClick && (
+              <AnalyticsButton
+                onClick={onAnalyticsClick}
+                isActive={isAnalyticsActive}
+              />
             )}
-          </motion.button>
 
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={onToggleSidebar}
-            className="lg:hidden text-gray-600 hover:text-gray-800 p-2 rounded-xl hover:bg-gray-100 transition-all duration-200"
-          >
-            <Menu className="w-5 h-5" />
-          </motion.button>
+            {/* Desktop Sidebar Toggle */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onToggleDesktopSidebar}
+              title={isSidebarOpen ? 'Hide Tasks' : 'Show Tasks'}
+              className="hidden lg:flex p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+            >
+              {isSidebarOpen ? (
+                <PanelRightClose className="w-5 h-5" />
+              ) : (
+                <PanelRightOpen className="w-5 h-5" />
+              )}
+            </motion.button>
+
+            {/* Mobile Menu */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={onToggleSidebar}
+              className="lg:hidden p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
+            >
+              <Menu className="w-5 h-5" />
+            </motion.button>
+          </div>
         </div>
       </motion.header>
 
-      <SearchOverlay 
-        open={searchOpen} 
+      <SearchOverlay
+        open={searchOpen}
         onClose={() => {
           setSearchOpen(false);
-          onSearch(''); // Clear search query in App.tsx when closing
+          onSearch('');
         }}
         onSearch={onSearch}
-        events={events} // Pass events data for search functionality
+        events={events}
       />
     </>
   );

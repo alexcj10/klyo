@@ -24,7 +24,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
   onNavigate
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
-  
+
   if (!isOpen || !event) return null;
 
   const handleDeleteClick = () => {
@@ -101,22 +101,20 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
                 if (canNavigatePrev) handleNavigation('prev');
               }}
               disabled={!canNavigatePrev}
-              className={`absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${
-                canNavigatePrev ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'
-              }`}
+              className={`absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${canNavigatePrev ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'
+                }`}
             >
               <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
-            
+
             <motion.button
               onClick={(e) => {
                 e.stopPropagation();
                 if (canNavigateNext) handleNavigation('next');
               }}
               disabled={!canNavigateNext}
-              className={`absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${
-                canNavigateNext ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'
-              }`}
+              className={`absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${canNavigateNext ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'
+                }`}
             >
               <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
@@ -128,7 +126,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -50 }}
-          transition={{ 
+          transition={{
             type: "spring",
             stiffness: 300,
             damping: 30,
@@ -153,10 +151,10 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
                 {currentIndex + 1} of {allEvents.length}
               </div>
             )}
-            
+
             {/* Event Info */}
             <div className="flex items-start space-x-3 mb-4">
-              <div 
+              <div
                 className="w-4 h-4 sm:w-5 sm:h-5 rounded-full flex-shrink-0 mt-1"
                 style={{ backgroundColor: event.color }}
               ></div>
@@ -204,7 +202,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
 
           {/* Simple Content */}
           <div className="px-3 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 overflow-y-auto max-h-[50vh] sm:max-h-[60vh]">
-            
+
             {/* Description */}
             {event.description && (
               <div>
@@ -226,16 +224,15 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
                   </span>
                 </div>
               </div>
-              
+
               <div>
                 <h4 className="font-medium text-gray-700 mb-1">Priority</h4>
                 <div className="flex items-center space-x-2">
                   <span className="text-lg">{getPriorityIcon(event.priority)}</span>
-                  <span className={`px-2 py-1 rounded text-xs font-medium capitalize ${
-                    event.priority === 'high' ? 'text-red-700 bg-red-100' : 
-                    event.priority === 'medium' ? 'text-orange-700 bg-orange-100' : 
-                    'text-emerald-700 bg-emerald-100'
-                  }`}>
+                  <span className={`px-2 py-1 rounded text-xs font-medium capitalize ${event.priority === 'high' ? 'text-red-700 bg-red-100' :
+                    event.priority === 'medium' ? 'text-orange-700 bg-orange-100' :
+                      'text-emerald-700 bg-emerald-100'
+                    }`}>
                     {event.priority}
                   </span>
                 </div>
@@ -245,40 +242,42 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
 
           {/* Delete Confirmation Dialog */}
           {showDeleteConfirm && (
-            <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 rounded-2xl">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-20">
               <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4"
+                className="bg-white rounded-2xl shadow-2xl p-5 max-w-[320px] w-full mx-auto overflow-hidden border border-gray-100"
               >
-                <div className="text-center">
-                  <div className="w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                    <Trash2 className="w-6 h-6 text-red-600" />
+                <div className="flex items-center space-x-3 mb-4 text-left">
+                  <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <Trash2 className="w-5 h-5 text-red-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  <h3 className="text-lg font-bold text-gray-900">
                     Delete Event
                   </h3>
-                  <p className="text-gray-600 mb-6">
-                    Are you sure you want to delete this event?
-                  </p>
-                  <div className="flex space-x-3">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleCancelDelete}
-                      className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors duration-200"
-                    >
-                      Cancel
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleConfirmDelete}
-                      className="flex-1 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors duration-200"
-                    >
-                      Delete
-                    </motion.button>
-                  </div>
+                </div>
+
+                <p className="text-[15px] text-gray-600 mb-6 leading-relaxed font-medium text-left">
+                  Are you sure you want to delete this event? This action cannot be undone.
+                </p>
+
+                <div className="flex space-x-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleCancelDelete}
+                    className="flex-1 px-4 py-2.5 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200"
+                  >
+                    Cancel
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={handleConfirmDelete}
+                    className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-200 transition-all duration-200"
+                  >
+                    Delete
+                  </motion.button>
                 </div>
               </motion.div>
             </div>
