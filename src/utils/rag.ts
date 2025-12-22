@@ -1,5 +1,4 @@
 
-import Groq from 'groq-sdk';
 import { embedText } from './embed';
 import { cosineSimilarity } from './similarity';
 import { Event, Task } from '../types';
@@ -26,12 +25,12 @@ export interface RagItem {
 function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
     const items: RagItem[] = [];
     const now = new Date();
-    const todayStr = now.toISOString().split('T')[0];
+    const todayStr = now.toLocaleDateString('en-CA'); // YYYY-MM-DD in local time
 
     // Process Events
     events.forEach(e => {
         const d = new Date(e.date);
-        const itemDateStr = d.toISOString().split('T')[0];
+        const itemDateStr = d.toLocaleDateString('en-CA');
 
         let relativeStatus = "[UPCOMING]";
         if (itemDateStr === todayStr) relativeStatus = "[TODAY]";
@@ -66,7 +65,7 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
 
         if (t.dueDate) {
             const d = new Date(t.dueDate);
-            const itemDateStr = d.toISOString().split('T')[0];
+            const itemDateStr = d.toLocaleDateString('en-CA');
 
             relativeStatus = "[UPCOMING]";
             if (itemDateStr === todayStr) relativeStatus = "[TODAY]";
@@ -96,21 +95,6 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
     return items;
 }
 
-// --------------------------------------------------------
-// Helper: Levenshtein Distance
-// --------------------------------------------------------
-const levenshtein = (a: string, b: string): number => {
-    const matrix = [];
-    for (let i = 0; i <= b.length; i++) matrix[i] = [i];
-    for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
-    for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-            if (b.charAt(i - 1) === a.charAt(j - 1)) matrix[i][j] = matrix[i - 1][j - 1];
-            else matrix[i][j] = Math.min(matrix[i - 1][j - 1] + 1, Math.min(matrix[i][j - 1] + 1, matrix[i - 1][j] + 1));
-        }
-    }
-    return matrix[b.length][a.length];
-};
 
 // --------------------------------------------------------
 // Main Pipeline: ragQuery
@@ -128,10 +112,15 @@ export async function ragQuery(
     const items = normalizeData(events, tasks);
     const lowerQ = question.toLowerCase().trim();
 
-    // Temporal Intent Detection
+    // Temporal & Content Intent Detection
     const isAskingAboutPast = /\b(yesterday|previous|before|last|past|histor|done|completed)\b/i.test(lowerQ);
+    const isAskingTomorrow = /\b(tomorrow|tmrw|tom|tmw)\b/i.test(lowerQ);
     const isGreeting = /\b(hi|hello|hey|hola|yo|good morning|good evening|good afternoon)\b/i.test(lowerQ);
-    const isAskingAboutTodayNow = /\b(today|now|currently|looking for|plans|plate)\b/i.test(lowerQ) || isGreeting;
+    const isAskingAboutTodayNow = (/\b(today|now|currently|looking for|plans|plate|schedule)\b/i.test(lowerQ) && !isAskingTomorrow) || isGreeting;
+
+    // Entity Intent Detection
+    const mentionsEvent = /\b(event|events|appointment|appointments|meeting|meetings|calendar)\b/i.test(lowerQ);
+    const mentionsTask = /\b(task|tasks|todo|todos|to-do|to-dos|reminders|done|pending)\b/i.test(lowerQ);
 
     // --- 0.5 SMART EXPANDER ---
     let searchQueries = [question];
@@ -178,20 +167,34 @@ export async function ragQuery(
 
             // Boost UPCOMING and TODAY items if not asking about past
             if (!isAskingAboutPast) {
-                if (item.content.includes("[TODAY]")) recencyScore += 5.0;
-                if (item.content.includes("[UPCOMING]") && daysDiff < 3) recencyScore += 3.0;
-                if (item.content.includes("[PAST]")) recencyScore -= 10.0; // Heavy penalty for past events
+                if (item.content.includes("[TODAY]")) recencyScore += 6.0;
+                if (item.content.includes("[UPCOMING]") && daysDiff < 3) recencyScore += 4.0;
+                if (item.content.includes("[PAST]")) recencyScore -= 12.0; // Heavy penalty for past events
             } else {
                 // If asking about past, boost PAST items
-                if (item.content.includes("[PAST]")) recencyScore += 5.0;
+                if (item.content.includes("[PAST]")) recencyScore += 8.0;
             }
         }
 
-        return { item, score: (vectorScore * 10) + lexicalScore + recencyScore };
+        // Entity Boosting
+        let intentScore = 0;
+        if (mentionsEvent && item.type === 'event') intentScore += 15.0; // Strong boost when specifically asked
+        if (mentionsTask && item.type === 'task') intentScore += 15.0;
+
+        // Equal priority boost for general queries (e.g., "plans", "schedule", "hi")
+        if (!mentionsEvent && !mentionsTask) {
+            intentScore += 2.0;
+            // Slight edge to today's events for the "first priority" feel
+            if (item.type === 'event' && item.content.includes("[TODAY]")) {
+                intentScore += 2.0;
+            }
+        }
+
+        return { item, score: (vectorScore * 10) + lexicalScore + recencyScore + intentScore };
     }).sort((a, b) => b.score - a.score);
 
     // --- 2. ORACLE RERANKER ---
-    let candidates = ranked.slice(0, 15).map(r => r.item);
+    let candidates = ranked.slice(0, 40).map(r => r.item); // Increased pool from 15 to 40
 
     // STRICT FILTERING: If asking about TODAY/NOW/GREETING, strip PAST events entirely
     if (isAskingAboutTodayNow && !isAskingAboutPast) {
@@ -210,7 +213,7 @@ export async function ragQuery(
     }
 
     const today = new Date();
-    const isAskingToday = /\b(today|tonight)\b/i.test(question);
+    const isAskingToday = /\b(today|tonight)\b/i.test(lowerQ);
 
     const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
     const shortMonths = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -225,9 +228,20 @@ export async function ragQuery(
         }
     }
 
-    if (isAskingToday) {
-        const todayStr = today.toISOString().split('T')[0];
-        candidates = candidates.filter(c => c.date && c.date.startsWith(todayStr));
+    if (isAskingTomorrow) {
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        const tomorrowStr = tomorrow.toLocaleDateString('en-CA');
+        candidates = candidates.filter(c => {
+            if (!c.date) return false;
+            return new Date(c.date).toLocaleDateString('en-CA') === tomorrowStr;
+        });
+    } else if (isAskingToday) {
+        const todayStr = today.toLocaleDateString('en-CA');
+        candidates = candidates.filter(c => {
+            if (!c.date) return false;
+            return new Date(c.date).toLocaleDateString('en-CA') === todayStr;
+        });
     } else if (targetMonthIndex !== -1) {
         candidates = candidates.filter(c => {
             if (!c.date) return false;
@@ -236,14 +250,13 @@ export async function ragQuery(
         });
     }
 
-    const totalFound = candidates.length;
 
     // --- 3. GENERATION ---
     const topCandidates = candidates.slice(0, 50);
 
     const contextString = topCandidates.length > 0
         ? topCandidates.map(c => `- ${c.content}`).join("\n")
-        : (isAskingAboutTodayNow ? "No upcoming events scheduled for today." : "No matching information found in your schedule.");
+        : (isAskingAboutTodayNow ? "No upcoming events or tasks scheduled for today." : "No matching information found in your schedule.");
 
     try {
         const currentFullDate = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -268,14 +281,15 @@ export async function ragQuery(
 
                         TEMPORAL AWARENESS (CRITICAL):
                         - Internal System Date: ${currentFullDate}
-                        - Use this internal date ONLY to filter the Context and understand "today" or "tomorrow".
-                        - **CRITICAL**: NEVER mention the current date, day of the week, time, or year in your response UNLESS the user explicitly asks "What is the date?" or "What day is it?".
-                        - Do NOT start your response with "Today is..." or anything similar. Just answer the question or greet the user normally.
+                        - If the user specifies a day (e.g., "today", "tomorrow", "this month"), ONLY use the items from the Context that match that day/period. 
+                        - **CRITICAL**: If the user asks for tomorrow, do NOT mention today's events/tasks at all.
+                        - NEVER mention the current date, day of the week, or time unless asked.
+                        - Do NOT start your response with "Today is...".
 
-                        SMART RULES:
-                        1. If the user asks general/funny questions, answer smartly without any schedule or date clutter.
-                        2. For greetings, focus on the vibe. Mention one highlight from [TODAY] if relevant, but do NOT state the date.
-                        3. Be concise. No robotic filler.
+                        CONTENT RULES:
+                        1. GIVE EQUAL PRIORITY TO EVENTS AND TASKS. Mention BOTH if they exist in the provided context.
+                        2. ONLY use information strictly found in his schedule Context.
+                        3. For general greetings, mention one highlight from [TODAY].
 
                         Context (User's Schedule):
                         ${contextString}
@@ -303,7 +317,8 @@ export async function ragQuery(
         return answer;
     } catch (e: any) {
         console.error("Groq Failure:", e);
-        return `Error: ${e.message || "AI Service Failed"}. Check console.`;
+        return `Error: ${e.message || "AI Service Failed"
+            }.Check console.`;
     }
 }
 
@@ -342,8 +357,8 @@ async function rerankItems(query: string, items: RagItem[]): Promise<RagItem[]> 
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [
-                    { role: "system", content: "Return indices of most relevant items. Output JSON: {relevant_indices: number[]}. IGNORE irrelevant." },
-                    { role: "user", content: `Query: ${query}\nItems:\n${text}` }
+                    { role: "system", content: "You are a Retrieval Specialist. Identify MOST relevant items from the list that match the user query. Give equal priority to Events and Tasks unless the user specifically asks for one. Output JSON: {relevant_indices: number[]}. IGNORE irrelevant items." },
+                    { role: "user", content: `Query: ${query}\nItems: \n${text}` }
                 ],
                 response_format: { type: "json_object" }
             })
@@ -363,7 +378,7 @@ async function reflectionStep(query: string, answer: string, context: string): P
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [
-                    { role: "system", content: "Rate answer 0-100 and critique. JSON: {score: number, critique: string}." },
+                    { role: "system", content: "Rate the AI response based on accuracy, tone, and coverage of user's schedule (Events & Tasks). Ensure the response doesn't ignore one for the other unless queried. JSON: {score: number, critique: string}." },
                     { role: "user", content: `Question: ${query}\nContext: ${context}\nAnswer: ${answer}` }
                 ],
                 response_format: { type: "json_object" }
@@ -380,7 +395,7 @@ async function reflectionStep(query: string, answer: string, context: string): P
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: `You are a professional editor. Rewrite the answer based on this critique: ${parsed.critique}. **CRITICAL**: NEVER mention the current date, day, or time unless specifically asked. Ensure you NEVER mention past events for current queries. Stay witty and smart.` },
+                        { role: "system", content: `You are a professional editor.Rewrite the answer based on this critique: ${parsed.critique}. ** CRITICAL **: ONLY mention items found in the provided Context.Do NOT mention items for Today if the user is asking about Tomorrow.Stay strictly within the requested timeframe.Stay witty and smart.` },
                         { role: "user", content: `Context: ${context}\nQuestion: ${query}\nOriginal Answer: ${answer}` }
                     ]
                 })
