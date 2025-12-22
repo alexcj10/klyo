@@ -219,7 +219,21 @@ export async function ragQuery(
     const shortMonths = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
     let targetMonthIndex = -1;
-    if (lowerQ.includes("this month")) {
+    let targetDay = -1;
+
+    // Specific Date Extraction (e.g., "Dec 22", "22nd December")
+    const dateMatch = lowerQ.match(/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b\s*(\d{1,2})/i);
+    const reverseDateMatch = lowerQ.match(/\b(\d{1,2})(?:st|nd|rd|th)?\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b/i);
+
+    if (dateMatch) {
+        const monthStr = dateMatch[1].toLowerCase();
+        targetMonthIndex = months.findIndex(m => m.startsWith(monthStr));
+        targetDay = parseInt(dateMatch[2]);
+    } else if (reverseDateMatch) {
+        const monthStr = reverseDateMatch[2].toLowerCase();
+        targetMonthIndex = months.findIndex(m => m.startsWith(monthStr));
+        targetDay = parseInt(reverseDateMatch[1]);
+    } else if (lowerQ.includes("this month")) {
         targetMonthIndex = today.getMonth();
     } else {
         targetMonthIndex = months.findIndex(m => lowerQ.includes(m));
@@ -246,8 +260,18 @@ export async function ragQuery(
         candidates = candidates.filter(c => {
             if (!c.date) return false;
             const d = new Date(c.date);
+            if (targetDay !== -1) {
+                return d.getMonth() === targetMonthIndex && d.getDate() === targetDay;
+            }
             return d.getMonth() === targetMonthIndex;
         });
+    }
+
+    // Smart Filtering: If one type is asked for, prioritize it but keep the other if it's high priority
+    if (mentionsEvent && !mentionsTask) {
+        // Asked for events: prioritize them, but tasks can stay for "smart" reminders if they are high priority
+        // No explicit filtering here as the LLM will handle the "focus" via the prompt, 
+        // and initial ranking already pushed them up.
     }
 
 
@@ -287,9 +311,11 @@ export async function ragQuery(
                         - Do NOT start your response with "Today is...".
 
                         CONTENT RULES:
-                        1. GIVE EQUAL PRIORITY TO EVENTS AND TASKS. Mention BOTH if they exist in the provided context.
-                        2. ONLY use information strictly found in his schedule Context.
-                        3. For general greetings, mention one highlight from [TODAY].
+                        1. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
+                        2. BE SMART & HELPFUL: If you see something really important (like a high-priority event while they asked for tasks), feel free to add a "By the way" or "Don't forget" reminder. This is what makes you Klyo's smartest assistant.
+                        3. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
+                        4. ONLY use information strictly found in your Context.
+                        5. For general greetings, mention one highlight (event or high-priority task).
 
                         Context (User's Schedule):
                         ${contextString}
