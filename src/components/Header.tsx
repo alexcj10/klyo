@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Menu, Search, PanelRightOpen, PanelRightClose } from 'lucide-react';
+import { Menu, Search, Clock, PanelRightOpen, PanelRightClose } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SearchOverlay from './SearchOverlay';
+import WorldClockModal from './WorldClockModal';
 import AnalyticsButton from './AnalyticsButton';
 import { Event } from '../types';
 
@@ -25,6 +26,7 @@ const Header: React.FC<HeaderProps> = ({
   isAnalyticsActive = false,
 }) => {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [clockOpen, setClockOpen] = useState(false);
 
   return (
     <>
@@ -72,6 +74,18 @@ const Header: React.FC<HeaderProps> = ({
               <Search className="w-5 h-5" />
             </motion.button>
 
+            {/* World Clock Button */}
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setClockOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/80 backdrop-blur-sm text-gray-700 hover:bg-white hover:shadow-md border border-gray-200/50 transition-all duration-200 group relative"
+              title="World Clock"
+            >
+              <Clock className="w-4 h-4 text-blue-500" />
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-blue-500 rounded-full border-2 border-white" />
+            </motion.button>
+
             {/* Analytics Button */}
             {onAnalyticsClick && (
               <AnalyticsButton
@@ -116,6 +130,11 @@ const Header: React.FC<HeaderProps> = ({
         }}
         onSearch={onSearch}
         events={events}
+      />
+
+      <WorldClockModal
+        isOpen={clockOpen}
+        onClose={() => setClockOpen(false)}
       />
     </>
   );
