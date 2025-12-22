@@ -185,7 +185,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               transition={{ delay: index * 0.005 }}
               onClick={() => onDateClick(date)}
               className={`
-                p-1 sm:p-2 border-r border-b border-gray-100 last:border-r-0 flex flex-col min-h-0 overflow-hidden
+                p-1 sm:p-2 border-r border-b border-blue-100/50 last:border-r-0 flex flex-col min-h-0 overflow-hidden
                 ${!isCurrentMonth ? 'bg-gray-50/50' : 'bg-white'}
                 ${isWeekend ? 'bg-gray-50/30' : ''}
                 hover:bg-blue-50/30 transition-colors cursor-pointer group
@@ -286,9 +286,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       {/* Time Grid */}
       <div className="flex-1">
         {hours.map((hour) => (
-          <div key={hour} className="grid grid-cols-8 border-b border-gray-100 min-h-[48px]">
+          <div key={hour} className="grid grid-cols-8 border-b border-blue-100/50 min-h-[48px]">
             {/* Time Label */}
-            <div className="p-1 text-xs text-gray-400 text-right pr-2 border-r border-gray-100">
+            <div className="p-1 text-xs text-gray-400 text-right pr-2 border-r border-blue-100/50">
               {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
             </div>
 
@@ -336,7 +336,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   );
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden h-full flex flex-col relative">
+    <div className="bg-white rounded-2xl shadow-sm border border-blue-200/60 overflow-hidden h-full flex flex-col relative">
       {/* Header - Clean Mobile Design */}
       <div className="px-2 sm:px-6 py-3 border-b border-blue-200 flex-shrink-0 bg-blue-100/70 backdrop-blur-sm">
         {/* Mobile: Centered nav layout */}
