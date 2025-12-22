@@ -172,7 +172,7 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                                             <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl shadow-sm border border-gray-100 overflow-hidden relative group-hover:scale-110 transition-transform">
                                                 {countryCode ? (
                                                     <img
-                                                        src={`https://flagcdn.com/w80/${countryCode}.png`}
+                                                        src={`https://flagcdn.com/${countryCode}.svg`}
                                                         alt={city.country}
                                                         className="w-full h-full object-cover"
                                                     />
