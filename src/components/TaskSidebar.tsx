@@ -177,9 +177,9 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
   const stats = getTaskStats();
 
   return (
-    <div className="h-full pt-16 lg:pt-0 bg-gradient-to-br from-white via-gray-50/50 to-indigo-50/30 backdrop-blur-sm overflow-hidden flex flex-col relative">
+    <div className="h-full pt-16 lg:pt-0 bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 backdrop-blur-sm overflow-hidden flex flex-col relative">
       {/* Decorative background elements */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-indigo-100/20 to-purple-100/20 rounded-full -translate-y-16 translate-x-16 blur-3xl"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100/20 to-cyan-100/20 rounded-full -translate-y-16 translate-x-16 blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-blue-100/20 to-cyan-100/20 rounded-full translate-y-12 -translate-x-12 blur-2xl"></div>
 
       {/* Header */}
@@ -187,18 +187,18 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
 
         {/* Stats Bar for Tasks */}
         {activeTab === 'tasks' && tasks.length > 0 && (
-          <div className="mb-3 p-2.5 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl border border-indigo-100">
+          <div className="mb-3 p-2.5 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl border border-blue-100">
             <div className="flex items-center justify-between text-[11px] sm:text-xs">
               <div className="flex items-center space-x-3">
                 <span className="text-gray-500 font-medium">Progress</span>
                 <div className="flex items-center space-x-2">
                   <div className="w-12 h-1 bg-gray-200/80 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
+                      className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-500"
                       style={{ width: `${stats.completionRate}%` }}
                     ></div>
                   </div>
-                  <span className="text-indigo-600 font-bold">{stats.completionRate}%</span>
+                  <span className="text-blue-600 font-bold">{stats.completionRate}%</span>
                 </div>
               </div>
               <span className="text-gray-400 font-medium">{stats.completed}/{stats.total}</span>
@@ -220,7 +220,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
               className={`
                 px-3 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex-1 flex items-center justify-center space-x-2
                 ${activeTab === key
-                  ? 'bg-white text-indigo-600 shadow-md shadow-indigo-500/10 border border-indigo-100'
+                  ? 'bg-white text-blue-600 shadow-md shadow-blue-500/10 border border-blue-100'
                   : 'text-gray-500 hover:bg-white/50 hover:text-gray-700'
                 }
               `}
@@ -230,7 +230,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
               <span className={`
                 px-2 py-0.5 rounded-full text-xs font-medium
                 ${activeTab === key
-                  ? 'bg-indigo-100 text-indigo-700'
+                  ? 'bg-blue-100 text-blue-700'
                   : 'bg-gray-200 text-gray-600'
                 }
               `}>
@@ -258,7 +258,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                   className={`
                     px-2.5 py-1.5 rounded-lg text-xs font-bold transition-all duration-300 flex-1 text-center border
                     ${filter === key
-                      ? 'bg-indigo-500 text-white border-indigo-600 shadow-sm'
+                      ? 'bg-blue-600 text-white border-blue-700 shadow-sm'
                       : 'bg-white/50 text-gray-500 border-gray-100 hover:bg-white hover:text-gray-700'
                     }
                   `}
@@ -287,7 +287,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsAddingTask(true)}
-                  className="flex-shrink-0 px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 text-[11px] font-bold flex items-center justify-center space-x-1.5"
+                  className="flex-shrink-0 px-3 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300 text-[11px] font-bold flex items-center justify-center space-x-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Task</span>
@@ -322,7 +322,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                     }}
                     onKeyPress={(e) => e.key === 'Enter' && handleAddTask()}
                     maxLength={100}
-                    className="w-full px-3.5 py-2 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-sm bg-white/80 backdrop-blur-sm placeholder-gray-400 transition-all duration-200"
+                    className="w-full px-3.5 py-2 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 text-sm bg-white/80 backdrop-blur-sm placeholder-gray-400 transition-all duration-200"
                     autoFocus
                   />
                   <div className="flex justify-end mt-1">
@@ -345,7 +345,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                   <select
                     value={newTaskCategory}
                     onChange={(e) => setNewTaskCategory(e.target.value as Task['category'])}
-                    className="px-2 py-2 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-xs bg-white/80 backdrop-blur-sm min-w-0"
+                    className="px-2 py-2 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 text-xs bg-white/80 backdrop-blur-sm min-w-0"
                   >
                     <option value="work">💼 Work</option>
                     <option value="personal">🏠 Personal</option>
@@ -356,7 +356,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                   <select
                     value={newTaskPriority}
                     onChange={(e) => setNewTaskPriority(e.target.value as Task['priority'])}
-                    className="px-2 py-2 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-300 text-xs bg-white/80 backdrop-blur-sm min-w-0"
+                    className="px-2 py-2 border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/50 focus:border-blue-300 text-xs bg-white/80 backdrop-blur-sm min-w-0"
                   >
                     <option value="low">🟢 Low</option>
                     <option value="medium">🟡 Medium</option>
@@ -368,7 +368,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={handleAddTask}
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg shadow-sm font-bold text-xs"
+                    className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg shadow-sm font-bold text-xs"
                   >
                     Add Task
                   </motion.button>
@@ -420,7 +420,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => onTaskComplete(task.id)}
-                        className="mt-1 text-gray-400 hover:text-indigo-500 transition-colors duration-200 flex-shrink-0"
+                        className="mt-1 text-gray-400 hover:text-blue-500 transition-colors duration-200 flex-shrink-0"
                       >
                         {task.completed ? (
                           <CheckCircle className="w-5 h-5 text-emerald-500" />
@@ -544,7 +544,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                                 e.stopPropagation();
                                 onEventClick(event);
                               }}
-                              className="text-indigo-500 hover:text-indigo-700 transition-colors duration-200 p-1.5 hover:bg-indigo-50 rounded-lg"
+                              className="text-blue-500 hover:text-blue-700 transition-colors duration-200 p-1.5 hover:bg-blue-50 rounded-lg"
                             >
                               <Edit3 className="w-3.5 h-3.5" />
                             </motion.button>
@@ -633,7 +633,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                     whileHover={{ scale: 1.02, y: -2 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsAddingTask(true)}
-                    className="bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-600 text-white px-8 py-4 rounded-2xl hover:shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 text-sm font-semibold flex items-center space-x-3 mx-auto group"
+                    className="bg-gradient-to-r from-blue-500 via-blue-600 to-cyan-600 text-white px-8 py-4 rounded-2xl hover:shadow-2xl hover:shadow-blue-500/25 transition-all duration-300 text-sm font-semibold flex items-center space-x-3 mx-auto group"
                   >
                     <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
                     <span>Add Your First Task</span>

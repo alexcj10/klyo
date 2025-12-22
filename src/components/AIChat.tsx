@@ -138,7 +138,7 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                         className="fixed z-50 flex flex-col overflow-hidden bg-white/95 backdrop-blur-md shadow-2xl border border-white/50 transition-all duration-300 ease-out bottom-6 left-6 right-6 h-[70vh] rounded-[2rem] sm:left-auto sm:right-6 sm:bottom-6 sm:rounded-2xl sm:w-[450px] sm:h-[75vh] md:h-[80vh]"
                     >
                         {/* Header */}
-                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white shadow-sm z-10">
+                        <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm z-10">
                             <div className="flex items-center gap-3">
                                 <div className="drop-shadow-md">
                                     <img src={crockLogo} alt="Mr. Crock" className="w-10 h-10 rounded-full object-cover border-2 border-white/20" />
@@ -198,11 +198,11 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                                         key={session.id}
                                                         onClick={() => handleLoadSession(session.id)}
                                                         className={`group flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all ${currentSessionId === session.id
-                                                            ? 'bg-violet-50 border-violet-200 shadow-sm'
-                                                            : 'bg-white border-gray-100 hover:border-violet-100 hover:shadow-md'
+                                                            ? 'bg-blue-50 border-blue-200 shadow-sm'
+                                                            : 'bg-white border-gray-100 hover:border-blue-100 hover:shadow-md'
                                                             }`}
                                                     >
-                                                        <div className={`p-2 rounded-lg ${currentSessionId === session.id ? 'bg-violet-100 text-violet-600' : 'bg-gray-100 text-gray-500'}`}>
+                                                        <div className={`p-2 rounded-lg ${currentSessionId === session.id ? 'bg-blue-100 text-blue-600' : 'bg-gray-100 text-gray-500'}`}>
                                                             <MessageSquare className="w-4 h-4" />
                                                         </div>
 
@@ -213,7 +213,7 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                                                         type="text"
                                                                         value={editTitle}
                                                                         onChange={(e) => setEditTitle(e.target.value)}
-                                                                        className="flex-1 text-sm px-2 py-1 rounded border border-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                                                                        className="flex-1 text-sm px-2 py-1 rounded border border-blue-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                                                         autoFocus
                                                                         onKeyDown={(e) => {
                                                                             if (e.key === 'Enter') saveTitle(e, session.id);
@@ -264,7 +264,7 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                                                     <>
                                                                         <button
                                                                             onClick={(e) => startEditing(e, session.id, session.title)}
-                                                                            className="p-1.5 text-gray-400 hover:text-violet-600 hover:bg-violet-50 rounded-lg transition-colors"
+                                                                            className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                                                             title="Rename"
                                                                         >
                                                                             <Edit2 className="w-3.5 h-3.5" />
@@ -301,12 +301,12 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                                 >
                                                     <div
                                                         className={`max-w-[85%] p-3 sm:p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm ${msg.role === 'user'
-                                                            ? 'bg-violet-600 text-white rounded-tr-sm'
+                                                            ? 'bg-blue-600 text-white rounded-tr-sm'
                                                             : 'bg-white text-slate-700 border border-slate-100 rounded-tl-sm'
                                                             }`}
                                                     >
                                                         {msg.role === 'ai' && (
-                                                            <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-violet-600/90 tracking-wide border-b border-violet-100 pb-1">
+                                                            <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-blue-600/90 tracking-wide border-b border-blue-100 pb-1">
                                                                 <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
                                                                 Mr. Crock
                                                             </div>
@@ -328,7 +328,7 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                                                                 {children}
                                                                             </code>
                                                                         ) : (
-                                                                            <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono text-violet-600" {...props}>
+                                                                            <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono text-blue-600" {...props}>
                                                                                 {children}
                                                                             </code>
                                                                         )
@@ -344,9 +344,9 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                             {isLoading && (
                                                 <div className="flex justify-start">
                                                     <div className="bg-white p-4 rounded-2xl rounded-tl-sm border border-slate-100 shadow-sm flex gap-1.5">
-                                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                                        <span className="w-2 h-2 bg-violet-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                                        <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                                        <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                                        <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                                                     </div>
                                                 </div>
                                             )}
@@ -361,12 +361,12 @@ export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
                                                     value={inputValue}
                                                     onChange={(e) => setInputValue(e.target.value)}
                                                     placeholder="Ask about your schedule..."
-                                                    className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:bg-white transition-all border border-slate-200 focus:border-violet-300"
+                                                    className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all border border-slate-200 focus:border-blue-300"
                                                 />
                                                 <button
                                                     type="submit"
                                                     disabled={!inputValue.trim() || isLoading}
-                                                    className="absolute right-2 p-2 bg-violet-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-violet-700 transition-colors shadow-sm active:scale-95"
+                                                    className="absolute right-2 p-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
                                                 >
                                                     <Send className="w-4 h-4" />
                                                 </button>

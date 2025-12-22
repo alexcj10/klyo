@@ -281,7 +281,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Search events…"
-                className="w-full pl-10 pr-10 py-3 rounded-xl bg-white/70 backdrop-blur-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base md:text-lg shadow-xl placeholder-gray-500"
+                className="w-full pl-10 pr-10 py-3 rounded-xl bg-white/70 backdrop-blur-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base md:text-lg shadow-xl placeholder-gray-500"
               />
               <button
                 onClick={handleClose}
@@ -342,7 +342,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
                               {hasLongDescription && (
                                 <button
                                   onClick={() => toggleEventExpansion(event.id)}
-                                  className="mt-2 text-indigo-600 hover:text-indigo-800 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded px-1"
+                                  className="mt-2 text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 rounded px-1"
                                 >
                                   {isExpanded ? 'Read less' : 'Read more'}
                                 </button>

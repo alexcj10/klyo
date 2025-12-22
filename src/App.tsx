@@ -416,7 +416,7 @@ function App() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '100%' }}
             transition={{ type: 'tween', ease: 'easeInOut', duration: 0.5 }}
-            className="fixed inset-0 z-[100] bg-gradient-to-br from-violet-600 via-purple-700 to-fuchsia-800 flex items-center justify-center"
+            className="fixed inset-0 z-[100] bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-800 flex items-center justify-center"
           >
             <motion.div
               initial={{ opacity: 0, y: 30 }}
