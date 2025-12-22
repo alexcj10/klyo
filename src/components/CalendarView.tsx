@@ -149,13 +149,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const MonthView = () => (
     <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
       {/* Day Headers */}
-      <div className="grid grid-cols-7 border-b border-gray-100">
+      <div className="grid grid-cols-7 border-b border-indigo-100 bg-indigo-50/50">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
           <div
             key={day}
             className={`
-              py-3 text-center text-xs font-semibold uppercase tracking-wider
-              ${idx === 0 || idx === 6 ? 'text-gray-400' : 'text-gray-600'}
+              py-3 text-center text-xs font-bold uppercase tracking-wider
+              ${idx === 0 || idx === 6 ? 'text-indigo-400' : 'text-indigo-600'}
             `}
           >
             <span className="hidden sm:inline">{day}</span>
@@ -174,7 +174,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         {monthData.map((date, index) => {
           const dayEvents = getEventsForDate(date);
           const isCurrentMonth = isSameMonth(date, currentDate);
-          const isCurrentDay = isToday(date);
+          const isTodayDate = isToday(date);
           const isWeekend = date.getDay() === 0 || date.getDay() === 6;
 
           return (
@@ -196,7 +196,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 <span
                   className={`
                     text-[10px] sm:text-xs font-semibold w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-full transition-colors
-                    ${isCurrentDay
+                    ${isTodayDate
                       ? 'bg-blue-500 text-white'
                       : isCurrentMonth
                         ? 'text-gray-900 group-hover:bg-gray-100'
@@ -258,22 +258,22 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const WeekView = () => (
     <div className="flex flex-col flex-1 min-h-0 overflow-auto">
       {/* Header with days */}
-      <div className="grid grid-cols-8 border-b border-gray-200 sticky top-0 bg-white z-10">
+      <div className="grid grid-cols-8 border-b border-indigo-100 sticky top-0 bg-indigo-50/80 backdrop-blur-sm z-10">
         <div className="p-2 border-r border-gray-100" /> {/* Time column header */}
         {weekData.map((date) => {
-          const isCurrentDay = isToday(date);
+          const isTodayDate = isToday(date);
           return (
             <div
               key={date.toISOString()}
               className="p-2 text-center border-r border-gray-100 last:border-r-0"
             >
-              <div className="text-xs text-gray-500 font-medium uppercase">
+              <div className="text-xs text-indigo-600 font-bold uppercase">
                 {format(date, 'EEE')}
               </div>
               <div
                 className={`
                   text-lg sm:text-xl font-semibold mt-1
-                  ${isCurrentDay ? 'text-red-500' : 'text-gray-900'}
+                  ${isTodayDate ? 'text-blue-500' : 'text-gray-900'}
                 `}
               >
                 {format(date, 'd')}
