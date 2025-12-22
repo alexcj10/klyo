@@ -108,7 +108,7 @@ const EventModal: React.FC<EventModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-2xl w-[94%] sm:w-full max-w-[340px] sm:max-w-lg md:max-w-xl lg:max-w-lg max-h-[70vh] sm:max-h-[75vh] lg:max-h-[90vh] overflow-hidden border border-gray-200"
+          className="bg-white rounded-2xl shadow-2xl w-[94%] sm:w-full max-w-[340px] sm:max-w-lg md:max-w-xl lg:max-w-lg max-h-[65vh] sm:max-h-[65vh] lg:max-h-[90vh] overflow-hidden border border-gray-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -178,8 +178,8 @@ const EventModal: React.FC<EventModalProps> = ({
 
           {/* Form */}
           <div className={`overflow-y-auto scrollbar-hide ${deleteConfirmEvent
-            ? 'max-h-[calc(70vh-220px)] sm:max-h-[calc(75vh-220px)] lg:max-h-[calc(90vh-220px)]'
-            : 'max-h-[calc(70vh-140px)] sm:max-h-[calc(75vh-140px)] lg:max-h-[calc(90vh-140px)]'
+            ? 'max-h-[calc(85vh-220px)] sm:max-h-[calc(85vh-220px)] lg:max-h-[calc(90vh-220px)]'
+            : 'max-h-[calc(85vh-140px)] sm:max-h-[calc(85vh-140px)] lg:max-h-[calc(90vh-140px)]'
             }`}>
             <form onSubmit={handleSubmit} className="p-4 sm:p-5 lg:p-6 space-y-3 sm:space-y-4">
               {/* Title */}
