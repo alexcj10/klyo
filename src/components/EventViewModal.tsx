@@ -132,7 +132,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
             damping: 30,
             duration: 0.4
           }}
-          className="bg-white rounded-xl shadow-xl w-full max-w-[90vw] sm:max-w-sm mx-auto overflow-hidden"
+          className="bg-white rounded-xl shadow-xl w-[94%] max-w-[340px] sm:max-w-sm mx-auto overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Simple Header */}
@@ -201,7 +201,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
           </div>
 
           {/* Simple Content */}
-          <div className="px-3 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 overflow-y-auto max-h-[50vh] sm:max-h-[60vh]">
+          <div className="px-3 sm:px-6 py-3 sm:py-4 space-y-3 sm:space-y-4 overflow-y-auto max-h-[40vh] sm:max-h-[60vh]">
 
             {/* Description */}
             {event.description && (

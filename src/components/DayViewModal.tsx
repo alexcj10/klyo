@@ -86,7 +86,7 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.2 }}
-          className="bg-white rounded-2xl shadow-xl max-w-sm sm:max-w-md lg:max-w-lg w-full max-h-[85vh] sm:max-h-[80vh] overflow-hidden border border-gray-200"
+          className="bg-white rounded-2xl shadow-xl max-w-[340px] sm:max-w-md lg:max-w-lg w-[94%] sm:w-full max-h-[70vh] sm:max-h-[80vh] overflow-hidden border border-gray-200"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -123,7 +123,7 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
           </div>
 
           {/* Events List */}
-          <div className="p-3 sm:p-4 space-y-2 max-h-[calc(85vh-100px)] sm:max-h-[calc(80vh-100px)] overflow-y-auto">
+          <div className="p-3 sm:p-4 space-y-2 max-h-[calc(70vh-100px)] sm:max-h-[calc(80vh-100px)] overflow-y-auto">
             {events.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
