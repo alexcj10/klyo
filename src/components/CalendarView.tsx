@@ -329,82 +329,72 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 overflow-hidden h-full flex flex-col">
-      {/* Header */}
-      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-100 flex-shrink-0">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          {/* Left: Title */}
-          <h2 className="text-lg sm:text-2xl font-bold text-gray-900">
-            {viewMode === 'month'
-              ? format(currentDate, 'MMM yyyy')
-              : `Week of ${format(startOfWeek(currentDate), 'MMM d')}`
-            }
-          </h2>
-
-          {/* Right: Controls */}
-          <div className="flex items-center space-x-1 sm:space-x-2">
-            {/* Today Button */}
+      {/* Header - Clean Mobile Design */}
+      <div className="px-3 sm:px-6 py-3 border-b border-gray-100 flex-shrink-0">
+        {/* Mobile: Centered nav layout */}
+        <div className="flex items-center justify-between">
+          {/* Navigation Arrows + Title */}
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-1">
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={goToToday}
-              className="px-3 py-1.5 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+              whileTap={{ scale: 0.9 }}
+              onClick={navigatePrev}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             >
-              Today
+              <ChevronLeft className="w-5 h-5 text-gray-600" />
             </motion.button>
 
-            {/* Navigation */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={navigatePrev}
-                className="p-1.5 hover:bg-white rounded-md transition-colors"
-              >
-                <ChevronLeft className="w-4 h-4 text-gray-600" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={navigateNext}
-                className="p-1.5 hover:bg-white rounded-md transition-colors"
-              >
-                <ChevronRight className="w-4 h-4 text-gray-600" />
-              </motion.button>
-            </div>
+            <motion.button
+              whileTap={{ scale: 0.98 }}
+              onClick={goToToday}
+              className="flex-1 sm:flex-none text-center"
+            >
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900">
+                {viewMode === 'month'
+                  ? format(currentDate, 'MMMM yyyy')
+                  : `Week of ${format(startOfWeek(currentDate), 'MMM d')}`
+                }
+              </h2>
+            </motion.button>
 
-            {/* View Toggle */}
-            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setViewMode('month')}
-                className={`
-                  px-2 sm:px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
-                  ${viewMode === 'month'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                  }
-                `}
-              >
-                <LayoutGrid className="w-4 h-4" />
-                <span className="hidden sm:inline">Month</span>
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setViewMode('week')}
-                className={`
-                  px-2 sm:px-3 py-1.5 text-sm font-medium rounded-md transition-all flex items-center space-x-1.5
-                  ${viewMode === 'week'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                  }
-                `}
-              >
-                <Rows3 className="w-4 h-4" />
-                <span className="hidden sm:inline">Week</span>
-              </motion.button>
-            </div>
+            <motion.button
+              whileTap={{ scale: 0.9 }}
+              onClick={navigateNext}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <ChevronRight className="w-5 h-5 text-gray-600" />
+            </motion.button>
+          </div>
+
+          {/* View Toggle - Simple Pills */}
+          <div className="flex items-center bg-gray-100 rounded-full p-0.5 ml-2">
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setViewMode('month')}
+              className={`
+                p-1.5 sm:px-3 sm:py-1 rounded-full transition-all flex items-center space-x-1
+                ${viewMode === 'month'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-500'
+                }
+              `}
+            >
+              <LayoutGrid className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm font-medium">Month</span>
+            </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setViewMode('week')}
+              className={`
+                p-1.5 sm:px-3 sm:py-1 rounded-full transition-all flex items-center space-x-1
+                ${viewMode === 'week'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-500'
+                }
+              `}
+            >
+              <Rows3 className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm font-medium">Week</span>
+            </motion.button>
           </div>
         </div>
       </div>
