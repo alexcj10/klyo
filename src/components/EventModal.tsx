@@ -88,7 +88,7 @@ const EventModal: React.FC<EventModalProps> = ({
     // Color assignment is handled in App.tsx
     // For existing events, preserve the original color
     // For new events, color will be assigned automatically
-    onSave({...formData, color: getNextColor(events)});
+    onSave({ ...formData, color: getNextColor(events) });
     onClose();
   };
 
@@ -177,11 +177,10 @@ const EventModal: React.FC<EventModalProps> = ({
           </AnimatePresence>
 
           {/* Form */}
-          <div className={`overflow-y-auto scrollbar-hide ${
-            deleteConfirmEvent 
-              ? 'max-h-[calc(80vh-220px)] sm:max-h-[calc(75vh-220px)] lg:max-h-[calc(85vh-220px)]' 
+          <div className={`overflow-y-auto scrollbar-hide ${deleteConfirmEvent
+              ? 'max-h-[calc(80vh-220px)] sm:max-h-[calc(75vh-220px)] lg:max-h-[calc(85vh-220px)]'
               : 'max-h-[calc(80vh-140px)] sm:max-h-[calc(75vh-140px)] lg:max-h-[calc(85vh-140px)]'
-          }`}>
+            }`}>
             <form onSubmit={handleSubmit} className="p-4 sm:p-5 lg:p-6 space-y-3 sm:space-y-4">
               {/* Title */}
               <div>
@@ -202,9 +201,8 @@ const EventModal: React.FC<EventModalProps> = ({
                   placeholder="Enter event title..."
                 />
                 <div className="flex justify-end mt-1">
-                  <span className={`text-xs ${
-                    formData.title.length > 90 ? 'text-red-500' : 'text-gray-400'
-                  }`}>
+                  <span className={`text-xs ${formData.title.length > 90 ? 'text-red-500' : 'text-gray-400'
+                    }`}>
                     {formData.title.length}/100
                   </span>
                 </div>
@@ -337,14 +335,14 @@ const EventModal: React.FC<EventModalProps> = ({
                   Event Color
                 </label>
                 <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <div 
-                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                    style={{ 
+                  <div
+                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex-shrink-0"
+                    style={{
                       backgroundColor: event ? event.color : getNextColor(events)
                     }}
                   ></div>
                   <span className="text-sm text-gray-600">
-                    {event 
+                    {event
                       ? `Current: ${getColorName(event.color)}`
                       : `Will be assigned: ${getColorName(getNextColor(events))}`
                     }
@@ -352,32 +350,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 </div>
                 {!event && (
                   <p className="text-xs text-gray-500 mt-1">
-                    Colors are automatically assigned in sequence for new events
-                  </p>
-                )}
-              </div>
-              {/* Color Preview */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Event Color
-                </label>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-                  <div 
-                    className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
-                    style={{ 
-                      backgroundColor: event ? event.color : getNextColor(events)
-                    }}
-                  ></div>
-                  <span className="text-sm text-gray-600">
-                    {event 
-                      ? `Current: ${getColorName(event.color)}`
-                      : `Will be assigned: ${getColorName(getNextColor(events))}`
-                    }
-                  </span>
-                </div>
-                {!event && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Colors are automatically assigned in sequence for new events
+                    Colors are automatically assigned in sequence
                   </p>
                 )}
               </div>
@@ -389,7 +362,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors duration-200 font-medium"
                 >
                   Cancel
                 </motion.button>
@@ -397,7 +370,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all duration-200"
+                  className="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm transition-all duration-200 font-medium"
                 >
                   {event ? 'Update Event' : 'Create Event'}
                 </motion.button>

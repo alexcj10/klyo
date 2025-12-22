@@ -90,17 +90,17 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-white px-6 py-4 border-b border-gray-100">
+          <div className="bg-white px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {format(date, 'EEEE, MMMM d')}
+              <div className="flex-1 min-w-0">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-800 truncate">
+                  {format(date, 'EEE, MMM d')}
                 </h2>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-xs sm:text-sm text-gray-500">
                   {events.length} {events.length === 1 ? 'event' : 'events'}
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2 flex-shrink-0">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -114,16 +114,16 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                  className="text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5" />
                 </motion.button>
               </div>
             </div>
           </div>
 
           {/* Events List */}
-          <div className="p-4 sm:p-6 space-y-2 sm:space-y-3 max-h-[calc(85vh-120px)] sm:max-h-[calc(80vh-120px)] overflow-y-auto scrollbar-hide">
+          <div className="p-3 sm:p-4 space-y-2 max-h-[calc(85vh-100px)] sm:max-h-[calc(80vh-100px)] overflow-y-auto">
             {events.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
@@ -143,82 +143,71 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
                 </motion.button>
               </motion.div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {sortedEvents.map((event, index) => (
                   <motion.div
                     key={event.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ delay: index * 0.05, duration: 0.2 }}
-                    className={`bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-all duration-200 group ${isDeleting && deleteConfirmEvent?.id === event.id ? 'opacity-50 pointer-events-none' : ''
+                    transition={{ delay: index * 0.03, duration: 0.15 }}
+                    className={`bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-all duration-200 ${isDeleting && deleteConfirmEvent?.id === event.id ? 'opacity-50 pointer-events-none' : ''
                       }`}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center space-x-3 mb-2">
-                          <div
-                            className="w-3 h-3 rounded-full"
-                            style={{ backgroundColor: event.color }}
-                          ></div>
-                          <h3 className="font-semibold text-gray-800 text-sm truncate">
-                            {event.title}
-                          </h3>
-                          <span className={`
-                            px-2 py-0.5 rounded-full text-xs font-medium border flex-shrink-0
-                            ${getCategoryColorClass(event.category)}
-                          `}>
-                            {event.category}
-                          </span>
-                        </div>
-                        {event.description && (
-                          <p className="text-gray-600 text-sm mb-3 line-clamp-2 whitespace-pre-wrap">
-                            {event.description}
-                          </p>
-                        )}
-                        <div className="flex items-center space-x-4 text-xs text-gray-600">
-                          <div className="flex items-center space-x-1">
-                            {event.isAllDay ? (
-                              <>
-                                <Calendar className="w-3 h-3" />
-                                <span>All day</span>
-                              </>
-                            ) : (
-                              <>
-                                <Clock className="w-3 h-3" />
-                                <span className="truncate">
-                                  {event.startTime} - {event.endTime}
-                                </span>
-                              </>
-                            )}
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <span>⚡</span>
-                            <span className="capitalize">{event.priority}</span>
-                          </div>
-                        </div>
+                    {/* Top row: Color dot + Title + Actions */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2 flex-1 min-w-0">
+                        <div
+                          className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+                          style={{ backgroundColor: event.color }}
+                        ></div>
+                        <h3 className="font-semibold text-gray-800 text-sm truncate">
+                          {event.title}
+                        </h3>
                       </div>
-                      <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ml-4">
+                      <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
                         <motion.button
-                          whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => onEventClick(event)}
-                          className="text-blue-500 hover:text-blue-600 transition-colors duration-200 p-1"
-                          title="Edit Event"
+                          className="text-blue-500 hover:text-blue-600 p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
                           disabled={isDeleting}
                         >
                           <Edit3 className="w-4 h-4" />
                         </motion.button>
                         <motion.button
-                          whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
                           onClick={() => handleDeleteClick(event)}
-                          className="text-red-500 hover:text-red-700 transition-colors duration-200 p-1"
-                          title="Delete Event"
+                          className="text-red-500 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition-colors"
                           disabled={isDeleting}
                         >
                           <Trash2 className="w-4 h-4" />
                         </motion.button>
+                      </div>
+                    </div>
+
+                    {/* Bottom row: Time + Category + Priority */}
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center space-x-1">
+                        {event.isAllDay ? (
+                          <>
+                            <Calendar className="w-3 h-3" />
+                            <span>All day</span>
+                          </>
+                        ) : (
+                          <>
+                            <Clock className="w-3 h-3" />
+                            <span>{event.startTime} - {event.endTime}</span>
+                          </>
+                        )}
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className={`px-1.5 py-0.5 rounded text-[10px] font-medium ${getCategoryColorClass(event.category)}`}>
+                          {event.category}
+                        </span>
+                        <span className="flex items-center space-x-0.5">
+                          <span>⚡</span>
+                          <span className="capitalize">{event.priority}</span>
+                        </span>
                       </div>
                     </div>
                   </motion.div>
