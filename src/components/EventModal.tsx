@@ -123,7 +123,7 @@ const EventModal: React.FC<EventModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-2xl w-[94%] sm:w-full max-w-[340px] sm:max-w-lg md:max-w-xl lg:max-w-lg max-h-[65vh] sm:max-h-[65vh] lg:max-h-[90vh] overflow-hidden border border-gray-200"
+          className="bg-white rounded-2xl shadow-2xl w-[94%] sm:w-full max-w-[340px] sm:max-w-lg md:max-w-xl lg:max-w-lg max-h-[65vh] sm:max-h-[65vh] lg:max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
