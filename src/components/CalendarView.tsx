@@ -219,7 +219,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                       e.stopPropagation();
                       onDayViewOpen(date);
                     }}
-                    className="cursor-pointer flex-shrink-0"
+                    className="cursor-pointer flex-shrink-0 min-w-0"
                   >
                     <div
                       className="px-1 py-0.5 rounded text-[8px] sm:text-[9px] md:text-[10px] font-medium truncate hover:opacity-80 transition-opacity leading-tight"
