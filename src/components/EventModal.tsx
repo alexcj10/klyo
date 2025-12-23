@@ -61,12 +61,27 @@ const EventModal: React.FC<EventModalProps> = ({
       };
     } else {
       // Creating new event - use defaults with selected/current date
+      const initialDate = selectedDate || new Date();
+
+      // Extract hours and minutes. If it's 00:00 (mid-night), it might be a day-selection
+      // in which case 09:00 AM is a better default for start time.
+      const hours = initialDate.getHours();
+      const minutes = initialDate.getMinutes();
+      const isMidnight = hours === 0 && minutes === 0;
+
+      const startH = isMidnight ? 9 : hours;
+      const startM = isMidnight ? 0 : minutes;
+
+      const startTime = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
+      const endH = (startH + 1) % 24;
+      const endTime = `${String(endH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
+
       return {
         title: '',
         description: '',
-        date: selectedDate || new Date(),
-        startTime: '09:00',
-        endTime: '10:00',
+        date: initialDate,
+        startTime,
+        endTime,
         category: 'personal' as const,
         priority: 'medium' as const,
         isAllDay: false

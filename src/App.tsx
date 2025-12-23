@@ -136,8 +136,7 @@ function App() {
   };
 
   const handleDateClick = (date: Date) => {
-    const clickedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    setSelectedDate(clickedDate);
+    setSelectedDate(date);
     setSelectedEvent(null);
     setIsEventModalOpen(true);
   };
