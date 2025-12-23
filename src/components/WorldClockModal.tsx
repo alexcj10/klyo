@@ -201,10 +201,10 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                                         initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: Math.min(index * 0.02, 0.5) }}
-                                        className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 hover:shadow-md transition-all group flex items-center justify-between"
+                                        className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-blue-200 hover:shadow-md transition-all group flex items-center justify-between gap-3"
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl shadow-sm border border-gray-100 overflow-hidden relative group-hover:scale-110 transition-transform text-2xl">
+                                        <div className="flex items-center gap-3 min-w-0 flex-1">
+                                            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-xl shadow-sm border border-gray-100 overflow-hidden relative group-hover:scale-110 transition-transform text-2xl shrink-0">
                                                 {countryCode ? (
                                                     <img
                                                         src={`https://flagcdn.com/${countryCode}.svg`}
@@ -219,26 +219,26 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                                                     <div className="absolute inset-0 bg-indigo-900/10" />
                                                 )}
                                             </div>
-                                            <div className="min-w-0">
+                                            <div className="flex-1 min-w-0">
                                                 <div className="flex items-center gap-1.5">
                                                     <h4 className="font-bold text-gray-800 text-sm truncate">{city.city}</h4>
-                                                    <span className="text-[10px] text-blue-500/80 font-bold bg-blue-50/50 px-1 rounded uppercase tracking-tighter">{offsetLabel}</span>
+                                                    <span className="text-[10px] text-blue-500/80 font-bold bg-blue-50/50 px-1 rounded uppercase tracking-tighter shrink-0">{offsetLabel}</span>
                                                 </div>
                                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                                    <span className="text-[10px] text-gray-500 uppercase tracking-tight">{city.country}</span>
-                                                    <div className={`w-1 h-1 rounded-full ${status === 'day' ? 'bg-amber-400' : 'bg-indigo-400'}`} />
-                                                    {status === 'day' ? <Sun className="w-2.5 h-2.5 text-amber-500" /> : <Moon className="w-2.5 h-2.5 text-indigo-500" />}
+                                                    <span className="text-[10px] text-gray-500 uppercase tracking-tight truncate">{city.country}</span>
+                                                    <div className={`w-1 h-1 rounded-full shrink-0 ${status === 'day' ? 'bg-amber-400' : 'bg-indigo-400'}`} />
+                                                    {status === 'day' ? <Sun className="w-2.5 h-2.5 text-amber-500 shrink-0" /> : <Moon className="w-2.5 h-2.5 text-indigo-500 shrink-0" />}
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="text-right flex flex-col items-end">
-                                            <div className="flex items-center gap-1 text-blue-600 mb-0.5">
-                                                <Clock className="w-3 h-3 opacity-50" />
+                                        <div className="text-right flex flex-col items-end shrink-0 ml-auto">
+                                            <div className="flex items-center gap-1 text-blue-600 mb-0.5 whitespace-nowrap">
+                                                <Clock className="w-3 h-3 opacity-50 shrink-0" />
                                                 <span className="font-mono font-bold text-sm tracking-tighter">
                                                     {formatCityTime(city.timezone)}
                                                 </span>
                                             </div>
-                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-tighter ${status === 'day' ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'
+                                            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-tighter whitespace-nowrap ${status === 'day' ? 'bg-amber-50 text-amber-600' : 'bg-indigo-50 text-indigo-600'
                                                 }`}>
                                                 {period}
                                             </span>
