@@ -258,7 +258,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const WeekView = () => (
     <div className="flex flex-col flex-1 min-h-0 overflow-auto">
       {/* Header with days */}
-      <div className="grid grid-cols-8 border-b border-indigo-100 sticky top-0 bg-indigo-50/80 backdrop-blur-sm z-10">
+      <div
+        className="grid border-b border-indigo-100 sticky top-0 bg-indigo-50/80 backdrop-blur-sm z-10"
+        style={{ gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)' }}
+      >
         <div className="p-2 border-r border-gray-100" /> {/* Time column header */}
         {weekData.map((date) => {
           const isTodayDate = isToday(date);
@@ -286,9 +289,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       {/* Time Grid */}
       <div className="flex-1">
         {hours.map((hour) => (
-          <div key={hour} className="grid grid-cols-8 border-b border-blue-100/50 min-h-[48px]">
+          <div
+            key={hour}
+            className="grid border-b border-blue-100/50 min-h-[48px]"
+            style={{ gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)' }}
+          >
             {/* Time Label */}
-            <div className="p-1 text-xs text-gray-400 text-right pr-2 border-r border-blue-100/50">
+            <div className="p-0.5 sm:p-1 text-[11px] sm:text-xs text-gray-400 text-right pr-1 sm:pr-2 border-r border-blue-100/50 whitespace-nowrap">
               {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
             </div>
 
