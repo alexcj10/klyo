@@ -265,7 +265,7 @@ function App() {
 
   // --------- MAIN APP UI ---------
   return (
-    <div className="h-[100dvh] w-full bg-transparent flex flex-col overflow-hidden fixed inset-0">
+    <div className="h-[100dvh] w-full bg-gray-50 flex flex-col overflow-hidden fixed inset-0">
       <Header
         onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         onToggleDesktopSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -280,7 +280,7 @@ function App() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
-        className="flex-1 flex overflow-y-auto relative min-h-0 bg-gray-50"
+        className="flex-1 flex overflow-y-auto relative min-h-0"
       >
         <div
           className={`flex-1 min-w-0 p-4 lg:p-6 transition-all duration-300 ${isSidebarOpen ? 'lg:mr-80 xl:mr-96' : 'lg:mr-0'
