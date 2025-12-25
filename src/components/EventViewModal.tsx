@@ -159,7 +159,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
                 style={{ backgroundColor: event.color }}
               ></div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 leading-tight">
+                <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 leading-tight break-words pr-8">
                   {event.title}
                 </h2>
                 <div className="space-y-1 text-sm text-gray-600">
