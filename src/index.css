@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+  background-color: #111827;
+  /* gray-900 */
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior-y: none;
+}
+
 /* Global Scrollbar Overrides */
 *::-webkit-scrollbar {
   width: 6px !important;
@@ -15,7 +26,8 @@
 *::-webkit-scrollbar-thumb {
   background-color: #cbd5e1 !important;
   border-radius: 10px !important;
-  border: 2px solid transparent !important; /* Adds padding effect */
+  border: 2px solid transparent !important;
+  /* Adds padding effect */
   background-clip: content-box !important;
 }
 
@@ -27,41 +39,47 @@
   .animate-fade-in {
     animation: fadeIn 0.5s ease-in-out;
   }
-  
+
   .custom-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #d1d5db #f9fafb;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-track {
     background: #f9fafb;
     border-radius: 4px;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, #8b5cf6, #06b6d4);
     border-radius: 4px;
     transition: background 0.2s ease;
   }
-  
+
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #7c3aed, #0891b2);
   }
-  
+
   .scrollbar-hide {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
