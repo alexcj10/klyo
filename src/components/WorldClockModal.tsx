@@ -140,7 +140,7 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                         initial={{ scale: 0.95, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                        className="relative w-[94%] sm:w-full max-w-[340px] sm:max-w-lg max-h-[65vh] sm:max-h-[90vh] md:max-h-[75vh] lg:max-h-[85vh] xl:max-h-[90vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col"
+                        className="relative w-[94%] sm:w-full max-w-[340px] sm:max-w-lg max-h-[65vh] sm:max-h-[90vh] md:max-h-[75vh] lg:max-h-[85vh] xl:max-h-[80vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-gray-100 flex flex-col"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}

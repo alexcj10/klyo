@@ -31,7 +31,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`w-[94%] sm:w-full ${hasData ? 'max-w-[340px] sm:max-w-[95%] md:max-w-[85%] lg:max-w-[85%] xl:max-w-6xl' : 'max-w-[340px] sm:max-w-lg'} max-h-[70vh] sm:max-h-[90vh] md:max-h-[80vh] lg:max-h-[85vh] xl:max-h-[90vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden`}
+            className={`w-[94%] sm:w-full ${hasData ? 'max-w-[340px] sm:max-w-[95%] md:max-w-[85%] lg:max-w-[85%] xl:max-w-5xl' : 'max-w-[340px] sm:max-w-lg'} max-h-[70vh] sm:max-h-[90vh] md:max-h-[80vh] lg:max-h-[85vh] xl:max-h-[85vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header - Compact */}
