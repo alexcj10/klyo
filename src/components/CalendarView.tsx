@@ -287,11 +287,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       </div>
 
       {/* Time Grid */}
-      <div className="flex-1">
+      <div className="flex-1 flex flex-col">
         {hours.map((hour) => (
           <div
             key={hour}
-            className="grid border-b border-blue-100/50 min-h-[48px]"
+            className="grid border-b border-blue-100/50 min-h-[48px] flex-1"
             style={{ gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)' }}
           >
             {/* Time Label */}
