@@ -260,7 +260,7 @@ function App() {
 
   // --------- MAIN APP UI ---------
   return (
-    <div className="h-screen w-full bg-gray-50 flex flex-col overflow-hidden fixed inset-0">
+    <div className="h-[100dvh] w-full bg-gray-50 flex flex-col overflow-hidden fixed inset-0">
       <Header
         onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         onToggleDesktopSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
