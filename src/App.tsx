@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
+import { isSameDay } from 'date-fns';
 import Header from './components/Header';
 import CalendarView from './components/CalendarView';
 import TaskSidebar from './components/TaskSidebar';
@@ -99,40 +100,30 @@ function App() {
   const handleEventNavigation = (direction: 'prev' | 'next') => {
     if (!viewEvent) return;
 
-    // Get events from the same month as the current viewed event
+    // Get events from the same day as the current viewed event
     const currentEventDate = viewEvent.date;
-    const currentMonth = currentEventDate.getMonth();
-    const currentYear = currentEventDate.getFullYear();
 
-    const monthEvents = filteredEvents
-      .filter(event =>
-        event.date.getMonth() === currentMonth &&
-        event.date.getFullYear() === currentYear
-      )
+    const dayEvents = filteredEvents
+      .filter(event => isSameDay(event.date, currentEventDate))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-    const currentIndex = monthEvents.findIndex(e => e.id === viewEvent.id);
+    const currentIndex = dayEvents.findIndex(e => e.id === viewEvent.id);
 
     if (direction === 'prev' && currentIndex > 0) {
-      setViewEvent(monthEvents[currentIndex - 1]);
-    } else if (direction === 'next' && currentIndex < monthEvents.length - 1) {
-      setViewEvent(monthEvents[currentIndex + 1]);
+      setViewEvent(dayEvents[currentIndex - 1]);
+    } else if (direction === 'next' && currentIndex < dayEvents.length - 1) {
+      setViewEvent(dayEvents[currentIndex + 1]);
     }
   };
 
-  // Get current month events for navigation
-  const getCurrentMonthEvents = () => {
+  // Get current day events for navigation
+  const getEventsForDay = () => {
     if (!viewEvent) return [];
 
     const currentEventDate = viewEvent.date;
-    const currentMonth = currentEventDate.getMonth();
-    const currentYear = currentEventDate.getFullYear();
 
     return filteredEvents
-      .filter(event =>
-        event.date.getMonth() === currentMonth &&
-        event.date.getFullYear() === currentYear
-      )
+      .filter(event => isSameDay(event.date, currentEventDate))
       .sort((a, b) => a.date.getTime() - b.date.getTime());
   };
 
@@ -388,7 +379,7 @@ function App() {
         event={viewEvent}
         onEdit={handleEventClick}
         onDelete={(event) => handleEventDelete(event.id)}
-        allEvents={getCurrentMonthEvents()}
+        allEvents={getEventsForDay()}
         onNavigate={handleEventNavigation}
       />
 
