@@ -71,12 +71,24 @@ const EventModal: React.FC<EventModalProps> = ({
       const minutes = initialDate.getMinutes();
       const isMidnight = hours === 0 && minutes === 0;
 
-      // If specific time was clicked, trust it even if it's midnight.
-      // If general date click (midnight), default to 9 AM.
-      const shouldDefaultToNine = isMidnight && !isTimeSpecific;
+      let startH: number;
+      let startM: number;
 
-      const startH = shouldDefaultToNine ? 9 : hours;
-      const startM = shouldDefaultToNine ? 0 : minutes;
+      if (isTimeSpecific) {
+        // Case 1: Week View specific slot click. Trust the time (even if 00:00).
+        startH = hours;
+        startM = minutes;
+      } else if (isMidnight) {
+        // Case 2: Month View Date click (defaults to 00:00).
+        // User wants CURRENT TIME, not 9 AM.
+        const now = new Date();
+        startH = now.getHours();
+        startM = now.getMinutes();
+      } else {
+        // Case 3: + Button click (already has new Date() with current time).
+        startH = hours;
+        startM = minutes;
+      }
 
       const startTime = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
       const endH = (startH + 1) % 24;
