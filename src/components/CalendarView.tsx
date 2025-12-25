@@ -314,7 +314,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                     const clickedDateTime = setMinutes(setHours(date, hour), 0);
                     onDateClick(clickedDateTime, true);
                   }}
-                  className="border-r border-gray-100 last:border-r-0 p-0.5 hover:bg-blue-50/30 cursor-pointer transition-colors relative"
+                  className="border-r border-gray-100 last:border-r-0 p-0.5 hover:bg-blue-50/30 cursor-pointer transition-colors relative min-w-0 overflow-hidden"
                 >
                   {dayEvents.map((event) => (
                     <div
