@@ -31,7 +31,7 @@ interface CalendarViewProps {
   events: Event[];
   onEventClick: (event: Event) => void;
   onEventView: (event: Event) => void;
-  onDateClick: (date: Date) => void;
+  onDateClick: (date: Date, isTimeSpecific?: boolean) => void;
   onAddEvent: () => void;
   onDayViewOpen: (date: Date) => void;
   onEventDelete: (event: Event) => void;
@@ -183,7 +183,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: index * 0.005 }}
-              onClick={() => onDateClick(date)}
+              onClick={() => onDateClick(date, false)}
               className={`
                 p-1 sm:p-2 border-r border-b border-blue-100/50 last:border-r-0 flex flex-col min-h-0 overflow-hidden
                 ${!isCurrentMonth ? 'bg-gray-50/50' : 'bg-white'}
@@ -312,7 +312,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   key={`${date.toISOString()}-${hour}`}
                   onClick={() => {
                     const clickedDateTime = setMinutes(setHours(date, hour), 0);
-                    onDateClick(clickedDateTime);
+                    onDateClick(clickedDateTime, true);
                   }}
                   className="border-r border-gray-100 last:border-r-0 p-0.5 hover:bg-blue-50/30 cursor-pointer transition-colors relative"
                 >

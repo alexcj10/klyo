@@ -11,6 +11,7 @@ interface EventModalProps {
   onDelete?: (eventId: string) => void;
   event?: Event;
   selectedDate?: Date;
+  isTimeSpecific?: boolean;
   events?: Event[];
   deleteConfirmEvent?: Event | null;
   onDeleteWithConfirm?: (event: Event) => void;
@@ -25,6 +26,7 @@ const EventModal: React.FC<EventModalProps> = ({
   onDelete,
   event,
   selectedDate,
+  isTimeSpecific = false,
   events = [],
   deleteConfirmEvent,
   onDeleteWithConfirm,
@@ -69,8 +71,12 @@ const EventModal: React.FC<EventModalProps> = ({
       const minutes = initialDate.getMinutes();
       const isMidnight = hours === 0 && minutes === 0;
 
-      const startH = isMidnight ? 9 : hours;
-      const startM = isMidnight ? 0 : minutes;
+      // If specific time was clicked, trust it even if it's midnight.
+      // If general date click (midnight), default to 9 AM.
+      const shouldDefaultToNine = isMidnight && !isTimeSpecific;
+
+      const startH = shouldDefaultToNine ? 9 : hours;
+      const startM = shouldDefaultToNine ? 0 : minutes;
 
       const startTime = `${String(startH).padStart(2, '0')}:${String(startM).padStart(2, '0')}`;
       const endH = (startH + 1) % 24;
@@ -96,7 +102,7 @@ const EventModal: React.FC<EventModalProps> = ({
     if (isOpen) {
       setFormData(getInitialFormData());
     }
-  }, [isOpen, event, selectedDate]);
+  }, [isOpen, event, selectedDate, isTimeSpecific]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

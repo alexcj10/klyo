@@ -24,6 +24,7 @@ function App() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [viewEvent, setViewEvent] = useState<Event | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isTimeSpecific, setIsTimeSpecific] = useState(false);
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [isEventViewModalOpen, setIsEventViewModalOpen] = useState(false);
   const [isDayViewModalOpen, setIsDayViewModalOpen] = useState(false);
@@ -135,8 +136,9 @@ function App() {
       .sort((a, b) => a.date.getTime() - b.date.getTime());
   };
 
-  const handleDateClick = (date: Date) => {
+  const handleDateClick = (date: Date, timeSpecific = false) => {
     setSelectedDate(date);
+    setIsTimeSpecific(timeSpecific);
     setSelectedEvent(null);
     setIsEventModalOpen(true);
   };
@@ -144,6 +146,7 @@ function App() {
   const handleAddEvent = () => {
     setSelectedEvent(null);
     setSelectedDate(new Date());
+    setIsTimeSpecific(false);
     setIsEventModalOpen(true);
   };
 
@@ -219,7 +222,9 @@ function App() {
     setDeleteConfirmEvent(null);
     setSelectedEvent(null);
     setViewEvent(null);
+    setViewEvent(null);
     setSelectedDate(null);
+    setIsTimeSpecific(false);
   };
 
   const handleDayViewModalClose = () => {
@@ -369,6 +374,7 @@ function App() {
         onDelete={handleEventDelete}
         event={selectedEvent || undefined}
         selectedDate={selectedDate || undefined}
+        isTimeSpecific={isTimeSpecific}
         events={events}
         deleteConfirmEvent={deleteConfirmEvent}
         onDeleteWithConfirm={handleDeleteWithConfirm}
