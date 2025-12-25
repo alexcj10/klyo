@@ -75,6 +75,25 @@ npm install
 npm run dev
 ```
 
+### Running with Docker 🐳
+
+Pull and run the pre-built Docker image:
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/alexcj10/klyo:latest
+
+# Run with your Groq API key
+docker run -d -p 8080:80 \
+  -e VITE_GROQ_KEY=your_groq_api_key_here \
+  --name klyo-app \
+  ghcr.io/alexcj10/klyo:latest
+```
+
+**Note**: Replace `your_groq_api_key_here` with your actual Groq API key. Get one at [console.groq.com](https://console.groq.com).
+
+Access the app at: `http://localhost:8080`
+
 ---
 
 ## 📂 Architecture
