@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-<img width="1920" height="1080" alt="227shots_so" src="https://github.com/user-attachments/assets/deddf3d8-4e1a-45bd-87b0-a5b34aec07cb" />
+<img width="1920" height="1080" alt="Klyo" src="https://github.com/user-attachments/assets/dcc2383e-706a-45f7-9872-2854cdb97e11" />
 </p>
 
 <p align="center">
