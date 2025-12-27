@@ -34,6 +34,11 @@ A fluid, interactive calendar that supports multiple views (Month, Day, Analytic
 ### 📊 Intelligent Analytics
 Visualize your productivity. Track your performance, category distributions, and completion rates with our built-in analytics suite.
 
+### 🌍 World Clock (Global Explorer)
+*   **1000+ Cities**: Track time across the globe with our new World Clock feature, supporting over 1000+ cities.
+*   **Real-Time Local States**: Stay in sync with international teams and friends by viewing the exact local time and state for any city instantly.
+*   **Quick Search**: Easily search for any location to add to your personal global dashboard.
+
 ### 📋 Unified Task Sidebar
 A persistence-enabled manager for your to-dos, allowing you to prioritize and execute without leaving your main workspace.
 
