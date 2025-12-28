@@ -132,6 +132,6 @@ We love professional collaboration! 🥂
 ---
 
 <p align="center">
-  Built with ❤️ by the Klyo Team.<br/>
+  Built with ❤️ by Alex (<a href="https://github.com/alexcj10">@alexcj10</a>).<br/>
   <em>"Plan. Prioritize. Progress."</em>
 </p>
