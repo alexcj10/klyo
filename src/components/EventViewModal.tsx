@@ -25,7 +25,38 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
 }) => {
   const [showDeleteConfirm, setShowDeleteConfirm] = React.useState(false);
 
+  // Swipe gesture detection for mobile/tablet
+  const [touchStart, setTouchStart] = React.useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = React.useState<number | null>(null);
+
+  // Minimum swipe distance (in px) to trigger navigation
+  const minSwipeDistance = 50;
+
   if (!isOpen || !event) return null;
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && canNavigateNext) {
+      handleNavigation('next');
+    }
+    if (isRightSwipe && canNavigatePrev) {
+      handleNavigation('prev');
+    }
+  };
 
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -134,6 +165,9 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
           }}
           className="bg-white rounded-xl shadow-xl w-[94%] max-w-[340px] sm:max-w-sm mx-auto overflow-hidden"
           onClick={(e) => e.stopPropagation()}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
         >
           {/* Simple Header */}
           <div className="relative px-3 sm:px-6 py-3 sm:py-6 border-b border-gray-100">
