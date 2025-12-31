@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
+import { X, Calendar, Clock, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Event } from '../types';
 
@@ -92,32 +92,32 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[65] flex items-center justify-center p-3"
         onClick={onClose}
       >
-        {/* Simple Navigation Arrows */}
+        {/* Invisible Touch Zones for Navigation */}
         {onNavigate && allEvents.length > 1 && (
           <>
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (canNavigatePrev) handleNavigation('prev');
-              }}
-              disabled={!canNavigatePrev}
-              className={`absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${canNavigatePrev ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'
-                }`}
-            >
-              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            </motion.button>
+            {/* Left Touch Zone - 40% of screen width */}
+            {canNavigatePrev && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNavigation('prev');
+                }}
+                className="absolute left-0 top-0 bottom-0 w-[40%] z-10 cursor-pointer active:bg-white/5"
+                aria-label="Previous event"
+              />
+            )}
 
-            <motion.button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (canNavigateNext) handleNavigation('next');
-              }}
-              disabled={!canNavigateNext}
-              className={`absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 z-10 w-8 h-8 sm:w-12 sm:h-12 bg-white rounded-full shadow-lg flex items-center justify-center transition-all duration-200 ${canNavigateNext ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-300 cursor-not-allowed'
-                }`}
-            >
-              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-            </motion.button>
+            {/* Right Touch Zone - 40% of screen width */}
+            {canNavigateNext && (
+              <div
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNavigation('next');
+                }}
+                className="absolute right-0 top-0 bottom-0 w-[40%] z-10 cursor-pointer active:bg-white/5"
+                aria-label="Next event"
+              />
+            )}
           </>
         )}
 
