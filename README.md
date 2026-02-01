@@ -17,34 +17,34 @@
 
 ---
 
-## 🌟 The Klyo Experience
+## The Klyo Experience
 
 Klyo isn't just a calendar; it's a unified environment designed to reduce cognitive load and keep you in the flow.
 
-### 🐊 Mr. Crock RAG AI
+### Mr. Crock RAG AI
 Meet your new executive assistant. Mr. Crock isn't a standard chatbot—he's powered by a **Hybrid Retrieval-Augmented Generation (RAG)** engine.
 *   **Context Aware**: He knows your schedule better than you do.
 *   **Smart Filtering**: He distinguishes between past, present, and future events with strict temporal logic.
 *   **Blazing Fast**: Integrated with **Groq llama-3.3-70b** for near-instant responses.
 *   **Witty & Adaptable**: Whether you need a serious briefing or a witty joke, Mr. Crock adapts his tone to yours.
 
-### 📅 Dynamic Calendar View
+### Dynamic Calendar View
 A fluid, interactive calendar that supports multiple views (Month, Day, Analytics) and features smooth transitions powered by Framer Motion.
 
-### 📊 Intelligent Analytics
+### Intelligent Analytics
 Visualize your productivity. Track your performance, category distributions, and completion rates with our built-in analytics suite.
 
-### 🌍 World Clock (Global Explorer)
+### World Clock (Global Explorer)
 *   **1000+ Cities**: Track time across the globe with our new World Clock feature, supporting over 1000+ cities.
 *   **Real-Time Local States**: Stay in sync with international teams and friends by viewing the exact local time and state for any city instantly.
 *   **Quick Search**: Easily search for any location to add to your personal global dashboard.
 
-### 📋 Unified Task Sidebar
+### Unified Task Sidebar
 A persistence-enabled manager for your to-dos, allowing you to prioritize and execute without leaving your main workspace.
 
 ---
 
-## 🛠️ Technical Excellence
+## Technical Excellence
 
 Klyo is built on a modern, high-performance stack:
 
@@ -57,7 +57,7 @@ Klyo is built on a modern, high-performance stack:
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 Experience Klyo locally in minutes.
 
@@ -80,7 +80,7 @@ npm install
 npm run dev
 ```
 
-### Running with Docker 🐳
+### Running with Docker 
 
 Pull and run the pre-built Docker image:
 
@@ -101,24 +101,24 @@ Access the app at: `http://localhost:8080`
 
 ---
 
-## 📂 Architecture
+## Architecture
 
 ```
 klyo/
-├── 📁 src/
-│   ├── 🧩 components/   → Modular React components (Calendar, Mr. Crock, Sidebar)
-│   ├── 🛠️ utils/        → The RAG engine, similarity logic, and date helpers
-│   ├── 📊 data/         → Data schemas and initial mock states
-│   ├── 🪝 hooks/        → Advanced state management & persistence
-│   └── 🎯 types/        → Strict TypeScript definitions
-└── 📋 project_config/  → Vite, Tailwind, and Environment setups
+├── src/
+│   ├── components/   → Modular React components (Calendar, Mr. Crock, Sidebar)
+│   ├── utils/        → The RAG engine, similarity logic, and date helpers
+│   ├── data/         → Data schemas and initial mock states
+│   ├── hooks/        → Advanced state management & persistence
+│   └── types/        → Strict TypeScript definitions
+└── project_config/  → Vite, Tailwind, and Environment setups
 ```
 
 ---
 
-## 🤝 Contribution Guide
+## Contribution Guide
 
-We love professional collaboration! 🥂
+We love professional collaboration! 
 
 1.  **Fork** the repository and create your feature branch.
 2.  **Code** with high standards: Clean, Type-Safe, and Documented.
