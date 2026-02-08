@@ -10,9 +10,9 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Powered%20By-Groq-orange?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/Stack-React%20%2B%20TypeScript-blue?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/UI-Tailwind%20%2B%20Framer-fuchsia?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Powered%20By-Groq-orange?style=flat" />
+  <img src="https://img.shields.io/badge/Stack-React%20%2B%20TypeScript-blue?style=flat" />
+  <img src="https://img.shields.io/badge/UI-Tailwind%20%2B%20Framer-fuchsia?style=flat" />
 </p>
 
 ---
