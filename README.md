@@ -38,6 +38,12 @@ A fluid, interactive calendar with multiple views designed for peak organization
 ### Intelligent Analytics
 Visualize your productivity. Track your performance, category distributions, and completion rates with our built-in analytics suite.
 
+### Productivity Mood Tracking
+Add emotional and behavioral context to your productivity workflow.
+*   **Intuition Tagging**: Native mood selectors (🧠 Focus, ⚡ Stress, 🍀 Easy, 🔋 Exhaust) for every event and task.
+*   **Burnout Analysis**: Smart analytics that calculate burnout risk based on your emotional data.
+*   **Mood-Aware AI**: Mr. Crock leverages your mood history to provide personalized encouragement and productivity warnings.
+
 ### World Clock (Global Explorer)
 *   **1000+ Cities**: Track time across the globe with our new World Clock feature, supporting over 1000+ cities.
 *   **Real-Time Local States**: Stay in sync with international teams and friends by viewing the exact local time and state for any city instantly.
