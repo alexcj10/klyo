@@ -31,12 +31,17 @@ Meet your new executive assistant. Mr. Crock isn't a standard chatbot—he's pow
 ### Dynamic Calendar View
 A fluid, interactive calendar with multiple views designed for peak organization:
 *   **Month, Week, & Year Views**: Seamlessly toggle between granular schedules and high-level overviews.
-*   **GitHub-Style Heatmap**: Visualize your productivity at a glance. The new Yearly View features a dynamic blue heatmap representing event density.
 *   **Smooth Transitions**: Fully responsive layouts with fluid animations powered by Framer Motion.
 *   **Deep Navigation**: Click any day in the Year or Month view to drill down instantly.
 
-### Intelligent Analytics
-Visualize your productivity. Track your performance, category distributions, and completion rates with our built-in analytics suite.
+### Intelligent Analytics & Visualization
+Visualize your productivity with high-fidelity tools.
+*   **GitHub-Style Heatmap**: An advanced yearly analysis engine.
+    *   **Interactive History**: Automatically detects your earliest activity to build a complete chronological history.
+    *   **Adaptive Year Selector**: Smart, horizontally scrollable year pills that adapt to your screen—cleanly contained on mobile, expansive on desktop.
+    *   **Pro-Level Scaling**: Large activity counts are elegantly formatted (e.g., `1.5k`, `10M`) for a professional aesthetic.
+    *   **Integrated Layout**: A compact, pixel-perfect design with visible interaction rings.
+*   **Performance Metrics**: Track your completion rates and category distributions with our built-in metrics suite.
 
 ### Productivity Mood Tracking
 Add emotional and behavioral context to your productivity workflow.
