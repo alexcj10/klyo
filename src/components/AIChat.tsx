@@ -365,18 +365,24 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
 
                                             {/* Input */}
                                             <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100 z-10">
-                                                <div className="relative flex items-center">
-                                                    <input
-                                                        type="text"
+                                                <div className="relative flex items-end">
+                                                    <textarea
                                                         value={inputValue}
                                                         onChange={(e) => setInputValue(e.target.value)}
+                                                        onKeyDown={(e) => {
+                                                            if (e.key === 'Enter' && !e.shiftKey) {
+                                                                e.preventDefault();
+                                                                handleSubmit(e);
+                                                            }
+                                                        }}
                                                         placeholder="Ask about your schedule..."
-                                                        className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all border border-slate-200 focus:border-blue-300"
+                                                        rows={1}
+                                                        className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all border border-slate-200 focus:border-blue-300 resize-none min-h-[46px] max-h-32 overflow-y-auto"
                                                     />
                                                     <button
                                                         type="submit"
                                                         disabled={!inputValue.trim() || isLoading}
-                                                        className="absolute right-2 p-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
+                                                        className="absolute right-2 bottom-1.5 p-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
                                                     >
                                                         <Send className="w-4 h-4" />
                                                     </button>
