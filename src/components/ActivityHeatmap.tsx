@@ -144,10 +144,10 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                 </div>
 
                 <div
-                    className="overflow-x-auto pb-2 scrollbar-hide"
+                    className="overflow-x-auto pb-1 scrollbar-hide"
                     onMouseLeave={() => setSelectedDayInfo(getDayInfo(today))}
                 >
-                    <div className="grid grid-flow-col grid-rows-7 gap-1.5 min-w-max">
+                    <div className="grid grid-flow-col grid-rows-7 gap-1.5 min-w-max p-1">
                         {yearlyDays.map((day, i) => {
                             const count = activityMap[day.toDateString()] || 0;
                             const info = getDayInfo(day);
