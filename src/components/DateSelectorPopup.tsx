@@ -54,15 +54,15 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                         className="relative bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden w-full max-w-[320px]"
                     >
                         {/* Header */}
-                        <div className="px-5 py-4 border-b border-blue-50 flex items-center justify-between bg-blue-50/50">
-                            <h3 className="font-bold text-gray-900 text-sm">
+                        <div className="px-5 py-2.5 border-b border-blue-50 flex items-center justify-between bg-blue-50/50">
+                            <h3 className="font-bold text-gray-800 text-[11px] uppercase tracking-wider">
                                 {viewMode === 'year' ? 'Select Year' : 'Select Month'}
                             </h3>
                             <button
                                 onClick={onClose}
-                                className="p-1.5 hover:bg-white hover:shadow-sm rounded-xl transition-all"
+                                className="p-1 hover:bg-white hover:shadow-sm rounded-lg transition-all"
                             >
-                                <X className="w-5 h-5 text-gray-400" />
+                                <X className="w-4 h-4 text-gray-400" />
                             </button>
                         </div>
 
