@@ -104,7 +104,7 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                                             className={`
                         py-3 rounded-2xl text-sm font-semibold transition-all
                         ${year === getYear(currentDate)
-                                                    ? 'bg-blue-500 text-white shadow-lg shadow-blue-200'
+                                                    ? 'bg-blue-500 text-white shadow-sm'
                                                     : 'bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50'
                                                 }
                       `}
@@ -129,7 +129,7 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                                                 className={`
                           py-3 rounded-2xl text-sm font-semibold transition-all
                           ${isSelected
-                                                        ? 'bg-blue-500 text-white shadow-lg shadow-blue-200'
+                                                        ? 'bg-blue-500 text-white shadow-sm'
                                                         : 'bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50'
                                                     }
                         `}
