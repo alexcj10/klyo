@@ -374,9 +374,15 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
 
     return (
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-2 sm:p-4">
-        {/* 12-Month Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 sm:p-5 lg:p-6 flex flex-col">
+        {/* 12-Month Grid — stretches to fill available space */}
+        <div
+          className={`grid gap-4 sm:gap-5 lg:gap-6 flex-1 ${isSidebarOpen
+              ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'
+              : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+            }`}
+          style={{ gridAutoRows: '1fr' }}
+        >
           {months.map((monthDate, monthIndex) => {
             const mStart = startOfMonth(monthDate);
             const mEnd = endOfMonth(monthDate);
@@ -390,7 +396,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: monthIndex * 0.03 }}
-                className="bg-white rounded-xl border border-gray-100 shadow-sm p-2 sm:p-3 hover:shadow-md transition-shadow"
+                className="bg-gradient-to-br from-white to-blue-50/30 rounded-xl border border-blue-100/60 shadow-sm p-3 sm:p-4 hover:shadow-lg hover:border-blue-200/80 transition-all duration-200 flex flex-col"
               >
                 {/* Month Name */}
                 <button
@@ -398,22 +404,22 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                     setCurrentDate(monthDate);
                     setViewMode('month');
                   }}
-                  className="text-xs sm:text-sm font-bold text-gray-800 mb-1.5 sm:mb-2 hover:text-blue-600 transition-colors cursor-pointer w-full text-left"
+                  className="text-sm sm:text-base font-bold text-gray-800 mb-2 sm:mb-3 hover:text-blue-600 transition-colors cursor-pointer w-full text-left flex-shrink-0"
                 >
                   {format(monthDate, 'MMMM')}
                 </button>
 
                 {/* Day Headers */}
-                <div className="grid grid-cols-7 mb-0.5">
+                <div className="grid grid-cols-7 mb-1 sm:mb-1.5 flex-shrink-0">
                   {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                    <div key={i} className="text-center text-[8px] sm:text-[9px] font-semibold text-gray-400 uppercase">
+                    <div key={i} className="text-center text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase">
                       {day}
                     </div>
                   ))}
                 </div>
 
-                {/* Day Grid with Heatmap */}
-                <div className="grid grid-cols-7 gap-[1px] sm:gap-[2px]">
+                {/* Day Grid with Heatmap — grows to fill card */}
+                <div className="grid grid-cols-7 gap-[2px] sm:gap-1 flex-1 content-start">
                   {days.map((date, dayIndex) => {
                     const inMonth = isSameMonth(date, monthDate);
                     const eventCount = inMonth ? getEventsForDate(date).length : 0;
@@ -429,12 +435,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                           }
                         }}
                         className={`
-                          w-full aspect-square rounded-[3px] sm:rounded text-[7px] sm:text-[9px] font-medium flex items-center justify-center transition-all
+                          w-full aspect-square rounded sm:rounded-md text-[8px] sm:text-[10px] lg:text-[11px] font-medium flex items-center justify-center transition-all
                           ${!inMonth
                             ? 'opacity-0 pointer-events-none'
-                            : `${getHeatmapColor(eventCount)} ${isTodayDate ? 'ring-1 ring-blue-600 ring-offset-1' : ''} hover:opacity-80 cursor-pointer`
+                            : `${getHeatmapColor(eventCount)} ${isTodayDate ? 'ring-2 ring-blue-600 ring-offset-1' : ''} hover:opacity-80 hover:scale-110 cursor-pointer`
                           }
-                          ${eventCount > 0 && inMonth ? 'text-white' : 'text-gray-500'}
+                          ${eventCount > 0 && inMonth ? 'text-white font-semibold' : 'text-gray-500'}
                         `}
                         title={inMonth ? `${format(date, 'MMM d')} - ${eventCount} event${eventCount !== 1 ? 's' : ''}` : ''}
                       >
@@ -449,20 +455,22 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         </div>
 
         {/* Heatmap Legend */}
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6 pb-2">
+        <div className="flex items-center justify-center gap-2 sm:gap-2.5 mt-5 sm:mt-8 pb-3 flex-shrink-0">
           <span className="text-[10px] sm:text-xs text-gray-500 font-medium">Less</span>
           {[0, 1, 2, 3, 4, 5].map((level) => (
             <div
               key={level}
-              className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${getHeatmapColor(level)}`}
+              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-sm ${getHeatmapColor(level)}`}
               title={level === 0 ? '0 events' : level === 5 ? '5+ events' : `${level} event${level !== 1 ? 's' : ''}`}
             />
           ))}
           <span className="text-[10px] sm:text-xs text-gray-500 font-medium">More</span>
         </div>
       </div>
+
     );
   };
+
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-blue-200/60 overflow-hidden h-full flex flex-col relative">
