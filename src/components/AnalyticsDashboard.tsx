@@ -23,6 +23,8 @@ import { CheckCircle, Clock, TrendingUp, BarChart3, PieChart as PieChartIcon, Ta
 import { Event, Task } from '../types';
 import { format, startOfWeek, endOfWeek, eachDayOfInterval, isWithinInterval } from 'date-fns';
 
+import ActivityHeatmap from './ActivityHeatmap';
+
 interface AnalyticsDashboardProps {
   events: Event[];
   tasks: Task[];
@@ -73,7 +75,7 @@ const COLORS = {
 };
 
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, onAddEvent, onAddTask }) => {
-  const [selectedView, setSelectedView] = useState<'overview' | 'detailed'>('overview');
+  const [selectedView, setSelectedView] = useState<'overview' | 'detailed' | 'activity'>('overview');
 
   // Calculate advanced analytics data with real-time sync and empty state handling
   const analytics = useMemo(() => {
@@ -283,7 +285,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
 
   const ViewToggle: React.FC = () => (
     <div className="flex bg-gray-100 rounded-xl p-1 mb-6">
-      {(['overview', 'detailed'] as const).map((view) => (
+      {(['overview', 'detailed', 'activity'] as const).map((view) => (
         <button
           key={view}
           onClick={() => setSelectedView(view)}
@@ -553,7 +555,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               </div>
             </motion.div>
           </motion.div>
-        ) : (
+        ) : selectedView === 'detailed' ? (
           <motion.div
             key="detailed"
             initial={{ opacity: 0, y: 20 }}
@@ -561,7 +563,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
             exit={{ opacity: 0, y: -20 }}
             className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 lg:gap-6"
           >
-            {/* Time Distribution */}
+            {/* ... existing detailed view content ... */}
             <motion.div
               whileHover={{ scale: 1.01 }}
               className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
@@ -662,6 +664,16 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                 </AreaChart>
               </ResponsiveContainer>
             </motion.div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="activity"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="w-full"
+          >
+            <ActivityHeatmap events={events} tasks={tasks} />
           </motion.div>
         )}
       </AnimatePresence>
