@@ -35,6 +35,10 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
         return map;
     }, [events, tasks]);
 
+    const totalYearlyActivities = useMemo(() => {
+        return yearlyDays.reduce((acc, day) => acc + (activityMap[day.toDateString()] || 0), 0);
+    }, [yearlyDays, activityMap]);
+
     const getColorClass = (count: number) => {
         if (count === 0) return 'bg-gray-100';
         if (count <= 2) return 'bg-blue-200 text-blue-800';
@@ -49,7 +53,12 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                     <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                        <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full">
+                                {totalYearlyActivities} Total
+                            </span>
+                        </div>
                         <p className="text-xs text-gray-500">Your productivity "commits" for {format(today, 'yyyy')}</p>
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
