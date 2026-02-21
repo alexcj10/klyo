@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { format, eachDayOfInterval, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { format, eachDayOfInterval, startOfYear, endOfYear, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { Event, Task } from '../types';
 
 interface ActivityHeatmapProps {
@@ -9,12 +9,12 @@ interface ActivityHeatmapProps {
 }
 
 const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
-    // Get last 365 days for the yearly view
+    // Get current calendar year days
     const today = new Date();
     const yearlyDays = useMemo(() => {
         return eachDayOfInterval({
-            start: subDays(today, 364),
-            end: today
+            start: startOfYear(today),
+            end: endOfYear(today)
         });
     }, [today]);
 
@@ -36,7 +36,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
     }, [events, tasks]);
 
     const getColorClass = (count: number) => {
-        if (count === 0) return 'bg-gray-100 dark:bg-slate-800';
+        if (count === 0) return 'bg-gray-100';
         if (count <= 2) return 'bg-blue-200 text-blue-800';
         if (count <= 4) return 'bg-blue-400 text-white';
         if (count <= 6) return 'bg-blue-600 text-white';
@@ -50,7 +50,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                 <div className="flex items-center justify-between mb-6">
                     <div>
                         <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
-                        <p className="text-xs text-gray-500">Your productivity "commits" over the last 365 days</p>
+                        <p className="text-xs text-gray-500">Your productivity "commits" for {format(today, 'yyyy')}</p>
                     </div>
                     <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
                         <span>Less</span>
