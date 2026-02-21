@@ -29,7 +29,11 @@ Meet your new executive assistant. Mr. Crock isn't a standard chatbot—he's pow
 *   **Witty & Adaptable**: Whether you need a serious briefing or a witty joke, Mr. Crock adapts his tone to yours.
 
 ### Dynamic Calendar View
-A fluid, interactive calendar that supports multiple views (Month, Day, Analytics) and features smooth transitions powered by Framer Motion.
+A fluid, interactive calendar with multiple views designed for peak organization:
+*   **Month, Week, & Year Views**: Seamlessly toggle between granular schedules and high-level overviews.
+*   **GitHub-Style Heatmap**: Visualize your productivity at a glance. The new Yearly View features a dynamic blue heatmap representing event density.
+*   **Smooth Transitions**: Fully responsive layouts with fluid animations powered by Framer Motion.
+*   **Deep Navigation**: Click any day in the Year or Month view to drill down instantly.
 
 ### Intelligent Analytics
 Visualize your productivity. Track your performance, category distributions, and completion rates with our built-in analytics suite.
