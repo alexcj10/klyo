@@ -50,6 +50,14 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     }, [messages, isOpen, showHistory]);
 
     useEffect(() => {
+        if (!isOpen) {
+            setShowHistory(false);
+            setEditingSessionId(null);
+            setDeletingSessionId(null);
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
         if (isOpen) {
             document.documentElement.style.overflow = 'hidden';
             document.body.style.overflow = 'hidden';
