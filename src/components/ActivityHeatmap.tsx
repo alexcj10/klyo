@@ -25,7 +25,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
     const availableYears = useMemo(() => {
         const currentYear = today.getFullYear();
         const years = [];
-        for (let y = currentYear; y >= startYear; y--) {
+        for (let y = startYear; y <= currentYear; y++) {
             years.push(y);
         }
         return years;
@@ -92,8 +92,8 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                                         key={year}
                                         onClick={() => setSelectedYear(year)}
                                         className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap shrink-0 ${selectedYear === year
-                                                ? 'bg-blue-600 text-white shadow-sm'
-                                                : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                            ? 'bg-blue-600 text-white shadow-sm'
+                                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                                             }`}
                                     >
                                         {year}
