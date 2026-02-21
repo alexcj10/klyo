@@ -87,12 +87,12 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
     return (
         <div className="space-y-6">
             {/* Yearly View */}
-            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex flex-col gap-4 mb-3">
+            <div className="bg-white p-3.5 sm:p-4.5 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="flex flex-col gap-2 mb-2">
                     {/* Top Row: Title, Subtitle, Years, and Total */}
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div className="flex flex-col gap-0.5">
-                            <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
+                            <h3 className="text-lg font-bold text-gray-800 tracking-tight">Yearly Activity</h3>
                             <p className="text-[10px] text-gray-400 font-medium tracking-wide">Productivity in {selectedYear}</p>
                         </div>
 
@@ -103,8 +103,8 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                                         key={year}
                                         onClick={() => setSelectedYear(year)}
                                         className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap shrink-0 ${selectedYear === year
-                                                ? 'bg-blue-600 text-white shadow-sm'
-                                                : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                            ? 'bg-blue-600 text-white shadow-sm'
+                                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                                             }`}
                                     >
                                         {year}
@@ -119,7 +119,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                     </div>
 
                     {/* Bottom Row: Interaction Badge and Legend */}
-                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3.5 border-t border-gray-50">
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-2.5 border-t border-gray-50">
                         <motion.div
                             key={selectedDayInfo.date}
                             initial={{ opacity: 0, scale: 0.95 }}
