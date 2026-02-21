@@ -9,14 +9,38 @@ interface ActivityHeatmapProps {
 }
 
 const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
-    // Get current calendar year days
     const today = new Date();
+
+    // Automatic start year detection
+    const startYear = useMemo(() => {
+        const eventDates = events.map(e => e.date.getFullYear());
+        const taskDates = tasks
+            .filter(t => t.completed && t.dueDate)
+            .map(t => t.dueDate!.getFullYear());
+
+        const allYears = [...eventDates, ...taskDates, today.getFullYear()];
+        return Math.min(...allYears);
+    }, [events, tasks, today]);
+
+    const availableYears = useMemo(() => {
+        const currentYear = today.getFullYear();
+        const years = [];
+        for (let y = currentYear; y >= startYear; y--) {
+            years.push(y);
+        }
+        return years;
+    }, [startYear, today]);
+
+    const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+
+    // Get calendar year days for selected year
     const yearlyDays = useMemo(() => {
+        const yearDate = new Date(selectedYear, 0, 1);
         return eachDayOfInterval({
-            start: startOfYear(today),
-            end: endOfYear(today)
+            start: startOfYear(yearDate),
+            end: endOfYear(yearDate)
         });
-    }, [today]);
+    }, [selectedYear]);
 
     // Activity map: date string -> count
     const activityMap = useMemo(() => {
@@ -60,14 +84,23 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                             <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
+                            <select
+                                value={selectedYear}
+                                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+                                className="bg-gray-50 border-none text-blue-600 text-xs font-bold rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                            >
+                                {availableYears.map(year => (
+                                    <option key={year} value={year}>{year}</option>
+                                ))}
+                            </select>
                             <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full">
                                 {totalYearlyActivities} Total
                             </span>
                         </div>
                         <div className="h-4 w-px bg-gray-200 hidden sm:block" />
-                        <p className="text-xs text-gray-500">Productivity in {format(today, 'yyyy')}</p>
+                        <p className="text-xs text-gray-500">Productivity in {selectedYear}</p>
                     </div>
 
                     <div className="flex items-center gap-4">
