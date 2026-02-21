@@ -435,7 +435,6 @@ function App() {
       <AIChat
         events={events}
         tasks={tasks}
-        isSidebarOpen={isActuallySidebarOpen}
         isOpen={isAIChatOpen}
         setIsOpen={setIsAIChatOpen}
       />

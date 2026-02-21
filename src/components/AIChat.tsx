@@ -11,12 +11,11 @@ import { format } from 'date-fns';
 interface AIChatProps {
     events: Event[];
     tasks: Task[];
-    isSidebarOpen?: boolean;
     isOpen?: boolean;
     setIsOpen?: (open: boolean) => void;
 }
 
-export default function AIChat({ events, tasks, isSidebarOpen, isOpen = false, setIsOpen = () => { } }: AIChatProps) {
+export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () => { } }: AIChatProps) {
     const [showHistory, setShowHistory] = useState(false);
     const [inputValue, setInputValue] = useState('');
 
@@ -381,27 +380,6 @@ export default function AIChat({ events, tasks, isSidebarOpen, isOpen = false, s
                             </div>
                         </motion.div>
                     </>
-                )}
-            </AnimatePresence>
-
-            {/* Floating Request Button */}
-            <AnimatePresence>
-                {!isOpen && !isSidebarOpen && (
-                    <motion.button
-                        initial={{ scale: 0, opacity: 0, y: 20 }}
-                        animate={{ scale: 1, opacity: 1, y: 0 }}
-                        exit={{ scale: 0, opacity: 0, y: 20 }}
-                        whileHover={{ scale: 1.1, rotate: 5 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setIsOpen(true)}
-                        className="fixed bottom-6 right-6 z-50 !bg-transparent p-0 border-none outline-none cursor-pointer"
-                    >
-                        <img
-                            src={crockLogo}
-                            alt="Chat with Mr. Crock"
-                            className="w-[44px] h-[44px] sm:w-14 sm:h-14 object-contain drop-shadow-xl"
-                        />
-                    </motion.button>
                 )}
             </AnimatePresence>
         </>

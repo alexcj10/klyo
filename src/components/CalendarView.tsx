@@ -378,8 +378,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         {/* 12-Month Grid — stretches to fill available space */}
         <div
           className={`grid gap-4 sm:gap-5 lg:gap-6 flex-1 ${isSidebarOpen
-              ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'
-              : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+            ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'
+            : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
             }`}
           style={{ gridAutoRows: '1fr' }}
         >
@@ -594,9 +594,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onAddEvent}
-            className="fixed bottom-24 right-6 bg-blue-500 hover:bg-blue-600 text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg hover:shadow-xl transition-all z-30 flex items-center justify-center"
+            className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-600 text-white w-10 h-10 sm:w-11 sm:h-11 rounded-full shadow-lg hover:shadow-xl transition-all z-30 flex items-center justify-center"
           >
-            <Plus className="w-6 h-6" />
+            <Plus className="w-5 h-5" />
           </motion.button>
         )}
       </AnimatePresence>
