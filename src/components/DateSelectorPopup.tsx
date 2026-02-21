@@ -28,6 +28,13 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
 }) => {
     const [selectorYear, setSelectorYear] = useState(getYear(currentDate));
 
+    // Reset selector year when popup opens to match current date
+    React.useEffect(() => {
+        if (isOpen) {
+            setSelectorYear(getYear(currentDate));
+        }
+    }, [isOpen, currentDate]);
+
     const months = eachMonthOfInterval({
         start: startOfYear(new Date(selectorYear, 0, 1)),
         end: endOfYear(new Date(selectorYear, 0, 1))
