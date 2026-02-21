@@ -30,6 +30,7 @@ import {
   setMinutes
 } from 'date-fns';
 import { Event } from '../types';
+import DateSelectorPopup from './DateSelectorPopup';
 
 interface CalendarViewProps {
   events: Event[];
@@ -56,6 +57,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
 
   // Navigation handlers
   const navigatePrev = () => {
@@ -495,13 +497,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               <ChevronLeft className="w-5 h-5 text-gray-600" />
             </motion.button>
 
-            <h2 className="text-base sm:text-xl font-bold text-gray-900 flex-1 text-center whitespace-nowrap truncate px-1">
-              {viewMode === 'month'
-                ? format(currentDate, 'MMMM yyyy')
-                : viewMode === 'week'
-                  ? `${format(startOfWeek(currentDate), 'MMMM d')}`
-                  : format(currentDate, 'yyyy')
-              }
+            <h2 className="text-base sm:text-xl font-bold flex-1 text-center whitespace-nowrap truncate px-1 relative group cursor-pointer"
+              onClick={() => setIsSelectorOpen(true)}
+            >
+              <motion.span
+                whileHover={{ scale: 1.02, color: '#3b82f6' }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-block text-gray-900 transition-colors duration-200"
+              >
+                {viewMode === 'month'
+                  ? format(currentDate, 'MMMM yyyy')
+                  : viewMode === 'week'
+                    ? `${format(startOfWeek(currentDate), 'MMMM d')}`
+                    : format(currentDate, 'yyyy')
+                }
+              </motion.span>
             </h2>
 
             {/* Inline Today indicator */}
@@ -654,6 +664,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           </motion.div>
         )}
       </AnimatePresence>
+      <DateSelectorPopup
+        isOpen={isSelectorOpen}
+        onClose={() => setIsSelectorOpen(false)}
+        currentDate={currentDate}
+        onSelectDate={setCurrentDate}
+        viewMode={viewMode}
+      />
     </div>
   );
 };
