@@ -35,6 +35,7 @@ function App() {
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
   const [showSadAnimation, setShowSadAnimation] = useState(false);
   const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
+  const [isAIChatOpen, setIsAIChatOpen] = useState(false);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
 
   // Responsive check
@@ -265,6 +266,8 @@ function App() {
         events={events}
         onAnalyticsClick={handleAnalyticsClick}
         isAnalyticsActive={isAnalyticsModalOpen}
+        onAIChatClick={() => setIsAIChatOpen(true)}
+        isAIChatActive={isAIChatOpen}
       />
 
       <motion.main
@@ -433,6 +436,8 @@ function App() {
         events={events}
         tasks={tasks}
         isSidebarOpen={isActuallySidebarOpen}
+        isOpen={isAIChatOpen}
+        setIsOpen={setIsAIChatOpen}
       />
     </div>
   );

@@ -5,6 +5,7 @@ import SearchOverlay from './SearchOverlay';
 import WorldClockModal from './WorldClockModal';
 import AnalyticsButton from './AnalyticsButton';
 import { Event } from '../types';
+import crockLogo from '../assets/crock.png';
 
 interface HeaderProps {
   onToggleSidebar: () => void;
@@ -14,6 +15,8 @@ interface HeaderProps {
   events?: Event[];
   onAnalyticsClick?: () => void;
   isAnalyticsActive?: boolean;
+  onAIChatClick?: () => void;
+  isAIChatActive?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
@@ -24,6 +27,8 @@ const Header: React.FC<HeaderProps> = ({
   events = [],
   onAnalyticsClick,
   isAnalyticsActive = false,
+  onAIChatClick,
+  isAIChatActive = false,
 }) => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [clockOpen, setClockOpen] = useState(false);
@@ -73,6 +78,23 @@ const Header: React.FC<HeaderProps> = ({
             >
               <Search className="w-5 h-5" />
             </motion.button>
+
+            {/* AI Assistant Button - Visible in Header when sidebar is open */}
+            {isSidebarOpen && onAIChatClick && (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onAIChatClick}
+                className={`p-1.5 rounded-xl transition-all duration-200 ${isAIChatActive ? 'bg-blue-50 ring-2 ring-blue-500/20 shadow-sm' : 'hover:bg-gray-100'}`}
+                title="Mr. Crock AI"
+              >
+                <img
+                  src={crockLogo}
+                  alt="Mr. Crock"
+                  className="w-7 h-7 sm:w-8 sm:h-8 rounded-full object-cover shadow-sm border border-gray-100"
+                />
+              </motion.button>
+            )}
 
             {/* World Clock Button */}
             <motion.button

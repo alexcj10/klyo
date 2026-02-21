@@ -12,10 +12,11 @@ interface AIChatProps {
     events: Event[];
     tasks: Task[];
     isSidebarOpen?: boolean;
+    isOpen?: boolean;
+    setIsOpen?: (open: boolean) => void;
 }
 
-export default function AIChat({ events, tasks, isSidebarOpen }: AIChatProps) {
-    const [isOpen, setIsOpen] = useState(false);
+export default function AIChat({ events, tasks, isSidebarOpen, isOpen = false, setIsOpen = () => { } }: AIChatProps) {
     const [showHistory, setShowHistory] = useState(false);
     const [inputValue, setInputValue] = useState('');
 
