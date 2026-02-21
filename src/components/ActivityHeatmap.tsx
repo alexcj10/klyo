@@ -9,8 +9,6 @@ interface ActivityHeatmapProps {
 }
 
 const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
-    const [selectedDayInfo, setSelectedDayInfo] = useState<{ date: string, count: number } | null>(null);
-
     // Get current calendar year days
     const today = new Date();
     const yearlyDays = useMemo(() => {
@@ -37,6 +35,13 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
         return map;
     }, [events, tasks]);
 
+    const getDayInfo = (date: Date) => ({
+        date: format(date, 'MMM d, yyyy'),
+        count: activityMap[date.toDateString()] || 0
+    });
+
+    const [selectedDayInfo, setSelectedDayInfo] = useState<{ date: string, count: number }>(() => getDayInfo(today));
+
     const totalYearlyActivities = useMemo(() => {
         return yearlyDays.reduce((acc, day) => acc + (activityMap[day.toDateString()] || 0), 0);
     }, [yearlyDays, activityMap]);
@@ -54,51 +59,56 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
             {/* Yearly View */}
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                         <div className="flex items-center gap-2">
                             <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
                             <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full">
                                 {totalYearlyActivities} Total
                             </span>
                         </div>
-                        <p className="text-xs text-gray-500">Your productivity "commits" for {format(today, 'yyyy')}</p>
+                        <div className="h-4 w-px bg-gray-200 hidden sm:block" />
+                        <p className="text-xs text-gray-500">Productivity in {format(today, 'yyyy')}</p>
                     </div>
 
-                    {selectedDayInfo && (
+                    <div className="flex items-center gap-4">
                         <motion.div
-                            initial={{ opacity: 0, y: -5 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm"
+                            key={selectedDayInfo.date}
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className="bg-blue-600 text-white text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm whitespace-nowrap"
                         >
-                            {selectedDayInfo.date}: {selectedDayInfo.count} activities
+                            {selectedDayInfo.date}: {selectedDayInfo.count}
                         </motion.div>
-                    )}
 
-                    <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
-                        <span>Less</span>
-                        <div className="w-2.5 h-2.5 rounded-sm bg-gray-100" />
-                        <div className="w-2.5 h-2.5 rounded-sm bg-blue-200" />
-                        <div className="w-2.5 h-2.5 rounded-sm bg-blue-400" />
-                        <div className="w-2.5 h-2.5 rounded-sm bg-blue-600" />
-                        <div className="w-2.5 h-2.5 rounded-sm bg-blue-800" />
-                        <span>More</span>
+                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
+                            <span>Less</span>
+                            <div className="w-2.5 h-2.5 rounded-sm bg-gray-100" />
+                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-200" />
+                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-400" />
+                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-600" />
+                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-800" />
+                            <span>More</span>
+                        </div>
                     </div>
                 </div>
 
-                <div className="overflow-x-auto pb-2 scrollbar-hide">
+                <div
+                    className="overflow-x-auto pb-2 scrollbar-hide"
+                    onMouseLeave={() => setSelectedDayInfo(getDayInfo(today))}
+                >
                     <div className="grid grid-flow-col grid-rows-7 gap-1.5 min-w-max">
                         {yearlyDays.map((day, i) => {
                             const count = activityMap[day.toDateString()] || 0;
-                            const dateStr = format(day, 'MMM d, yyyy');
+                            const info = getDayInfo(day);
                             return (
                                 <motion.div
                                     key={i}
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: i * 0.001 }}
-                                    title={`${dateStr}: ${count} activities`}
-                                    onClick={() => setSelectedDayInfo({ date: dateStr, count })}
-                                    onMouseEnter={() => setSelectedDayInfo({ date: dateStr, count })}
+                                    title={`${info.date}: ${count} activities`}
+                                    onClick={() => setSelectedDayInfo(info)}
+                                    onMouseEnter={() => setSelectedDayInfo(info)}
                                     className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${getColorClass(count)} hover:ring-2 hover:ring-blue-400/50 transition-all cursor-pointer`}
                                 />
                             );
@@ -117,7 +127,10 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                     const totalInMonth = days.reduce((acc, day) => acc + (activityMap[day.toDateString()] || 0), 0);
 
                     return (
-                        <div key={offset} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
+                        <div
+                            key={offset}
+                            className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm"
+                        >
                             <div className="flex items-center justify-between mb-4">
                                 <h4 className="font-bold text-gray-800">{format(monthDate, 'MMMM')}</h4>
                                 <div className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full">
@@ -131,12 +144,10 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                                 ))}
                                 {days.map((day, i) => {
                                     const count = activityMap[day.toDateString()] || 0;
-                                    const dateStr = format(day, 'd');
                                     return (
                                         <div
                                             key={i}
-                                            title={`${dateStr}: ${count}`}
-                                            onClick={() => setSelectedDayInfo({ date: format(day, 'MMM d, yyyy'), count })}
+                                            title={`${format(day, 'MMM d, yyyy')}: ${count}`}
                                             className={`w-full aspect-square rounded-lg flex items-center justify-center text-[10px] font-medium transition-all ${getColorClass(count)}`}
                                         >
                                             {day.getDate()}
