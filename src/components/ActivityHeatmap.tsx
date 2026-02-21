@@ -84,18 +84,23 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
             <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                     <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <div className="flex items-center gap-3">
-                            <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
-                            <select
-                                value={selectedYear}
-                                onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-                                className="bg-gray-50 border-none text-blue-600 text-xs font-bold rounded-lg px-2 py-1 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
-                            >
+                        <div className="flex items-center gap-3 w-full sm:w-auto overflow-hidden">
+                            <h3 className="text-lg font-bold text-gray-800 shrink-0">Yearly Activity</h3>
+                            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 max-w-[130px] xs:max-w-[170px] sm:max-w-[260px]">
                                 {availableYears.map(year => (
-                                    <option key={year} value={year}>{year}</option>
+                                    <button
+                                        key={year}
+                                        onClick={() => setSelectedYear(year)}
+                                        className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap shrink-0 ${selectedYear === year
+                                                ? 'bg-blue-600 text-white shadow-sm'
+                                                : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                            }`}
+                                    >
+                                        {year}
+                                    </button>
                                 ))}
-                            </select>
-                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full">
+                            </div>
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full shrink-0">
                                 {totalYearlyActivities} Total
                             </span>
                         </div>
