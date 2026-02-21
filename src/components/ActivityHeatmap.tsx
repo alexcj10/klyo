@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { format, eachDayOfInterval, startOfYear, endOfYear, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { Event, Task } from '../types';
@@ -9,6 +9,8 @@ interface ActivityHeatmapProps {
 }
 
 const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
+    const [selectedDayInfo, setSelectedDayInfo] = useState<{ date: string, count: number } | null>(null);
+
     // Get current calendar year days
     const today = new Date();
     const yearlyDays = useMemo(() => {
@@ -61,6 +63,17 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                         </div>
                         <p className="text-xs text-gray-500">Your productivity "commits" for {format(today, 'yyyy')}</p>
                     </div>
+
+                    {selectedDayInfo && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -5 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-sm"
+                        >
+                            {selectedDayInfo.date}: {selectedDayInfo.count} activities
+                        </motion.div>
+                    )}
+
                     <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
                         <span>Less</span>
                         <div className="w-2.5 h-2.5 rounded-sm bg-gray-100" />
@@ -76,13 +89,16 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                     <div className="grid grid-flow-col grid-rows-7 gap-1.5 min-w-max">
                         {yearlyDays.map((day, i) => {
                             const count = activityMap[day.toDateString()] || 0;
+                            const dateStr = format(day, 'MMM d, yyyy');
                             return (
                                 <motion.div
                                     key={i}
                                     initial={{ opacity: 0, scale: 0.8 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     transition={{ delay: i * 0.001 }}
-                                    title={`${format(day, 'MMM d, yyyy')}: ${count} activities`}
+                                    title={`${dateStr}: ${count} activities`}
+                                    onClick={() => setSelectedDayInfo({ date: dateStr, count })}
+                                    onMouseEnter={() => setSelectedDayInfo({ date: dateStr, count })}
                                     className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${getColorClass(count)} hover:ring-2 hover:ring-blue-400/50 transition-all cursor-pointer`}
                                 />
                             );
@@ -115,10 +131,12 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
                                 ))}
                                 {days.map((day, i) => {
                                     const count = activityMap[day.toDateString()] || 0;
+                                    const dateStr = format(day, 'd');
                                     return (
                                         <div
                                             key={i}
-                                            title={`${format(day, 'd')}: ${count}`}
+                                            title={`${dateStr}: ${count}`}
+                                            onClick={() => setSelectedDayInfo({ date: format(day, 'MMM d, yyyy'), count })}
                                             className={`w-full aspect-square rounded-lg flex items-center justify-center text-[10px] font-medium transition-all ${getColorClass(count)}`}
                                         >
                                             {day.getDate()}
