@@ -78,53 +78,66 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
         return 'bg-blue-800 text-white';
     };
 
+    const formatNumber = (num: number) => {
+        if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        return num.toString();
+    };
+
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             {/* Yearly View */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                        <div className="flex items-center gap-3 w-full sm:w-auto overflow-hidden">
-                            <h3 className="text-lg font-bold text-gray-800 shrink-0">Yearly Activity</h3>
-                            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5 max-w-[130px] xs:max-w-[170px] sm:max-w-[260px]">
+            <div className="bg-white p-4 sm:p-5 rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+                <div className="flex flex-col gap-4 mb-3">
+                    {/* Top Row: Title, Subtitle, Years, and Total */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div className="flex flex-col gap-0.5">
+                            <h3 className="text-lg font-bold text-gray-800">Yearly Activity</h3>
+                            <p className="text-[10px] text-gray-400 font-medium tracking-wide">Productivity in {selectedYear}</p>
+                        </div>
+
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-hide py-0.5 max-w-[140px] xs:max-w-[180px] sm:max-w-none">
                                 {availableYears.map(year => (
                                     <button
                                         key={year}
                                         onClick={() => setSelectedYear(year)}
-                                        className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap shrink-0 ${selectedYear === year
-                                            ? 'bg-blue-600 text-white shadow-sm'
-                                            : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                                        className={`px-2.5 py-0.5 rounded-lg text-[10px] font-bold transition-all whitespace-nowrap shrink-0 ${selectedYear === year
+                                                ? 'bg-blue-600 text-white shadow-sm'
+                                                : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
                                             }`}
                                     >
                                         {year}
                                     </button>
                                 ))}
                             </div>
-                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full shrink-0">
-                                {totalYearlyActivities} Total
+                            <div className="w-px h-4 bg-gray-100 hidden sm:block" />
+                            <span className="px-2 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full whitespace-nowrap">
+                                {formatNumber(totalYearlyActivities)} Total
                             </span>
                         </div>
-                        <div className="h-4 w-px bg-gray-200 hidden sm:block" />
-                        <p className="text-xs text-gray-500">Productivity in {selectedYear}</p>
                     </div>
 
-                    <div className="flex items-center gap-4">
+                    {/* Bottom Row: Interaction Badge and Legend */}
+                    <div className="flex flex-wrap items-center justify-between gap-3 pt-3.5 border-t border-gray-50">
                         <motion.div
                             key={selectedDayInfo.date}
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="bg-blue-600 text-white text-[10px] sm:text-[11px] font-bold px-2.5 py-1 rounded-full shadow-sm whitespace-nowrap"
+                            className="bg-blue-600 text-white text-[10px] sm:text-[11px] font-bold px-3 py-1 rounded-full shadow-sm whitespace-nowrap"
                         >
-                            {selectedDayInfo.date}: {selectedDayInfo.count}
+                            {selectedDayInfo.date}: {formatNumber(selectedDayInfo.count)}
                         </motion.div>
 
-                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
+                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-medium bg-gray-50/50 px-2.5 py-1.5 rounded-xl">
                             <span>Less</span>
-                            <div className="w-2.5 h-2.5 rounded-sm bg-gray-100" />
-                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-200" />
-                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-400" />
-                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-600" />
-                            <div className="w-2.5 h-2.5 rounded-sm bg-blue-800" />
+                            <div className="flex gap-1">
+                                <div className="w-2.5 h-2.5 rounded-[2px] bg-gray-100" />
+                                <div className="w-2.5 h-2.5 rounded-[2px] bg-blue-200" />
+                                <div className="w-2.5 h-2.5 rounded-[2px] bg-blue-400" />
+                                <div className="w-2.5 h-2.5 rounded-[2px] bg-blue-600" />
+                                <div className="w-2.5 h-2.5 rounded-[2px] bg-blue-800" />
+                            </div>
                             <span>More</span>
                         </div>
                     </div>
