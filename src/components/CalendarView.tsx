@@ -6,6 +6,7 @@ import {
   Plus,
   LayoutGrid,
   Rows3,
+  CalendarDays,
   Trash2
 } from 'lucide-react';
 import {
@@ -21,6 +22,9 @@ import {
   subMonths,
   addWeeks,
   subWeeks,
+  addYears,
+  subYears,
+  getYear,
   isSameDay,
   setHours,
   setMinutes
@@ -38,7 +42,7 @@ interface CalendarViewProps {
   isSidebarOpen?: boolean;
 }
 
-type ViewMode = 'month' | 'week';
+type ViewMode = 'month' | 'week' | 'year';
 
 const CalendarView: React.FC<CalendarViewProps> = ({
   events,
@@ -57,16 +61,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const navigatePrev = () => {
     if (viewMode === 'month') {
       setCurrentDate(subMonths(currentDate, 1));
-    } else {
+    } else if (viewMode === 'week') {
       setCurrentDate(subWeeks(currentDate, 1));
+    } else {
+      setCurrentDate(subYears(currentDate, 1));
     }
   };
 
   const navigateNext = () => {
     if (viewMode === 'month') {
       setCurrentDate(addMonths(currentDate, 1));
-    } else {
+    } else if (viewMode === 'week') {
       setCurrentDate(addWeeks(currentDate, 1));
+    } else {
+      setCurrentDate(addYears(currentDate, 1));
     }
   };
 
@@ -350,6 +358,112 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     </div>
   );
 
+  // Heatmap color helper
+  const getHeatmapColor = (count: number): string => {
+    if (count === 0) return 'bg-gray-100';
+    if (count === 1) return 'bg-blue-200';
+    if (count === 2) return 'bg-blue-300';
+    if (count === 3) return 'bg-blue-400';
+    if (count === 4) return 'bg-blue-500';
+    return 'bg-blue-700';
+  };
+
+  // Year View Component
+  const YearView = () => {
+    const year = getYear(currentDate);
+    const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
+
+    return (
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-2 sm:p-4">
+        {/* 12-Month Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+          {months.map((monthDate, monthIndex) => {
+            const mStart = startOfMonth(monthDate);
+            const mEnd = endOfMonth(monthDate);
+            const calStart = startOfWeek(mStart, { weekStartsOn: 0 });
+            const calEnd = endOfWeek(mEnd, { weekStartsOn: 0 });
+            const days = eachDayOfInterval({ start: calStart, end: calEnd });
+
+            return (
+              <motion.div
+                key={monthIndex}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: monthIndex * 0.03 }}
+                className="bg-white rounded-xl border border-gray-100 shadow-sm p-2 sm:p-3 hover:shadow-md transition-shadow"
+              >
+                {/* Month Name */}
+                <button
+                  onClick={() => {
+                    setCurrentDate(monthDate);
+                    setViewMode('month');
+                  }}
+                  className="text-xs sm:text-sm font-bold text-gray-800 mb-1.5 sm:mb-2 hover:text-blue-600 transition-colors cursor-pointer w-full text-left"
+                >
+                  {format(monthDate, 'MMMM')}
+                </button>
+
+                {/* Day Headers */}
+                <div className="grid grid-cols-7 mb-0.5">
+                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                    <div key={i} className="text-center text-[8px] sm:text-[9px] font-semibold text-gray-400 uppercase">
+                      {day}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Day Grid with Heatmap */}
+                <div className="grid grid-cols-7 gap-[1px] sm:gap-[2px]">
+                  {days.map((date, dayIndex) => {
+                    const inMonth = isSameMonth(date, monthDate);
+                    const eventCount = inMonth ? getEventsForDate(date).length : 0;
+                    const isTodayDate = isToday(date);
+
+                    return (
+                      <button
+                        key={dayIndex}
+                        onClick={() => {
+                          if (inMonth) {
+                            setCurrentDate(date);
+                            setViewMode('month');
+                          }
+                        }}
+                        className={`
+                          w-full aspect-square rounded-[3px] sm:rounded text-[7px] sm:text-[9px] font-medium flex items-center justify-center transition-all
+                          ${!inMonth
+                            ? 'opacity-0 pointer-events-none'
+                            : `${getHeatmapColor(eventCount)} ${isTodayDate ? 'ring-1 ring-blue-600 ring-offset-1' : ''} hover:opacity-80 cursor-pointer`
+                          }
+                          ${eventCount > 0 && inMonth ? 'text-white' : 'text-gray-500'}
+                        `}
+                        title={inMonth ? `${format(date, 'MMM d')} - ${eventCount} event${eventCount !== 1 ? 's' : ''}` : ''}
+                      >
+                        {inMonth ? format(date, 'd') : ''}
+                      </button>
+                    );
+                  })}
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Heatmap Legend */}
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6 pb-2">
+          <span className="text-[10px] sm:text-xs text-gray-500 font-medium">Less</span>
+          {[0, 1, 2, 3, 4, 5].map((level) => (
+            <div
+              key={level}
+              className={`w-3 h-3 sm:w-3.5 sm:h-3.5 rounded-sm ${getHeatmapColor(level)}`}
+              title={level === 0 ? '0 events' : level === 5 ? '5+ events' : `${level} event${level !== 1 ? 's' : ''}`}
+            />
+          ))}
+          <span className="text-[10px] sm:text-xs text-gray-500 font-medium">More</span>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-blue-200/60 overflow-hidden h-full flex flex-col relative">
       {/* Header - Clean Mobile Design */}
@@ -369,22 +483,25 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             <h2 className="text-base sm:text-xl font-bold text-gray-900 flex-1 text-center whitespace-nowrap truncate px-1">
               {viewMode === 'month'
                 ? format(currentDate, 'MMMM yyyy')
-                : `${format(startOfWeek(currentDate), 'MMMM d')}`
+                : viewMode === 'week'
+                  ? `${format(startOfWeek(currentDate), 'MMMM d')}`
+                  : format(currentDate, 'yyyy')
               }
             </h2>
 
-            {/* Inline Today indicator - shows when not on current month */}
-            {format(currentDate, 'yyyy-MM') !== format(new Date(), 'yyyy-MM') && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={goToToday}
-                className="text-[10px] sm:text-xs text-blue-600 font-semibold px-2 py-0.5 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors flex-shrink-0 mr-1"
-              >
-                Today
-              </motion.button>
-            )}
+            {/* Inline Today indicator */}
+            {((viewMode === 'year' && getYear(currentDate) !== getYear(new Date())) ||
+              (viewMode !== 'year' && format(currentDate, 'yyyy-MM') !== format(new Date(), 'yyyy-MM'))) && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={goToToday}
+                  className="text-[10px] sm:text-xs text-blue-600 font-semibold px-2 py-0.5 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors flex-shrink-0 mr-1"
+                >
+                  Today
+                </motion.button>
+              )}
 
             <motion.button
               whileTap={{ scale: 0.9 }}
@@ -425,6 +542,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               <Rows3 className="w-4 h-4" />
               <span className="hidden sm:inline text-sm font-medium">Week</span>
             </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setViewMode('year')}
+              className={`
+                p-1.5 sm:px-3 sm:py-1 rounded-full transition-all flex items-center space-x-1
+                ${viewMode === 'year'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-500'
+                }
+              `}
+            >
+              <CalendarDays className="w-4 h-4" />
+              <span className="hidden sm:inline text-sm font-medium">Year</span>
+            </motion.button>
           </div>
         </div>
       </div>
@@ -441,7 +572,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           transition={{ duration: 0.2 }}
           className="flex-1 flex flex-col min-h-0 overflow-hidden"
         >
-          {viewMode === 'month' ? <MonthView /> : <WeekView />}
+          {viewMode === 'month' ? <MonthView /> : viewMode === 'week' ? <WeekView /> : <YearView />}
         </motion.div>
       </AnimatePresence>
 
