@@ -84,7 +84,7 @@ const ActivityHeatmap: React.FC<ActivityHeatmapProps> = ({ events, tasks }) => {
 
             {/* Monthly Breakdown */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {[0, 1, 2].map(offset => {
+                {[2, 1, 0].map(offset => {
                     const monthDate = subMonths(today, offset);
                     const monthStart = startOfMonth(monthDate);
                     const monthEnd = endOfMonth(monthDate);
