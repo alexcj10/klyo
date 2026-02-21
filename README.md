@@ -39,6 +39,7 @@ Visualize your productivity with high-fidelity tools.
 *   **GitHub-Style Heatmap**: An advanced yearly analysis engine.
     *   **Interactive History**: Automatically detects your earliest activity to build a complete chronological history.
     *   **Adaptive Year Selector**: Smart, horizontally scrollable year pills that adapt to your screen—cleanly contained on mobile, expansive on desktop.
+    *   **Total Activity Tracking**: Seamlessly combines calendar events and completed tasks (with due dates) into a single unified productivity score.
     *   **Pro-Level Scaling**: Large activity counts are elegantly formatted (e.g., `1.5k`, `10M`) for a professional aesthetic.
     *   **Integrated Layout**: A compact, pixel-perfect design with visible interaction rings.
 *   **Performance Metrics**: Track your completion rates and category distributions with our built-in metrics suite.
