@@ -435,16 +435,23 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                           }
                         }}
                         className={`
-                          w-full aspect-square rounded sm:rounded-md text-[8px] sm:text-[10px] lg:text-[11px] font-medium flex items-center justify-center transition-all
+                          w-full aspect-square rounded sm:rounded-md text-[8px] sm:text-[10px] lg:text-[11px] font-medium flex items-center justify-center transition-all relative
                           ${!inMonth
                             ? 'opacity-0 pointer-events-none'
-                            : `${getHeatmapColor(eventCount)} ${isTodayDate ? 'ring-2 ring-blue-600 ring-offset-1' : ''} hover:opacity-80 hover:scale-110 cursor-pointer`
+                            : `${getHeatmapColor(eventCount)} hover:opacity-80 hover:scale-110 cursor-pointer`
                           }
                           ${eventCount > 0 && inMonth ? 'text-white font-semibold' : 'text-gray-500'}
                         `}
                         title={inMonth ? `${format(date, 'MMM d')} - ${eventCount} event${eventCount !== 1 ? 's' : ''}` : ''}
                       >
-                        {inMonth ? format(date, 'd') : ''}
+                        {inMonth && (
+                          <>
+                            {isTodayDate && (
+                              <div className="absolute inset-0 border-2 border-blue-600 rounded sm:rounded-md pointer-events-none z-10" />
+                            )}
+                            <span className="relative z-0">{format(date, 'd')}</span>
+                          </>
+                        )}
                       </button>
                     );
                   })}
