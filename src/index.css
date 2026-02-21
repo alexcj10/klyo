@@ -31,26 +31,25 @@
 
   .custom-scrollbar {
     scrollbar-width: thin;
-    scrollbar-color: #d1d5db #f9fafb;
+    scrollbar-color: #cbd5e1 #f8fafc;
   }
 
   .custom-scrollbar::-webkit-scrollbar {
-    width: 8px;
+    width: 5px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: #f9fafb;
-    border-radius: 4px;
+    background: transparent;
+    margin: 4px 0;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #8b5cf6, #06b6d4);
-    border-radius: 4px;
-    transition: background 0.2s ease;
+    background: #cbd5e1;
+    border-radius: 10px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #7c3aed, #0891b2);
+    background: #94a3b8;
   }
 
   .scrollbar-hide {

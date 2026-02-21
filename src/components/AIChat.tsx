@@ -54,6 +54,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
             setShowHistory(false);
             setEditingSessionId(null);
             setDeletingSessionId(null);
+            setInputValue(''); // Clear input when closed
         }
     }, [isOpen]);
 
@@ -365,7 +366,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
 
                                             {/* Input */}
                                             <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100 z-10">
-                                                <div className="relative flex items-end">
+                                                <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:bg-white focus-within:border-blue-400/50 transition-all duration-200 shadow-sm overflow-hidden p-1">
                                                     <textarea
                                                         value={inputValue}
                                                         onChange={(e) => setInputValue(e.target.value)}
@@ -377,12 +378,12 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                         }}
                                                         placeholder="Ask about your schedule..."
                                                         rows={1}
-                                                        className="w-full bg-slate-50 text-slate-800 placeholder:text-slate-500 rounded-xl pl-4 pr-12 py-3 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white transition-all border border-slate-200 focus:border-blue-300 resize-none min-h-[46px] max-h-32 overflow-y-auto"
+                                                        className="flex-1 bg-transparent text-slate-800 placeholder:text-slate-500 pl-4 pr-2 py-2 text-[15px] focus:outline-none resize-none min-h-[40px] max-h-32 overflow-y-auto custom-scrollbar leading-relaxed"
                                                     />
                                                     <button
                                                         type="submit"
                                                         disabled={!inputValue.trim() || isLoading}
-                                                        className="absolute right-2 bottom-1.5 p-2 bg-blue-600 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors shadow-sm active:scale-95"
+                                                        className="flex-shrink-0 p-2 ml-1 mr-1 bg-blue-600 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-colors shadow-sm active:scale-95 z-10"
                                                     >
                                                         <Send className="w-4 h-4" />
                                                     </button>
