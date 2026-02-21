@@ -256,11 +256,14 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   // Week View Component
   const WeekView = () => (
-    <div className="flex flex-col flex-1 min-h-0 overflow-auto">
-      {/* Header with days */}
+    <div className="flex flex-col flex-1 min-h-0">
+      {/* Header with days - Fixed at top */}
       <div
-        className="grid border-b border-indigo-100 sticky top-0 bg-indigo-50/80 backdrop-blur-sm z-10"
-        style={{ gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)' }}
+        className="grid border-b border-indigo-100 bg-indigo-50/80 backdrop-blur-sm z-10"
+        style={{
+          gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)',
+          scrollbarGutter: 'stable'
+        }}
       >
         <div className="p-2 border-r border-gray-100" /> {/* Time column header */}
         {weekData.map((date) => {
@@ -286,58 +289,63 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         })}
       </div>
 
-      {/* Time Grid */}
-      <div className="flex-1 flex flex-col">
-        {hours.map((hour) => (
-          <div
-            key={hour}
-            className="grid border-b border-blue-100/50 min-h-[48px] flex-auto"
-            style={{ gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)' }}
-          >
-            {/* Time Label */}
-            <div className="p-0.5 sm:p-1 text-[11px] sm:text-xs text-gray-400 text-right pr-1 sm:pr-2 border-r border-blue-100/50 whitespace-nowrap">
-              {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
+      {/* Time Grid - Scrollable area */}
+      <div
+        className="flex-1 overflow-y-auto custom-scrollbar"
+        style={{ scrollbarGutter: 'stable' }}
+      >
+        <div className="flex flex-col">
+          {hours.map((hour) => (
+            <div
+              key={hour}
+              className="grid border-b border-blue-100/50 min-h-[48px]"
+              style={{ gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)' }}
+            >
+              {/* Time Label */}
+              <div className="p-0.5 sm:p-1 text-[11px] sm:text-xs text-gray-400 text-right pr-1 sm:pr-2 border-r border-blue-100/50 whitespace-nowrap">
+                {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
+              </div>
+
+              {/* Day Columns */}
+              {weekData.map((date) => {
+                const dayEvents = getEventsForDate(date).filter(event => {
+                  if (event.isAllDay) return hour === 0;
+                  const eventHour = parseInt(event.startTime.split(':')[0]);
+                  return eventHour === hour;
+                });
+
+                return (
+                  <div
+                    key={`${date.toISOString()}-${hour}`}
+                    onClick={() => {
+                      const clickedDateTime = setMinutes(setHours(date, hour), 0);
+                      onDateClick(clickedDateTime, true);
+                    }}
+                    className="border-r border-gray-100 last:border-r-0 p-0.5 hover:bg-blue-50/30 cursor-pointer transition-colors relative min-w-0 overflow-hidden"
+                  >
+                    {dayEvents.map((event) => (
+                      <div
+                        key={event.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEventView(event);
+                        }}
+                        className="text-[10px] sm:text-xs p-1 rounded truncate cursor-pointer hover:shadow-sm"
+                        style={{
+                          backgroundColor: `${event.color}20`,
+                          color: event.color,
+                          borderLeft: `2px solid ${event.color}`
+                        }}
+                      >
+                        {event.title}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
             </div>
-
-            {/* Day Columns */}
-            {weekData.map((date) => {
-              const dayEvents = getEventsForDate(date).filter(event => {
-                if (event.isAllDay) return hour === 0;
-                const eventHour = parseInt(event.startTime.split(':')[0]);
-                return eventHour === hour;
-              });
-
-              return (
-                <div
-                  key={`${date.toISOString()}-${hour}`}
-                  onClick={() => {
-                    const clickedDateTime = setMinutes(setHours(date, hour), 0);
-                    onDateClick(clickedDateTime, true);
-                  }}
-                  className="border-r border-gray-100 last:border-r-0 p-0.5 hover:bg-blue-50/30 cursor-pointer transition-colors relative min-w-0 overflow-hidden"
-                >
-                  {dayEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onEventView(event);
-                      }}
-                      className="text-[10px] sm:text-xs p-1 rounded truncate cursor-pointer hover:shadow-sm"
-                      style={{
-                        backgroundColor: `${event.color}20`,
-                        color: event.color,
-                        borderLeft: `2px solid ${event.color}`
-                      }}
-                    >
-                      {event.title}
-                    </div>
-                  ))}
-                </div>
-              );
-            })}
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
