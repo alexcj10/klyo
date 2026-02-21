@@ -56,6 +56,20 @@ const COLORS = {
     medium: '#F59E0B',
     low: '#10B981',
   },
+  moodColors: {
+    focus: '#3B82F6',
+    stress: '#F59E0B',
+    easy: '#10B981',
+    exhausting: '#EF4444',
+    none: '#94A3B8',
+  },
+  moodGradients: {
+    focus: 'from-blue-500 to-blue-600',
+    stress: 'from-amber-500 to-orange-600',
+    easy: 'from-emerald-500 to-teal-600',
+    exhausting: 'from-red-500 to-rose-600',
+    none: 'from-gray-400 to-gray-500',
+  }
 };
 
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, onAddEvent, onAddTask }) => {
@@ -201,6 +215,28 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
       });
     }
 
+    // Mood Analysis - process both events and tasks
+    const allActivitiesWithMood = [...events, ...tasks].filter(a => a.mood && a.mood !== 'none');
+    const moodDistribution = Object.entries(
+      [...events, ...tasks].reduce((acc, item) => {
+        const m = item.mood || 'none';
+        acc[m] = (acc[m] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>)
+    ).map(([name, value]) => ({
+      name: name.charAt(0).toUpperCase() + name.slice(1),
+      value,
+      color: COLORS.moodColors[name as keyof typeof COLORS.moodColors] || COLORS.moodColors.none,
+      percentage: ((value / (events.length + tasks.length)) * 100).toFixed(1),
+    }));
+
+    // Burnout Risk Calculation
+    const exhaustingCount = allActivitiesWithMood.filter(a => a.mood === 'exhausting' || a.mood === 'stress').length;
+    const recoveryCount = allActivitiesWithMood.filter(a => a.mood === 'easy' || a.mood === 'focus').length;
+    const burnoutRisk = allActivitiesWithMood.length > 0
+      ? Math.round((exhaustingCount / (exhaustingCount + recoveryCount || 1)) * 100)
+      : 0;
+
     return {
       eventsByCategory,
       tasksByCategory,
@@ -213,6 +249,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
       timeDistributionData,
       weeklyActivity,
       monthlyTrends,
+      moodDistribution,
+      burnoutRisk,
     };
   }, [events, tasks]);
 
@@ -355,10 +393,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
           color="from-blue-500 to-cyan-600"
         />
         <StatCard
-          title="Weekly Total"
-          value={analytics.weeklyActivity.reduce((sum, day) => sum + day.total, 0)}
+          title="Burnout Risk"
+          value={`${analytics.burnoutRisk}%`}
           icon={<Activity className="w-4 h-4 sm:w-5 sm:h-5" />}
-          color="from-amber-500 to-orange-600"
+          color={analytics.burnoutRisk > 60 ? 'from-red-500 to-rose-600' : analytics.burnoutRisk > 30 ? 'from-orange-500 to-amber-600' : 'from-emerald-500 to-teal-600'}
         />
       </div>
 
@@ -466,6 +504,53 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                   />
                 </PieChart>
               </ResponsiveContainer>
+            </motion.div>
+
+            {/* Mood Distribution */}
+            <motion.div
+              whileHover={{ scale: 1.01 }}
+              className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl shadow-lg border border-gray-100"
+            >
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
+                <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-blue-500" />
+                Mood & Well-being
+              </h3>
+              <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 200 : window.innerWidth < 1024 ? 185 : 250}>
+                <PieChart>
+                  <Pie
+                    data={analytics.moodDistribution}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={window.innerWidth < 640 ? 30 : window.innerWidth < 1024 ? 40 : 45}
+                    outerRadius={window.innerWidth < 640 ? 60 : window.innerWidth < 1024 ? 75 : 85}
+                    paddingAngle={3}
+                    dataKey="value"
+                  >
+                    {analytics.moodDistribution.map((entry, index) => (
+                      <Cell key={`mood-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string, props: any) => [
+                      `${value} (${props.payload.percentage}%)`,
+                      name
+                    ]}
+                  />
+                  <Legend
+                    wrapperStyle={{ fontSize: '10px' }}
+                    iconType="circle"
+                    formatter={(value: string) => {
+                      const item = analytics.moodDistribution.find(c => c.name === value);
+                      return item ? `${value} (${item.percentage}%)` : value;
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+              <div className="mt-2 text-center">
+                <span className={`text-[10px] font-bold px-2 py-1 rounded-full ${analytics.burnoutRisk > 50 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
+                  {analytics.burnoutRisk > 50 ? '⚠️ High Burnout Risk' : '✨ Healthy Balance'}
+                </span>
+              </div>
             </motion.div>
           </motion.div>
         ) : (

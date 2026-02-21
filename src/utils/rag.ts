@@ -44,8 +44,9 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
         const dayYear = d.toLocaleDateString('en-US', { day: 'numeric', year: 'numeric' });
 
         const dateStr = `${fullDay} (${shortDay}), ${fullMonth} (${shortMonth}) ${dayYear}`;
+        const moodStr = e.mood ? ` Mood: ${e.mood}.` : "";
 
-        const text = `${relativeStatus} Event: ${e.title}. Category: ${e.category}. Priority: ${e.priority}. Date: ${dateStr} ${timeString}. Details: ${e.description || 'None'}`;
+        const text = `${relativeStatus} Event: ${e.title}. Category: ${e.category}. Priority: ${e.priority}.${moodStr} Date: ${dateStr} ${timeString}. Details: ${e.description || 'None'}`;
         items.push({
             id: `evt-${e.id}`,
             type: 'event',
@@ -78,8 +79,9 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
             const dayYear = d.toLocaleDateString('en-US', { day: 'numeric', year: 'numeric' });
             dateStr = `${fullDay} (${shortDay}), ${fullMonth} (${shortMonth}) ${dayYear}`;
         }
+        const moodStr = t.mood ? ` Mood: ${t.mood}.` : "";
 
-        const text = `${relativeStatus} Task: ${t.title}. Category: ${t.category}. Priority: ${t.priority}. Due: ${dateStr}. Status: ${t.completed ? 'Done' : 'Pending'}. Details: ${t.description || 'None'}`;
+        const text = `${relativeStatus} Task: ${t.title}. Category: ${t.category}. Priority: ${t.priority}.${moodStr} Due: ${dateStr}. Status: ${t.completed ? 'Done' : 'Pending'}. Details: ${t.description || 'None'}`;
         items.push({
             id: `tsk-${t.id}`,
             type: 'task',
@@ -328,8 +330,12 @@ export async function ragQuery(
                         1. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
                         2. PROACTIVE "LOOKAHEAD" SMARTNESS: You have access to "Lookahead" context for tomorrow. If you see something important coming up (like an early morning event or high-priority task), add a smart reminder like "By the way, you have [Event] tomorrow morning—don't forget to prepare tonight!"
                         3. BE SMART & HELPFUL: Always identify high-priority items. 
-                        4. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
-                        5. ONLY use information strictly found in your Context.
+                        4. MOOD AWARENESS (NEW): You now have access to "Mood" data for items (focus, stress, easy, exhausting). 
+                           - Use this to identify if the user is having a stressful day.
+                           - If you see many "exhausting" or "stress" tags, offer words of encouragement or suggest a break.
+                           - If they are in a "focus" flow, praise their productivity.
+                        5. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
+                        6. ONLY use information strictly found in your Context.
                         
                         Context (User's Schedule Today/Target):
                         ${contextString}

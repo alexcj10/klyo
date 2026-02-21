@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, Circle, Clock, Plus, Calendar, Trash2, Edit3, List, AlertCircle } from 'lucide-react';
-import { Task, Event } from '../types';
+import { Task, Event, Mood } from '../types';
 import { format } from 'date-fns';
 
 interface TaskSidebarProps {
@@ -32,6 +32,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
   const [newTaskDate, setNewTaskDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [newTaskCategory, setNewTaskCategory] = useState<Task['category']>('personal');
   const [newTaskPriority, setNewTaskPriority] = useState<Task['priority']>('medium');
+  const [newTaskMood, setNewTaskMood] = useState<Mood>('none');
   const [sortBy, setSortBy] = useState<'priority' | 'date' | 'category'>('priority');
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
   // Removed isSorting state as sorting is now instant with useMemo
@@ -121,9 +122,11 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
         completed: false,
         category: newTaskCategory,
         dueDate: new Date(newTaskDate),
+        mood: newTaskMood,
       });
       setNewTaskTitle('');
       setNewTaskDate(new Date().toISOString().split('T')[0]);
+      setNewTaskMood('none');
       setIsAddingTask(false);
     }
   };
@@ -363,6 +366,27 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                     <option value="high">🔴 High</option>
                   </select>
                 </div>
+                <div>
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider ml-1 mb-1 block">Productivity Mood</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { v: 'none', e: '⚪' },
+                      { v: 'focus', e: '🧠' },
+                      { v: 'stress', e: '⚡' },
+                      { v: 'easy', e: '🍀' },
+                      { v: 'exhausting', e: '🔋' }
+                    ].map(m => (
+                      <button
+                        key={m.v}
+                        onClick={() => setNewTaskMood(m.v as Mood)}
+                        className={`p-1.5 rounded-lg border transition-all ${newTaskMood === m.v ? 'bg-blue-50 border-blue-400 scale-110 shadow-sm' : 'bg-white border-gray-100 hover:border-gray-200'}`}
+                        title={m.v}
+                      >
+                        {m.e}
+                      </button>
+                    ))}
+                  </div>
+                </div>
                 <div className="flex space-x-3 pt-2">
                   <motion.button
                     whileHover={{ scale: 1.02 }}
@@ -467,6 +491,11 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                             <span className="text-base">
                               {getCategoryIcon(task.category || 'other')}
                             </span>
+                            {task.mood && task.mood !== 'none' && (
+                              <span className="text-sm grayscale-0 group-hover:scale-125 transition-transform" title={task.mood}>
+                                {task.mood === 'focus' ? '🧠' : task.mood === 'stress' ? '⚡' : task.mood === 'easy' ? '🍀' : '🔋'}
+                              </span>
+                            )}
                             {task.estimatedTime && (
                               <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
                                 <Clock className="w-3 h-3" />

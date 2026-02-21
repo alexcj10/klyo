@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Calendar, Clock, Tag, AlertCircle, Trash2 } from 'lucide-react';
-import { Event } from '../types';
+import { X, Calendar, Clock, Tag, AlertCircle, Trash2, Smile } from 'lucide-react';
+import { Event, Mood } from '../types';
 import { getNextColor, getColorName } from '../utils/colorPalette';
 
 interface EventModalProps {
@@ -59,7 +59,8 @@ const EventModal: React.FC<EventModalProps> = ({
         endTime: event.endTime,
         category: event.category,
         priority: event.priority,
-        isAllDay: event.isAllDay || false
+        isAllDay: event.isAllDay || false,
+        mood: event.mood || 'none'
       };
     } else {
       // Creating new event - use defaults with selected/current date
@@ -102,7 +103,8 @@ const EventModal: React.FC<EventModalProps> = ({
         endTime,
         category: 'personal' as const,
         priority: 'medium' as const,
-        isAllDay: false
+        isAllDay: false,
+        mood: 'none' as Mood
       };
     }
   };
@@ -127,6 +129,14 @@ const EventModal: React.FC<EventModalProps> = ({
 
   if (!isOpen) return null;
 
+  const moodOptions: { value: Mood; label: string; emoji: string; color: string }[] = [
+    { value: 'none', label: 'None', emoji: '⚪', color: 'bg-gray-100' },
+    { value: 'focus', label: 'Focus', emoji: '🧠', color: 'bg-blue-100' },
+    { value: 'stress', label: 'Stress', emoji: '⚡', color: 'bg-orange-100' },
+    { value: 'easy', label: 'Easy', emoji: '🍀', color: 'bg-green-100' },
+    { value: 'exhausting', label: 'Exhaust', emoji: '🔋', color: 'bg-red-100' },
+  ];
+
   return (
     <AnimatePresence>
       <motion.div
@@ -141,7 +151,7 @@ const EventModal: React.FC<EventModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
           transition={{ duration: 0.3 }}
-          className="bg-white rounded-2xl shadow-2xl w-[94%] sm:w-full max-w-[340px] sm:max-w-lg md:max-w-xl lg:max-w-lg max-h-[65vh] sm:max-h-[65vh] lg:max-h-[90vh] overflow-hidden border border-gray-200 flex flex-col"
+          className="bg-white rounded-2xl shadow-2xl w-[94%] sm:w-full max-w-[340px] sm:max-w-lg md:max-w-xl lg:max-w-lg max-h-[75vh] sm:max-h-[75vh] lg:max-h-[95vh] overflow-hidden border border-gray-200 flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -255,35 +265,40 @@ const EventModal: React.FC<EventModalProps> = ({
                 />
               </div>
 
-              {/* Date */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date
-                </label>
-                <div className="relative">
-                  <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <input
-                    type="date"
-                    required
-                    value={formatDateForInput(formData.date)}
-                    onChange={(e) => setFormData({ ...formData, date: parseDateFromInput(e.target.value) })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  />
+              {/* Date & Time Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Date */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Date
+                  </label>
+                  <div className="relative">
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="date"
+                      required
+                      value={formatDateForInput(formData.date)}
+                      onChange={(e) => setFormData({ ...formData, date: parseDateFromInput(e.target.value) })}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* All Day Toggle */}
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="allDay"
-                  checked={formData.isAllDay}
-                  onChange={(e) => setFormData({ ...formData, isAllDay: e.target.checked })}
-                  className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="allDay" className="text-sm text-gray-700">
-                  All day event
-                </label>
+                {/* All Day Toggle */}
+                <div className="flex items-end pb-2">
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="allDay"
+                      checked={formData.isAllDay}
+                      onChange={(e) => setFormData({ ...formData, isAllDay: e.target.checked })}
+                      className="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                    />
+                    <label htmlFor="allDay" className="text-sm text-gray-700">
+                      All day event
+                    </label>
+                  </div>
+                </div>
               </div>
 
               {/* Time Fields */}
@@ -300,7 +315,7 @@ const EventModal: React.FC<EventModalProps> = ({
                         required
                         value={formData.startTime}
                         onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                       />
                     </div>
                   </div>
@@ -315,51 +330,86 @@ const EventModal: React.FC<EventModalProps> = ({
                         required
                         value={formData.endTime}
                         onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
                       />
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Category */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Category
-                </label>
-                <div className="relative">
-                  <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <select
-                    value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value as Event['category'] })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="work">Work</option>
-                    <option value="personal">Personal</option>
-                    <option value="health">Health</option>
-                    <option value="social">Social</option>
-                    <option value="other">Other</option>
-                  </select>
+              {/* Category & Priority Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {/* Category */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <div className="relative">
+                    <Tag className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <select
+                      value={formData.category}
+                      onChange={(e) => setFormData({ ...formData, category: e.target.value as Event['category'] })}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                    >
+                      <option value="work">Work</option>
+                      <option value="personal">Personal</option>
+                      <option value="health">Health</option>
+                      <option value="social">Social</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Priority */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Priority
+                  </label>
+                  <div className="relative">
+                    <AlertCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <select
+                      value={formData.priority}
+                      onChange={(e) => setFormData({ ...formData, priority: e.target.value as Event['priority'] })}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm"
+                    >
+                      <option value="low">Low</option>
+                      <option value="medium">Medium</option>
+                      <option value="high">High</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
-              {/* Priority */}
+              {/* Mood Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Priority
+                <label className="block text-sm font-medium text-gray-700 mb-3 flex items-center">
+                  <Smile className="w-4 h-4 mr-2 text-blue-500" />
+                  Productivity Mood
                 </label>
-                <div className="relative">
-                  <AlertCircle className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <select
-                    value={formData.priority}
-                    onChange={(e) => setFormData({ ...formData, priority: e.target.value as Event['priority'] })}
-                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </select>
+                <div className="flex flex-wrap gap-2">
+                  {moodOptions.map((option) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setFormData({ ...formData, mood: option.value })}
+                      className={`
+                        flex items-center space-x-1.5 px-3 py-2 rounded-xl border transition-all duration-200
+                        ${formData.mood === option.value
+                          ? `${option.color} border-blue-500 ring-2 ring-blue-500/10 shadow-sm font-semibold`
+                          : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300'
+                        }
+                      `}
+                    >
+                      <span className="text-lg">{option.emoji}</span>
+                      <span className="text-xs">{option.label}</span>
+                    </motion.button>
+                  ))}
                 </div>
+                <p className="text-[10px] text-gray-400 mt-2">
+                  How do you feel about this session? Helps track burnout.
+                </p>
               </div>
 
               {/* Color Preview */}
@@ -367,7 +417,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Event Color
                 </label>
-                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
+                <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg border border-gray-200/50">
                   <div
                     className="w-6 h-6 rounded-full border-2 border-white shadow-sm flex-shrink-0"
                     style={{
@@ -381,21 +431,16 @@ const EventModal: React.FC<EventModalProps> = ({
                     }
                   </span>
                 </div>
-                {!event && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    Colors are automatically assigned in sequence
-                  </p>
-                )}
               </div>
 
               {/* Actions */}
-              <div className="flex space-x-3 pt-4">
+              <div className="flex space-x-3 pt-2">
                 <motion.button
                   type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={onClose}
-                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors duration-200 font-medium"
+                  className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors duration-200 font-medium text-sm"
                 >
                   Cancel
                 </motion.button>
@@ -403,7 +448,7 @@ const EventModal: React.FC<EventModalProps> = ({
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm transition-all duration-200 font-medium"
+                  className="flex-1 px-4 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl shadow-sm transition-all duration-200 font-medium text-sm"
                 >
                   {event ? 'Update Event' : 'Create Event'}
                 </motion.button>

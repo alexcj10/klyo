@@ -1,3 +1,5 @@
+export type Mood = 'focus' | 'stress' | 'easy' | 'exhausting' | 'none';
+
 export interface Event {
   id: string;
   title: string;
@@ -9,6 +11,7 @@ export interface Event {
   priority: 'low' | 'medium' | 'high';
   color: string;
   isAllDay?: boolean;
+  mood?: Mood;
 }
 
 export interface Task {
@@ -20,6 +23,7 @@ export interface Task {
   completed: boolean;
   estimatedTime?: number; // in minutes
   category: 'work' | 'personal' | 'health' | 'social' | 'other';
+  mood?: Mood;
 }
 
 export interface Message {
