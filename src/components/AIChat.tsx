@@ -385,9 +385,9 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                 'text-blue-600/90 border-blue-100'
                                                                     }`}>
                                                                     {msg.agent === 'Dr. Frog' ? (
-                                                                        <img src={frogLogo} className="w-10 h-10 rounded-full object-cover border-2 border-emerald-400 shadow-md ring-2 ring-emerald-100" />
+                                                                        <img src={frogLogo} className="w-6 h-6 rounded-full object-cover border border-emerald-300 shadow-sm" />
                                                                     ) : (
-                                                                        <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
+                                                                        <img src={crockLogo} className="w-6 h-6 rounded-full object-cover border border-blue-200 shadow-sm" />
                                                                     )}
                                                                     {msg.agent || 'Mr. Crock'}
                                                                 </div>
