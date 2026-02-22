@@ -46,7 +46,7 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
         const dateStr = `${fullDay} (${shortDay}), ${fullMonth} (${shortMonth}) ${dayYear}`;
         const moodStr = e.mood ? ` Mood: ${e.mood}.` : "";
 
-        const text = `${relativeStatus} Event: ${e.title}. Category: ${e.category}. Priority: ${e.priority}.${moodStr} Date: ${dateStr} ${timeString}. Details: ${e.description || 'None'}`;
+        const text = `[${timeString}] ${relativeStatus} Event: ${e.title}. Category: ${e.category}. Priority: ${e.priority}.${moodStr} Date: ${dateStr}. Details: ${e.description || 'None'}`;
         items.push({
             id: `evt-${e.id}`,
             type: 'event',
@@ -81,7 +81,7 @@ function normalizeData(events: Event[], tasks: Task[]): RagItem[] {
         }
         const moodStr = t.mood ? ` Mood: ${t.mood}.` : "";
 
-        const text = `${relativeStatus} Task: ${t.title}. Category: ${t.category}. Priority: ${t.priority}.${moodStr} Due: ${dateStr}. Status: ${t.completed ? 'Done' : 'Pending'}. Details: ${t.description || 'None'}`;
+        const text = `[${t.dueDate ? dateStr : 'No Due Date'}] ${relativeStatus} Task: ${t.title}. Category: ${t.category}. Priority: ${t.priority}.${moodStr} Status: ${t.completed ? 'Done' : 'Pending'}. Details: ${t.description || 'None'}`;
         items.push({
             id: `tsk-${t.id}`,
             type: 'task',
@@ -261,14 +261,17 @@ export async function ragQuery(
             return new Date(c.date).toLocaleDateString('en-CA') === todayStr;
         });
     } else if (targetMonthIndex !== -1) {
-        candidates = candidates.filter(c => {
+        // Year-Aware Filtering: Prioritize current year (2026) and future
+        const prioritizedCandidates = candidates.filter(c => {
             if (!c.date) return false;
             const d = new Date(c.date);
-            if (targetDay !== -1) {
-                return d.getMonth() === targetMonthIndex && d.getDate() === targetDay;
-            }
-            return d.getMonth() === targetMonthIndex;
+            const isTargetMonthDay = d.getMonth() === targetMonthIndex && (targetDay === -1 || d.getDate() === targetDay);
+            return isTargetMonthDay && d.getFullYear() >= 2026;
         });
+
+        // Only include 2026+ matches. If empty, it stays empty so AI can report "Nothing found".
+        // This prevents accidentally showing 2025 events as current ones.
+        candidates = prioritizedCandidates;
     }
 
     // Smart Filtering: If one type is asked for, prioritize it but keep the other if it's high priority
@@ -319,24 +322,24 @@ export async function ragQuery(
         let specialistLabel = "Mr. Crock";
 
         if (lowerQ.includes('@coach')) {
-            systemRole = `You are @coach (Klyo Edition), an empathetic, warm, and highly supportive productivity mentor. 
-            TONE: Gentle, encouraging, but firm about well-being. Use terms of endearment or friendly vibes.
-            GOAL: Analyze the user's schedule to ensure they aren't burning out. Focus heavily on 'Mood' data.
-            If you see many 'stress' or 'exhausting' tags, insist on a break.`;
+            systemRole = `You are @coach (Klyo Edition), an empathetic productivity mentor. 
+            SKILL: Precision-focused reporting of times and dates found in the context.
+            TONE: Gentle, encouraging, but firm about well-being.
+            GOAL: Analyze the user's schedule to ensure they aren't burning out. Focus heavily on 'Mood' data.`;
             personaKey = import.meta.env.VITE_COACH_KEY || GROQ_KEY;
             specialistLabel = "Coach";
         } else if (lowerQ.includes('@analyst')) {
             systemRole = `You are @analyst (Klyo Edition), a high-performance data-driven strategist. 
+            SKILL: Precision-focused reporting of times and dates found in the context.
             TONE: Sharp, efficient, professional, and brutally honest about numbers.
-            GOAL: Identify productivity trends, completion rates, and optimization opportunities.
-            Focus on stats, priorities, and getting the most out of the day.`;
+            GOAL: Identify productivity trends, completion rates, and optimization opportunities.`;
             personaKey = import.meta.env.VITE_ANALYST_KEY || GROQ_KEY;
             specialistLabel = "Analyst";
         } else if (lowerQ.includes('@planner')) {
             systemRole = `You are @planner (Klyo Edition), a master of spatial-temporal coordination. 
+            SKILL: Precision-focused reporting of times and dates found in the context.
             TONE: Organized, direct, and solution-oriented.
-            GOAL: Resolve calendar conflicts and optimize the sequence of tasks.
-            Identify tight overlaps and suggest moving items to better slots.`;
+            GOAL: Resolve calendar conflicts and optimize the sequence of tasks.`;
             personaKey = import.meta.env.VITE_PLANNER_KEY || GROQ_KEY;
             specialistLabel = "Planner";
         }
