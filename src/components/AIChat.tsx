@@ -548,59 +548,70 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                                                                 transition={{ duration: 0.15 }}
-                                                                className="absolute bottom-full left-2 right-2 mb-3 bg-white rounded-2xl shadow-2xl border border-slate-100/80 overflow-hidden z-[80]"
+                                                                className="absolute bottom-full left-2 right-2 mb-3 bg-white rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden z-[80]"
                                                                 onClick={(e) => e.stopPropagation()}
                                                             >
                                                                 {/* Header */}
-                                                                <div className="px-4 py-2.5 border-b border-slate-50 flex items-center justify-between">
+                                                                <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
                                                                     <div className="flex items-center gap-2">
-                                                                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
-                                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.12em]">Specialists</span>
+                                                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Select Agent</span>
                                                                     </div>
-                                                                    <span className="text-[10px] text-slate-300">↑↓ navigate · Enter select</span>
+                                                                    <span className="text-[9px] text-slate-400/60 font-medium">↑↓ navigate · Enter select</span>
                                                                 </div>
 
                                                                 {/* Agent List */}
-                                                                <div className="p-2 space-y-0.5">
+                                                                <div className="p-1.5 space-y-0.5">
                                                                     {visibleAgents.map((agent, idx) => (
                                                                         <div
                                                                             key={agent.id}
                                                                             onClick={() => selectAgent(agent)}
                                                                             onMouseEnter={() => setMentionIndex(idx)}
-                                                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${mentionIndex === idx
-                                                                                    ? `${agent.bg.replace('hover:', '')} ${agent.color}`
-                                                                                    : 'hover:bg-slate-50 text-slate-600'
+                                                                            className={`relative flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer transition-all duration-150 ${mentionIndex === idx
+                                                                                ? 'bg-slate-50/80'
+                                                                                : 'hover:bg-slate-50/50'
                                                                                 }`}
                                                                         >
+                                                                            {/* Selected Accent Bar */}
+                                                                            {mentionIndex === idx && (
+                                                                                <motion.div
+                                                                                    layoutId="mention-accent"
+                                                                                    className={`absolute left-0 w-1 h-6 rounded-r-full ${agent.color.replace('text-', 'bg-')}`}
+                                                                                />
+                                                                            )}
+
                                                                             {/* Avatar */}
                                                                             <div className="relative flex-shrink-0">
                                                                                 {agent.id === 'frog' ? (
-                                                                                    <img src={frogLogo} className="w-8 h-8 rounded-full object-cover border-2 border-emerald-200 shadow-sm" />
+                                                                                    <img src={frogLogo} className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-sm" />
                                                                                 ) : agent.id === 'crock' ? (
-                                                                                    <img src={crockLogo} className="w-8 h-8 rounded-full object-cover border-2 border-blue-200 shadow-sm" />
+                                                                                    <img src={crockLogo} className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-sm" />
                                                                                 ) : (
-                                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-base shadow-sm ${agent.id === 'coach' ? 'bg-emerald-50 border-2 border-emerald-200' :
-                                                                                            agent.id === 'analyst' ? 'bg-purple-50 border-2 border-purple-200' :
-                                                                                                'bg-orange-50 border-2 border-orange-200'
+                                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-base shadow-sm border border-slate-100 ${agent.id === 'coach' ? 'bg-emerald-50' :
+                                                                                        agent.id === 'analyst' ? 'bg-purple-50' :
+                                                                                            'bg-orange-50'
                                                                                         }`}>{agent.icon}</div>
                                                                                 )}
                                                                             </div>
 
                                                                             {/* Info */}
                                                                             <div className="flex-1 min-w-0">
-                                                                                <div className="font-bold text-[13px] leading-tight">{agent.label}</div>
-                                                                                <div className="text-[10px] text-slate-400 mt-0.5 truncate">{agent.detail}</div>
+                                                                                <div className={`font-semibold text-[13px] leading-tight transition-colors ${mentionIndex === idx ? 'text-slate-900' : 'text-slate-700'}`}>
+                                                                                    {agent.label}
+                                                                                </div>
+                                                                                <div className="text-[10px] text-slate-400 mt-0.5 truncate font-medium">
+                                                                                    {agent.detail}
+                                                                                </div>
                                                                             </div>
 
-                                                                            {/* Active Indicator */}
+                                                                            {/* Active Indicator (Dot) */}
                                                                             {mentionIndex === idx && (
-                                                                                <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${agent.color.replace('text-', 'bg-')}`} />
+                                                                                <div className={`w-1 h-1 rounded-full flex-shrink-0 opacity-40 ${agent.color.replace('text-', 'bg-')}`} />
                                                                             )}
                                                                         </div>
                                                                     ))}
 
                                                                     {visibleAgents.length === 0 && (
-                                                                        <div className="py-6 text-center text-xs text-slate-300 italic">No agents found</div>
+                                                                        <div className="py-8 text-center text-xs text-slate-400 font-medium">No agents found</div>
                                                                     )}
                                                                 </div>
                                                             </motion.div>
