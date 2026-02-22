@@ -36,7 +36,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     const AGENTS = [
         { id: 'frog', label: '@frog', detail: 'Swarm Orchestrator', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🐸' },
         { id: 'crock', label: '@crock', detail: 'Default Klyo Assistant', color: 'text-blue-600', bg: 'hover:bg-blue-50', icon: '🤖' },
-        { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-teal-600', bg: 'hover:bg-teal-50', icon: '🌱' },
+        { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-rose-600', bg: 'hover:bg-rose-50', icon: '🌱' },
         { id: 'analyst', label: '@analyst', detail: 'Data Strategist', color: 'text-purple-600', bg: 'hover:bg-purple-50', icon: '📊' },
         { id: 'planner', label: '@planner', detail: 'Calendar Expert', color: 'text-orange-600', bg: 'hover:bg-orange-50', icon: '📅' },
     ];
@@ -235,7 +235,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                         >
                             {/* Header - dynamic based on active agent */}
                             <div className={`p-4 border-b border-gray-100 flex justify-between items-center text-white shadow-sm z-10 transition-all duration-500 ${activeAgent?.id === 'frog' ? 'bg-gradient-to-r from-emerald-600 to-emerald-700' :
-                                activeAgent?.id === 'coach' ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                                activeAgent?.id === 'coach' ? 'bg-gradient-to-r from-rose-500 to-rose-600' :
                                     activeAgent?.id === 'analyst' ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
                                         activeAgent?.id === 'planner' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
                                             'bg-gradient-to-r from-blue-500 to-blue-600'
@@ -424,7 +424,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 }`}
                                                         >
                                                             {msg.role === 'ai' && (
-                                                                <div className={`flex items-center gap-2 mb-1.5 text-xs font-bold tracking-wide border-b pb-1 ${msg.agent === 'Coach' ? 'text-emerald-600 border-emerald-100' :
+                                                                <div className={`flex items-center gap-2 mb-1.5 text-xs font-bold tracking-wide border-b pb-1 ${msg.agent === 'Coach' ? 'text-rose-600 border-rose-100' :
                                                                     msg.agent === 'Analyst' ? 'text-purple-600 border-purple-100' :
                                                                         msg.agent === 'Planner' ? 'text-orange-600 border-orange-100' :
                                                                             msg.agent === 'Dr. Frog' ? 'text-emerald-700 border-emerald-200 bg-emerald-50/50 -mx-1 px-1 rounded-t' :
@@ -461,19 +461,19 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                     hidden: { opacity: 0, x: -10 },
                                                                                     visible: { opacity: 1, x: 0 }
                                                                                 }}
-                                                                                className={`p-2 rounded-lg border text-[11px] leading-relaxed relative ${step.agent === 'Coach' ? 'bg-emerald-50/30 border-emerald-100 shadow-sm' :
+                                                                                className={`p-2 rounded-lg border text-[11px] leading-relaxed relative ${step.agent === 'Coach' ? 'bg-rose-50/30 border-rose-100 shadow-sm' :
                                                                                     step.agent === 'Analyst' ? 'bg-purple-50/30 border-purple-100 shadow-sm' :
                                                                                         step.agent === 'Planner' ? 'bg-orange-50/30 border-orange-100 shadow-sm' :
                                                                                             'bg-blue-50/30 border-blue-100 shadow-sm'
                                                                                     }`}
                                                                             >
                                                                                 <div className="flex items-center gap-1.5 mb-1">
-                                                                                    <div className={`w-2 h-2 rounded-sm rotate-45 ${step.agent === 'Coach' ? 'bg-emerald-500' :
+                                                                                    <div className={`w-2 h-2 rounded-sm rotate-45 ${step.agent === 'Coach' ? 'bg-rose-500' :
                                                                                         step.agent === 'Analyst' ? 'bg-purple-500' :
                                                                                             step.agent === 'Planner' ? 'bg-orange-500' :
                                                                                                 'bg-blue-500'
                                                                                         }`} />
-                                                                                    <span className={`font-black uppercase tracking-tighter text-[9px] ${step.agent === 'Coach' ? 'text-emerald-700' :
+                                                                                    <span className={`font-black uppercase tracking-tighter text-[9px] ${step.agent === 'Coach' ? 'text-rose-700' :
                                                                                         step.agent === 'Analyst' ? 'text-purple-700' :
                                                                                             step.agent === 'Planner' ? 'text-orange-700' :
                                                                                                 'text-blue-700'
@@ -586,7 +586,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                 ) : agent.id === 'crock' ? (
                                                                                     <img src={crockLogo} className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-sm" />
                                                                                 ) : (
-                                                                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[13px] shadow-sm border border-slate-100 ${agent.id === 'coach' ? 'bg-teal-50' :
+                                                                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[13px] shadow-sm border border-slate-100 ${agent.id === 'coach' ? 'bg-rose-50' :
                                                                                         agent.id === 'analyst' ? 'bg-purple-50' :
                                                                                             'bg-orange-50'
                                                                                         }`}>{agent.icon}</div>
