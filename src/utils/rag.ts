@@ -260,17 +260,25 @@ export async function ragQuery(
             if (!c.date) return false;
             return new Date(c.date).toLocaleDateString('en-CA') === todayStr;
         });
-    } else if (targetMonthIndex !== -1) {
-        // Year-Aware Filtering: Prioritize current year (2026) and future
+        // Year-Aware Filtering: Prioritize "Today or Future" for general queries
         const prioritizedCandidates = candidates.filter(c => {
             if (!c.date) return false;
             const d = new Date(c.date);
             const isTargetMonthDay = d.getMonth() === targetMonthIndex && (targetDay === -1 || d.getDate() === targetDay);
-            return isTargetMonthDay && d.getFullYear() >= 2026;
+
+            if (!isAskingAboutPast) {
+                // Return true if it matches month/day AND is today or in the future
+                // We set hours to 0 to compare just the date portion correctly
+                const compareDate = new Date(d);
+                compareDate.setHours(0, 0, 0, 0);
+                const compareToday = new Date(today);
+                compareToday.setHours(0, 0, 0, 0);
+
+                return isTargetMonthDay && compareDate >= compareToday;
+            }
+            return isTargetMonthDay; // Include everything if user asked for "past/history"
         });
 
-        // Only include 2026+ matches. If empty, it stays empty so AI can report "Nothing found".
-        // This prevents accidentally showing 2025 events as current ones.
         candidates = prioritizedCandidates;
     }
 
@@ -370,8 +378,9 @@ export async function ragQuery(
                          - Do NOT start your response with "Today is...".
  
                          CONTENT RULES:
-                         1. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
-                         2. PROACTIVE "LOOKAHEAD" SMARTNESS: You have access to "Lookahead" context for tomorrow. If you see something important coming up (like an early morning event or high-priority task), add a smart reminder like "By the way, you have [Event] tomorrow morning—don't forget to prepare tonight!"
+                         1. **TIMING PRECISION**: Always lead with the exact [TIME] brackets found in the context when discussing an event or task. Never omit the start or end times.
+                         2. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
+                         3. PROACTIVE "LOOKAHEAD" SMARTNESS: You have access to "Lookahead" context for tomorrow. If you see something important coming up (like an early morning event or high-priority task), add a smart reminder like "By the way, you have [Event] tomorrow morning—don't forget to prepare tonight!"
                          3. BE SMART & HELPFUL: Always identify high-priority items. 
                          4. MOOD AWARENESS (NEW): You now have access to "Mood" data for items (focus, stress, easy, exhausting). 
                             - Use this to identify if the user is having a stressful day.
