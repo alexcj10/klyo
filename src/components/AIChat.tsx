@@ -194,6 +194,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                             onClick={() => {
                                 setIsOpen(false);
                                 setEditingSessionId(null);
+                                setShowMentionPopup(false);
                                 startNewChat();
                             }}
                         />
@@ -233,6 +234,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                     <button
                                         onClick={() => {
                                             setIsOpen(false);
+                                            setShowMentionPopup(false);
                                             startNewChat();
                                         }}
                                         className="p-1.5 rounded-lg hover:bg-white/20 transition-colors text-white/90 hover:text-white"
@@ -360,7 +362,10 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                             exit={{ opacity: 0, x: 20 }}
                                             className="flex flex-col h-full overflow-hidden"
                                         >
-                                            <div className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
+                                            <div
+                                                className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain"
+                                                onClick={() => setShowMentionPopup(false)}
+                                            >
                                                 {messages.map((msg) => (
                                                     <div
                                                         key={msg.id}
@@ -380,7 +385,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                 'text-blue-600/90 border-blue-100'
                                                                     }`}>
                                                                     {msg.agent === 'Dr. Frog' ? (
-                                                                        <img src={frogLogo} className="w-4 h-4 rounded-full object-cover border border-emerald-200 shadow-sm" />
+                                                                        <img src={frogLogo} className="w-10 h-10 rounded-full object-cover border-2 border-emerald-400 shadow-md ring-2 ring-emerald-100" />
                                                                     ) : (
                                                                         <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
                                                                     )}
@@ -486,6 +491,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                                             className="absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-[80]"
+                                                            onClick={(e) => e.stopPropagation()}
                                                         >
                                                             <div className="p-2 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
                                                                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Select Specialist</span>
@@ -501,9 +507,9 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                             }`}
                                                                     >
                                                                         {agent.id === 'frog' ? (
-                                                                            <img src={frogLogo} className="w-5 h-5 rounded-full object-cover border border-emerald-200" />
+                                                                            <img src={frogLogo} className="w-7 h-7 rounded-full object-cover border-2 border-emerald-300 shadow-sm" />
                                                                         ) : agent.id === 'crock' ? (
-                                                                            <img src={crockLogo} className="w-5 h-5 rounded-full object-cover border border-blue-200" />
+                                                                            <img src={crockLogo} className="w-7 h-7 rounded-full object-cover border-2 border-blue-300 shadow-sm" />
                                                                         ) : (
                                                                             <span className="text-lg">{agent.icon}</span>
                                                                         )}
