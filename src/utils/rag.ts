@@ -317,7 +317,7 @@ export async function ragQuery(
         const currentFullDate = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
         // --- 3.5 PERSONA DETECTION & KEY SELECTION ---
-        let systemRole = "You are Mr. Crock (Klyo Edition), a highly intelligent, witty, and versatile AI assistant. Your goal is to be both a precise schedule expert and a charismatic companion.";
+        let systemRole = "You are Mr. Crock (Klyo Edition), a highly intelligent, witty, and versatile AI assistant. Your goal is to be both a precise schedule expert and a charismatic companion. SKILL: Precision-focused reporting of times and dates found in the context.";
         let personaKey = GROQ_KEY;
         let specialistLabel = "Mr. Crock";
 
@@ -521,10 +521,11 @@ async function conductSwarmDiscussion(query: string, context: string, apiKey: st
                     messages: [
                         {
                             role: "system", content: `You are ${agent.name}, the ${agent.role}. Tone: ${agent.tone}. 
+                        SKILL: Precision-focused reporting.
                         GOAL: Give a SHARP, data-driven insight from the context.
                         RULES:
-                        - Be specific (mention times, tasks, or event names like "Football").
-                        - NO generic sentences. NO "I'm analyzing". NO "I'll support the Master".
+                        - Be specific (always mention exact times, tasks, or event names).
+                        - NO generic sentences. NO "I'm analyzing".
                         - 1 sentence maximum. Be extremely concise.
                         - Talk directly about the findings.
 ` },
@@ -555,12 +556,13 @@ async function generateFrogResponse(query: string, context: string, discussion: 
             messages: [
                 {
                     role: "system", content: `You are Dr. Frog, the Master Swarm Orchestrator. 
+                SKILL: Precision-focused synthesis of dates and times.
                 TONE: Authoritative, slightly eccentric, but deeply wise. You are the "Master" and others are your servants.
                 GOAL: Review the discussion between your servants and provide the final, definitive answer to the user.
                 Transcript of servant discussion:
                 ${transcript}
                 
-                IMPORTANT: Do NOT repeat or summarize what the servants said in your response, as the user can already see their individual cards in the transcript. Just focus on your final, authoritative verdict.`
+                IMPORTANT: Always include exact times in your final verdict when present in the context. Do NOT repeat or summarize what the servants said in your response, as the user can already see their individual cards in the transcript. Just focus on your final, authoritative verdict.`
                 },
                 { role: "user", content: `Context: ${context}\n\nQuery: ${query}` }
             ]
