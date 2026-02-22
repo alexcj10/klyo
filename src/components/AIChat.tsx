@@ -24,6 +24,17 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     const [editTitle, setEditTitle] = useState('');
     const [deletingSessionId, setDeletingSessionId] = useState<string | null>(null);
 
+    // Mention state
+    const [showMentionPopup, setShowMentionPopup] = useState(false);
+    const [mentionSearch, setMentionSearch] = useState('');
+    const [mentionIndex, setMentionIndex] = useState(0);
+
+    const AGENTS = [
+        { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🌱' },
+        { id: 'analyst', label: '@analyst', detail: 'Data Strategist', color: 'text-purple-600', bg: 'hover:bg-purple-50', icon: '📊' },
+        { id: 'planner', label: '@planner', detail: 'Calendar Expert', color: 'text-orange-600', bg: 'hover:bg-orange-50', icon: '📅' },
+    ];
+
     const {
         messages,
         sendMessage,
@@ -80,7 +91,51 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         if (!inputValue.trim() || isLoading) return;
         sendMessage(inputValue);
         setInputValue('');
+        setShowMentionPopup(false);
     };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        const val = e.target.value;
+        const cursorPos = e.target.selectionStart;
+        setInputValue(val);
+
+        // Basic mention detection
+        const lastAt = val.lastIndexOf('@', cursorPos - 1);
+        if (lastAt !== -1 && (lastAt === 0 || val[lastAt - 1] === ' ' || val[lastAt - 1] === '\n')) {
+            const search = val.slice(lastAt + 1, cursorPos);
+            if (!search.includes(' ')) {
+                setMentionSearch(search);
+                setShowMentionPopup(true);
+                setMentionIndex(0);
+                return;
+            }
+        }
+        setShowMentionPopup(false);
+    };
+
+    const selectAgent = (agent: typeof AGENTS[0]) => {
+        const cursorPos = textareaRef.current?.selectionStart || 0;
+        const lastAt = inputValue.lastIndexOf('@', cursorPos - 1);
+
+        const before = inputValue.slice(0, lastAt);
+        const after = inputValue.slice(cursorPos);
+
+        // Per user request: "@agent/type your queries here"
+        const newValue = `${before}${agent.label}/type your queries here ${after}`;
+        setInputValue(newValue);
+        setShowMentionPopup(false);
+
+        // Focus and set cursor
+        setTimeout(() => {
+            if (textareaRef.current) {
+                textareaRef.current.focus();
+                const newPos = before.length + agent.label.length + 1; // After the slash
+                textareaRef.current.setSelectionRange(newPos, newPos + 23); // Select "type your queries here"
+            }
+        }, 10);
+    };
+
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
     const handleNewChat = () => {
         startNewChat();
@@ -318,9 +373,9 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                         >
                                                             {msg.role === 'ai' && (
                                                                 <div className={`flex items-center gap-2 mb-1.5 text-xs font-bold tracking-wide border-b pb-1 ${msg.agent === 'Coach' ? 'text-emerald-600 border-emerald-100' :
-                                                                        msg.agent === 'Analyst' ? 'text-purple-600 border-purple-100' :
-                                                                            msg.agent === 'Planner' ? 'text-orange-600 border-orange-100' :
-                                                                                'text-blue-600/90 border-blue-100'
+                                                                    msg.agent === 'Analyst' ? 'text-purple-600 border-purple-100' :
+                                                                        msg.agent === 'Planner' ? 'text-orange-600 border-orange-100' :
+                                                                            'text-blue-600/90 border-blue-100'
                                                                     }`}>
                                                                     <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
                                                                     {msg.agent || 'Mr. Crock'}
@@ -369,12 +424,68 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                             </div>
 
                                             {/* Input */}
-                                            <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100 z-10">
+                                            <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100 z-10 relative">
+                                                {/* Mention Popup */}
+                                                <AnimatePresence>
+                                                    {showMentionPopup && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                            className="absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-[80]"
+                                                        >
+                                                            <div className="p-2 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
+                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Select Specialist</span>
+                                                                <span className="text-[10px] text-slate-400">↑↓ to navigate • Enter to select</span>
+                                                            </div>
+                                                            <div className="max-h-48 overflow-y-auto p-1">
+                                                                {AGENTS.filter(a => a.label.toLowerCase().includes(mentionSearch.toLowerCase())).map((agent, idx) => (
+                                                                    <div
+                                                                        key={agent.id}
+                                                                        onClick={() => selectAgent(agent)}
+                                                                        onMouseEnter={() => setMentionIndex(idx)}
+                                                                        className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all ${mentionIndex === idx ? `${agent.bg} ${agent.color} translate-x-1` : 'text-slate-600 hover:bg-slate-50'
+                                                                            }`}
+                                                                    >
+                                                                        <span className="text-lg">{agent.icon}</span>
+                                                                        <div className="flex-1 min-w-0">
+                                                                            <div className="font-bold text-sm">{agent.label}</div>
+                                                                            <div className="text-[10px] opacity-70 italic">{agent.detail}</div>
+                                                                        </div>
+                                                                        {mentionIndex === idx && <Check className="w-3.5 h-3.5" />}
+                                                                    </div>
+                                                                ))}
+                                                                {AGENTS.filter(a => a.label.toLowerCase().includes(mentionSearch.toLowerCase())).length === 0 && (
+                                                                    <div className="p-4 text-center text-xs text-slate-400 italic">No agents found</div>
+                                                                )}
+                                                            </div>
+                                                        </motion.div>
+                                                    )}
+                                                </AnimatePresence>
+
                                                 <div className="relative flex items-center bg-slate-50 border border-slate-200 rounded-2xl focus-within:ring-2 focus-within:ring-blue-500/30 focus-within:bg-white focus-within:border-blue-400/50 transition-all duration-200 shadow-sm overflow-hidden p-1">
                                                     <textarea
+                                                        ref={textareaRef}
                                                         value={inputValue}
-                                                        onChange={(e) => setInputValue(e.target.value)}
+                                                        onChange={handleInputChange}
                                                         onKeyDown={(e) => {
+                                                            if (showMentionPopup) {
+                                                                const filtered = AGENTS.filter(a => a.label.toLowerCase().includes(mentionSearch.toLowerCase()));
+                                                                if (e.key === 'ArrowDown') {
+                                                                    e.preventDefault();
+                                                                    setMentionIndex((prev) => (prev + 1) % filtered.length);
+                                                                } else if (e.key === 'ArrowUp') {
+                                                                    e.preventDefault();
+                                                                    setMentionIndex((prev) => (prev - 1 + filtered.length) % filtered.length);
+                                                                } else if (e.key === 'Enter' || e.key === 'Tab') {
+                                                                    e.preventDefault();
+                                                                    if (filtered[mentionIndex]) selectAgent(filtered[mentionIndex]);
+                                                                } else if (e.key === 'Escape') {
+                                                                    setShowMentionPopup(false);
+                                                                }
+                                                                return;
+                                                            }
+
                                                             if (e.key === 'Enter' && !e.shiftKey) {
                                                                 e.preventDefault();
                                                                 handleSubmit(e);
