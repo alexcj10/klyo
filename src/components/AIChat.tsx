@@ -30,8 +30,12 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     const [mentionSearch, setMentionSearch] = useState('');
     const [mentionIndex, setMentionIndex] = useState(0);
 
+    // Sticky agent state: null = default Crock
+    const [activeAgent, setActiveAgent] = useState<typeof AGENTS[0] | null>(null);
+
     const AGENTS = [
         { id: 'frog', label: '@frog', detail: 'Master Swarm Orchestrator (Elite)', color: 'text-emerald-800', bg: 'hover:bg-emerald-100/50', icon: '🐸' },
+        { id: 'crock', label: '@crock', detail: 'Default Klyo Assistant', color: 'text-blue-600', bg: 'hover:bg-blue-50', icon: '🤖' },
         { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🌱' },
         { id: 'analyst', label: '@analyst', detail: 'Data Strategist', color: 'text-purple-600', bg: 'hover:bg-purple-50', icon: '📊' },
         { id: 'planner', label: '@planner', detail: 'Calendar Expert', color: 'text-orange-600', bg: 'hover:bg-orange-50', icon: '📅' },
@@ -67,7 +71,9 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
             setShowHistory(false);
             setEditingSessionId(null);
             setDeletingSessionId(null);
-            setInputValue(''); // Clear input when closed
+            setInputValue('');
+            setShowMentionPopup(false);
+            setActiveAgent(null); // Reset agent on close
         }
     }, [isOpen]);
 
@@ -91,7 +97,28 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!inputValue.trim() || isLoading) return;
-        sendMessage(inputValue);
+
+        let msgToSend = inputValue;
+        const hasExplicitMention = /@(frog|drfrog|coach|analyst|planner|crock)/i.test(inputValue);
+
+        // If an agent is active but this message doesn't mention one, auto-prepend
+        if (activeAgent && activeAgent.id !== 'crock' && !hasExplicitMention) {
+            msgToSend = `${activeAgent.label}/ ${inputValue}`;
+        }
+
+        // Detect if a new agent mention switches the active agent
+        const agentMatch = inputValue.match(/@(frog|drfrog|coach|analyst|planner|crock)/i);
+        if (agentMatch) {
+            const mentionedId = agentMatch[1].toLowerCase().replace('drfrog', 'frog');
+            if (mentionedId === 'crock') {
+                setActiveAgent(null); // Reset to default
+            } else {
+                const found = AGENTS.find(a => a.id === mentionedId);
+                if (found) setActiveAgent(found);
+            }
+        }
+
+        sendMessage(msgToSend);
         setInputValue('');
         setShowMentionPopup(false);
     };
@@ -125,6 +152,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         const newValue = `${before}${agent.label}/${after}`;
         setInputValue(newValue);
         setShowMentionPopup(false);
+        setActiveAgent(agent); // Sticky: lock to this agent
 
         // Focus and set cursor
         setTimeout(() => {
@@ -205,15 +233,33 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                             exit={{ opacity: 0, y: 50, scale: 0.9 }}
                             className="fixed z-[70] flex flex-col overflow-hidden bg-white/95 backdrop-blur-md shadow-2xl border border-white/50 transition-all duration-300 ease-out bottom-6 left-6 right-6 h-[70vh] rounded-[2rem] sm:left-auto sm:right-6 sm:bottom-6 sm:rounded-2xl sm:w-[450px] sm:h-[75vh] md:h-[80vh]"
                         >
-                            {/* Header */}
-                            <div className="p-4 border-b border-gray-100 flex justify-between items-center bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm z-10">
+                            {/* Header - dynamic based on active agent */}
+                            <div className={`p-4 border-b border-gray-100 flex justify-between items-center text-white shadow-sm z-10 transition-all duration-500 ${activeAgent?.id === 'frog' ? 'bg-gradient-to-r from-emerald-600 to-emerald-700' :
+                                activeAgent?.id === 'coach' ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+                                    activeAgent?.id === 'analyst' ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
+                                        activeAgent?.id === 'planner' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
+                                            'bg-gradient-to-r from-blue-500 to-blue-600'
+                                }`}>
                                 <div className="flex items-center gap-3">
                                     <div className="drop-shadow-md">
-                                        <img src={crockLogo} alt="Mr. Crock" className="w-10 h-10 rounded-full object-cover border-2 border-white/20" />
+                                        {activeAgent?.id === 'frog' ? (
+                                            <img src={frogLogo} alt="Dr. Frog" className="w-10 h-10 rounded-full object-cover border-2 border-white/30" />
+                                        ) : (
+                                            <img src={crockLogo} alt="Mr. Crock" className="w-10 h-10 rounded-full object-cover border-2 border-white/20" />
+                                        )}
                                     </div>
                                     <div className="overflow-hidden">
-                                        <h3 className="font-bold text-sm truncate">Mr. Crock</h3>
-                                        <p className="text-xs text-white/80 truncate">Klyo Assistant</p>
+                                        <h3 className="font-bold text-sm truncate">
+                                            {activeAgent ? (
+                                                activeAgent.id === 'frog' ? 'Dr. Frog' :
+                                                    activeAgent.id === 'coach' ? 'Coach' :
+                                                        activeAgent.id === 'analyst' ? 'Analyst' :
+                                                            activeAgent.id === 'planner' ? 'Planner' : 'Mr. Crock'
+                                            ) : 'Mr. Crock'}
+                                        </h3>
+                                        <p className="text-xs text-white/80 truncate">
+                                            {activeAgent ? activeAgent.detail : 'Klyo Assistant'}
+                                        </p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-1">
@@ -485,45 +531,106 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                             <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100 z-10 relative">
                                                 {/* Mention Popup */}
                                                 <AnimatePresence>
-                                                    {showMentionPopup && (
-                                                        <motion.div
-                                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                            className="absolute bottom-full left-3 right-3 mb-2 bg-white rounded-xl shadow-xl border border-slate-100 overflow-hidden z-[80]"
-                                                            onClick={(e) => e.stopPropagation()}
-                                                        >
-                                                            <div className="p-2 border-b border-slate-50 flex items-center justify-between bg-slate-50/50">
-                                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1">Select Specialist</span>
-                                                                <span className="text-[10px] text-slate-400">↑↓ to navigate • Enter to select</span>
-                                                            </div>
-                                                            <div className="max-h-48 overflow-y-auto p-1">
-                                                                {AGENTS.filter(a => a.id.includes(mentionSearch.toLowerCase()) || a.label.includes(mentionSearch.toLowerCase())).map((agent, idx) => (
-                                                                    <div
-                                                                        key={agent.id}
-                                                                        onClick={() => selectAgent(agent)}
-                                                                        onMouseEnter={() => setMentionIndex(idx)}
-                                                                        className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all ${mentionIndex === idx ? `${agent.bg} ${agent.color} translate-x-1` : 'text-slate-600 hover:bg-slate-50'
-                                                                            }`}
-                                                                    >
-                                                                        {agent.id === 'frog' ? (
-                                                                            <img src={frogLogo} className="w-7 h-7 rounded-full object-cover border-2 border-emerald-300 shadow-sm" />
-                                                                        ) : agent.id === 'crock' ? (
-                                                                            <img src={crockLogo} className="w-7 h-7 rounded-full object-cover border-2 border-blue-300 shadow-sm" />
-                                                                        ) : (
-                                                                            <span className="text-lg">{agent.icon}</span>
-                                                                        )}
-                                                                        <div className="flex-1 min-w-0">
-                                                                            <div className="font-bold text-sm">{agent.label}</div>
-                                                                            <div className="text-[10px] opacity-70 italic">{agent.detail}</div>
-                                                                        </div>
-                                                                        {mentionIndex === idx && <Check className="w-3.5 h-3.5" />}
+                                                    {showMentionPopup && (() => {
+                                                        // Smart filter: hide @crock when no agent active (default is already Crock),
+                                                        // hide the currently active agent (can't switch to yourself),
+                                                        // but show @crock when another agent is active (as an escape hatch)
+                                                        const visibleAgents = AGENTS.filter(a => {
+                                                            if (!activeAgent && a.id === 'crock') return false; // hide crock at start
+                                                            if (activeAgent && a.id === activeAgent.id) return false; // hide current agent
+                                                            const q = mentionSearch.toLowerCase();
+                                                            return !q || a.id.includes(q) || a.label.includes(q);
+                                                        });
+
+                                                        return (
+                                                            <motion.div
+                                                                initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                                exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                                                                transition={{ duration: 0.15 }}
+                                                                className="absolute bottom-full left-2 right-2 mb-3 bg-white rounded-2xl shadow-2xl border border-slate-100/80 overflow-hidden z-[80]"
+                                                                onClick={(e) => e.stopPropagation()}
+                                                            >
+                                                                {/* Header */}
+                                                                <div className="px-4 py-2.5 border-b border-slate-50 flex items-center justify-between">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse" />
+                                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.12em]">Specialists</span>
                                                                     </div>
-                                                                ))}
-                                                                {AGENTS.filter(a => a.label.toLowerCase().includes(mentionSearch.toLowerCase())).length === 0 && (
-                                                                    <div className="p-4 text-center text-xs text-slate-400 italic">No agents found</div>
-                                                                )}
-                                                            </div>
+                                                                    <span className="text-[10px] text-slate-300">↑↓ navigate · Enter select</span>
+                                                                </div>
+
+                                                                {/* Agent List */}
+                                                                <div className="p-2 space-y-0.5">
+                                                                    {visibleAgents.map((agent, idx) => (
+                                                                        <div
+                                                                            key={agent.id}
+                                                                            onClick={() => selectAgent(agent)}
+                                                                            onMouseEnter={() => setMentionIndex(idx)}
+                                                                            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-150 ${mentionIndex === idx
+                                                                                    ? `${agent.bg.replace('hover:', '')} ${agent.color}`
+                                                                                    : 'hover:bg-slate-50 text-slate-600'
+                                                                                }`}
+                                                                        >
+                                                                            {/* Avatar */}
+                                                                            <div className="relative flex-shrink-0">
+                                                                                {agent.id === 'frog' ? (
+                                                                                    <img src={frogLogo} className="w-8 h-8 rounded-full object-cover border-2 border-emerald-200 shadow-sm" />
+                                                                                ) : agent.id === 'crock' ? (
+                                                                                    <img src={crockLogo} className="w-8 h-8 rounded-full object-cover border-2 border-blue-200 shadow-sm" />
+                                                                                ) : (
+                                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-base shadow-sm ${agent.id === 'coach' ? 'bg-emerald-50 border-2 border-emerald-200' :
+                                                                                            agent.id === 'analyst' ? 'bg-purple-50 border-2 border-purple-200' :
+                                                                                                'bg-orange-50 border-2 border-orange-200'
+                                                                                        }`}>{agent.icon}</div>
+                                                                                )}
+                                                                            </div>
+
+                                                                            {/* Info */}
+                                                                            <div className="flex-1 min-w-0">
+                                                                                <div className="font-bold text-[13px] leading-tight">{agent.label}</div>
+                                                                                <div className="text-[10px] text-slate-400 mt-0.5 truncate">{agent.detail}</div>
+                                                                            </div>
+
+                                                                            {/* Active Indicator */}
+                                                                            {mentionIndex === idx && (
+                                                                                <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${agent.color.replace('text-', 'bg-')}`} />
+                                                                            )}
+                                                                        </div>
+                                                                    ))}
+
+                                                                    {visibleAgents.length === 0 && (
+                                                                        <div className="py-6 text-center text-xs text-slate-300 italic">No agents found</div>
+                                                                    )}
+                                                                </div>
+                                                            </motion.div>
+                                                        );
+                                                    })()}
+                                                </AnimatePresence>
+
+                                                {/* Active Agent Indicator Pill */}
+                                                <AnimatePresence>
+                                                    {activeAgent && (
+                                                        <motion.div
+                                                            initial={{ opacity: 0, y: 4 }}
+                                                            animate={{ opacity: 1, y: 0 }}
+                                                            exit={{ opacity: 0, y: 4 }}
+                                                            className={`flex items-center gap-1.5 mb-1 px-2 py-1 rounded-lg text-[11px] font-semibold w-fit ${activeAgent.id === 'frog' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                                                                activeAgent.id === 'coach' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' :
+                                                                    activeAgent.id === 'analyst' ? 'bg-purple-50 text-purple-600 border border-purple-200' :
+                                                                        activeAgent.id === 'planner' ? 'bg-orange-50 text-orange-600 border border-orange-200' :
+                                                                            'bg-blue-50 text-blue-600 border border-blue-200'
+                                                                }`}
+                                                        >
+                                                            <span className="opacity-80">{activeAgent.label}</span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setActiveAgent(null)}
+                                                                className="hover:opacity-60 transition-opacity ml-0.5"
+                                                                title="Switch back to Mr. Crock"
+                                                            >
+                                                                <X className="w-3 h-3" />
+                                                            </button>
                                                         </motion.div>
                                                     )}
                                                 </AnimatePresence>
