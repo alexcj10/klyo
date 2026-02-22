@@ -106,9 +106,9 @@ export async function ragQuery(
     question: string,
     events: Event[],
     tasks: Task[]
-): Promise<string> {
-    if (!GROQ_KEY) return "Please configure your VITE_GROQ_KEY to use Mr. Crock AI.";
-    if (!question || typeof question !== 'string') return "I didn't quite catch that. Could you say it again?";
+): Promise<{ answer: string, agent: string }> {
+    if (!GROQ_KEY) return { answer: "Please configure your VITE_GROQ_KEY to use Mr. Crock AI.", agent: "System" };
+    if (!question || typeof question !== 'string') return { answer: "I didn't quite catch that. Could you say it again?", agent: "Mr. Crock" };
 
     // 0. Prepare Data
     const items = normalizeData(events, tasks);
@@ -301,10 +301,38 @@ export async function ragQuery(
     try {
         const currentFullDate = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
+        // --- 3.5 PERSONA DETECTION & KEY SELECTION ---
+        let systemRole = "You are Mr. Crock (Klyo Edition), a highly intelligent, witty, and versatile AI assistant. Your goal is to be both a precise schedule expert and a charismatic companion.";
+        let personaKey = GROQ_KEY;
+        let specialistLabel = "Mr. Crock";
+
+        if (lowerQ.includes('@coach')) {
+            systemRole = `You are @coach (Klyo Edition), an empathetic, warm, and highly supportive productivity mentor. 
+            TONE: Gentle, encouraging, but firm about well-being. Use terms of endearment or friendly vibes.
+            GOAL: Analyze the user's schedule to ensure they aren't burning out. Focus heavily on 'Mood' data.
+            If you see many 'stress' or 'exhausting' tags, insist on a break.`;
+            personaKey = import.meta.env.VITE_COACH_KEY || GROQ_KEY;
+            specialistLabel = "Coach";
+        } else if (lowerQ.includes('@analyst')) {
+            systemRole = `You are @analyst (Klyo Edition), a high-performance data-driven strategist. 
+            TONE: Sharp, efficient, professional, and brutally honest about numbers.
+            GOAL: Identify productivity trends, completion rates, and optimization opportunities.
+            Focus on stats, priorities, and getting the most out of the day.`;
+            personaKey = import.meta.env.VITE_ANALYST_KEY || GROQ_KEY;
+            specialistLabel = "Analyst";
+        } else if (lowerQ.includes('@planner')) {
+            systemRole = `You are @planner (Klyo Edition), a master of spatial-temporal coordination. 
+            TONE: Organized, direct, and solution-oriented.
+            GOAL: Resolve calendar conflicts and optimize the sequence of tasks.
+            Identify tight overlaps and suggest moving items to better slots.`;
+            personaKey = import.meta.env.VITE_PLANNER_KEY || GROQ_KEY;
+            specialistLabel = "Planner";
+        }
+
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
             headers: {
-                "Authorization": `Bearer ${GROQ_KEY}`,
+                "Authorization": `Bearer ${personaKey}`,
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
@@ -312,36 +340,36 @@ export async function ragQuery(
                 messages: [
                     {
                         role: "system",
-                        content: `You are Mr. Crock (Klyo Edition), a highly intelligent, witty, and versatile AI assistant. Your goal is to be both a precise schedule expert and a charismatic companion.
-
-                        PERSONALITY & TONE:
-                        - Adapt your vibe to the user. Be funny if they are casual, professional if they are serious, and warm if they are friendly.
-                        - You are witty, confident, and never robotic.
-                        - You represent 'Klyo', the ultimate productivity workspace.
-
-                        TEMPORAL AWARENESS (CRITICAL):
-                        - Internal System Date: ${currentFullDate}
-                        - If the user specifies a day (e.g., "today", "tomorrow", "this month"), ONLY use the items from the Context that match that day/period. 
-                        - **CRITICAL**: If the user asks for tomorrow, do NOT mention today's events/tasks at all.
-                        - NEVER mention the current date, day of the week, or time unless asked.
-                        - Do NOT start your response with "Today is...".
-
-                        CONTENT RULES:
-                        1. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
-                        2. PROACTIVE "LOOKAHEAD" SMARTNESS: You have access to "Lookahead" context for tomorrow. If you see something important coming up (like an early morning event or high-priority task), add a smart reminder like "By the way, you have [Event] tomorrow morning—don't forget to prepare tonight!"
-                        3. BE SMART & HELPFUL: Always identify high-priority items. 
-                        4. MOOD AWARENESS (NEW): You now have access to "Mood" data for items (focus, stress, easy, exhausting). 
-                           - Use this to identify if the user is having a stressful day.
-                           - If you see many "exhausting" or "stress" tags, offer words of encouragement or suggest a break.
-                           - If they are in a "focus" flow, praise their productivity.
-                        5. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
-                        6. ONLY use information strictly found in your Context.
-                        
-                        Context (User's Schedule Today/Target):
-                        ${contextString}
-
-                        ${lookaheadString}
-                        `
+                        content: `${systemRole}
+ 
+                         PERSONALITY & TONE (GENERAL):
+                         - Adapt your vibe to the user. Be funny if they are casual, professional if they are serious, and warm if they are friendly.
+                         - You are witty, confident, and never robotic.
+                         - You represent 'Klyo', the ultimate productivity workspace.
+ 
+                         TEMPORAL AWARENESS (CRITICAL):
+                         - Internal System Date: ${currentFullDate}
+                         - If the user specifies a day (e.g., "today", "tomorrow", "this month"), ONLY use the items from the Context that match that day/period. 
+                         - **CRITICAL**: If the user asks for tomorrow, do NOT mention today's events/tasks at all.
+                         - NEVER mention the current date, day of the week, or time unless asked.
+                         - Do NOT start your response with "Today is...".
+ 
+                         CONTENT RULES:
+                         1. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
+                         2. PROACTIVE "LOOKAHEAD" SMARTNESS: You have access to "Lookahead" context for tomorrow. If you see something important coming up (like an early morning event or high-priority task), add a smart reminder like "By the way, you have [Event] tomorrow morning—don't forget to prepare tonight!"
+                         3. BE SMART & HELPFUL: Always identify high-priority items. 
+                         4. MOOD AWARENESS (NEW): You now have access to "Mood" data for items (focus, stress, easy, exhausting). 
+                            - Use this to identify if the user is having a stressful day.
+                            - If you see many "exhausting" or "stress" tags, offer words of encouragement or suggest a break.
+                            - If they are in a "focus" flow, praise their productivity.
+                         5. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
+                         6. ONLY use information strictly found in your Context.
+                         
+                         Context (User's Schedule Today/Target):
+                         ${contextString}
+ 
+                         ${lookaheadString}
+                         `
                     },
                     {
                         role: "user",
@@ -358,15 +386,17 @@ export async function ragQuery(
 
         // --- 4. REFLECTION CORE (Self-Correction) ---
         if (answer.length > 100 || question.length > 20) {
-            const improvedAnswer = await reflectionStep(question, answer, contextString);
-            if (improvedAnswer) return improvedAnswer;
+            const improvedAnswer = await reflectionStep(question, answer, contextString, specialistLabel, personaKey);
+            if (improvedAnswer) return { answer: improvedAnswer, agent: specialistLabel };
         }
 
-        return answer;
+        return { answer, agent: specialistLabel };
     } catch (e: any) {
         console.error("Groq Failure:", e);
-        return `Error: ${e.message || "AI Service Failed"
-            }.Check console.`;
+        return {
+            answer: `Error: ${e.message || "AI Service Failed"}. Check console.`,
+            agent: "System"
+        };
     }
 }
 
@@ -417,12 +447,12 @@ async function rerankItems(query: string, items: RagItem[]): Promise<RagItem[]> 
     } catch (e) { return []; }
 }
 
-async function reflectionStep(query: string, answer: string, context: string): Promise<string | null> {
-    if (!GROQ_KEY) return null;
+async function reflectionStep(query: string, answer: string, context: string, agentLabel: string, apiKey: string): Promise<string | null> {
+    if (!apiKey) return null;
     try {
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
             method: "POST",
-            headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
+            headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
             body: JSON.stringify({
                 model: "llama-3.3-70b-versatile",
                 messages: [
@@ -439,11 +469,11 @@ async function reflectionStep(query: string, answer: string, context: string): P
             // Rewrite with improved instructions
             const rwRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                 method: "POST",
-                headers: { "Authorization": `Bearer ${GROQ_KEY}`, "Content-Type": "application/json" },
+                headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
                 body: JSON.stringify({
                     model: "llama-3.3-70b-versatile",
                     messages: [
-                        { role: "system", content: `You are a professional editor.Rewrite the answer based on this critique: ${parsed.critique}. ** CRITICAL **: ONLY mention items found in the provided Context.Do NOT mention items for Today if the user is asking about Tomorrow.Stay strictly within the requested timeframe.Stay witty and smart.` },
+                        { role: "system", content: `You are a professional editor representing ${agentLabel}. Rewrite the answer based on this critique: ${parsed.critique}. ** CRITICAL **: ONLY mention items found in the provided Context. Do NOT mention items for Today if the user is asking about Tomorrow. Stay strictly within the requested timeframe. Stay witty and smart.` },
                         { role: "user", content: `Context: ${context}\nQuestion: ${query}\nOriginal Answer: ${answer}` }
                     ]
                 })

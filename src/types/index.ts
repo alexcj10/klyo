@@ -31,6 +31,7 @@ export interface Message {
   role: 'user' | 'ai';
   content: string;
   timestamp: Date;
+  agent?: string;
 }
 
 export interface Session {

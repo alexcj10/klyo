@@ -317,9 +317,13 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 }`}
                                                         >
                                                             {msg.role === 'ai' && (
-                                                                <div className="flex items-center gap-2 mb-1.5 text-xs font-bold text-blue-600/90 tracking-wide border-b border-blue-100 pb-1">
+                                                                <div className={`flex items-center gap-2 mb-1.5 text-xs font-bold tracking-wide border-b pb-1 ${msg.agent === 'Coach' ? 'text-emerald-600 border-emerald-100' :
+                                                                        msg.agent === 'Analyst' ? 'text-purple-600 border-purple-100' :
+                                                                            msg.agent === 'Planner' ? 'text-orange-600 border-orange-100' :
+                                                                                'text-blue-600/90 border-blue-100'
+                                                                    }`}>
                                                                     <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
-                                                                    Mr. Crock
+                                                                    {msg.agent || 'Mr. Crock'}
                                                                 </div>
                                                             )}
                                                             <div className="markdown-body">
