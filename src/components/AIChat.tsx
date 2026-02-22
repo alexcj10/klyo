@@ -34,9 +34,9 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     const [activeAgent, setActiveAgent] = useState<typeof AGENTS[0] | null>(null);
 
     const AGENTS = [
-        { id: 'frog', label: '@frog', detail: 'Master Swarm Orchestrator (Elite)', color: 'text-emerald-800', bg: 'hover:bg-emerald-100/50', icon: '🐸' },
+        { id: 'frog', label: '@frog', detail: 'Master Swarm Orchestrator (Elite)', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🐸' },
         { id: 'crock', label: '@crock', detail: 'Default Klyo Assistant', color: 'text-blue-600', bg: 'hover:bg-blue-50', icon: '🤖' },
-        { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🌱' },
+        { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-teal-600', bg: 'hover:bg-teal-50', icon: '🌱' },
         { id: 'analyst', label: '@analyst', detail: 'Data Strategist', color: 'text-purple-600', bg: 'hover:bg-purple-50', icon: '📊' },
         { id: 'planner', label: '@planner', detail: 'Calendar Expert', color: 'text-orange-600', bg: 'hover:bg-orange-50', icon: '📅' },
     ];
@@ -560,13 +560,13 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 </div>
 
                                                                 {/* Agent List */}
-                                                                <div className="p-1.5 space-y-0.5">
+                                                                <div className="p-1 space-y-0">
                                                                     {visibleAgents.map((agent, idx) => (
                                                                         <div
                                                                             key={agent.id}
                                                                             onClick={() => selectAgent(agent)}
                                                                             onMouseEnter={() => setMentionIndex(idx)}
-                                                                            className={`relative flex items-center gap-3 px-3 py-2 rounded-xl cursor-pointer transition-all duration-150 ${mentionIndex === idx
+                                                                            className={`relative flex items-center gap-2.5 px-3 py-1.5 rounded-xl cursor-pointer transition-all duration-150 ${mentionIndex === idx
                                                                                 ? 'bg-slate-50/80'
                                                                                 : 'hover:bg-slate-50/50'
                                                                                 }`}
@@ -575,18 +575,18 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                             {mentionIndex === idx && (
                                                                                 <motion.div
                                                                                     layoutId="mention-accent"
-                                                                                    className={`absolute left-0 w-1 h-6 rounded-r-full ${agent.color.replace('text-', 'bg-')}`}
+                                                                                    className={`absolute left-0 w-0.5 h-5 rounded-r-full ${agent.color.replace('text-', 'bg-')}`}
                                                                                 />
                                                                             )}
 
                                                                             {/* Avatar */}
                                                                             <div className="relative flex-shrink-0">
                                                                                 {agent.id === 'frog' ? (
-                                                                                    <img src={frogLogo} className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-sm" />
+                                                                                    <img src={frogLogo} className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-sm" />
                                                                                 ) : agent.id === 'crock' ? (
-                                                                                    <img src={crockLogo} className="w-8 h-8 rounded-full object-cover border border-slate-200 shadow-sm" />
+                                                                                    <img src={crockLogo} className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-sm" />
                                                                                 ) : (
-                                                                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-base shadow-sm border border-slate-100 ${agent.id === 'coach' ? 'bg-emerald-50' :
+                                                                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[13px] shadow-sm border border-slate-100 ${agent.id === 'coach' ? 'bg-teal-50' :
                                                                                         agent.id === 'analyst' ? 'bg-purple-50' :
                                                                                             'bg-orange-50'
                                                                                         }`}>{agent.icon}</div>
@@ -595,10 +595,10 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
 
                                                                             {/* Info */}
                                                                             <div className="flex-1 min-w-0">
-                                                                                <div className={`font-semibold text-[13px] leading-tight transition-colors ${mentionIndex === idx ? 'text-slate-900' : 'text-slate-700'}`}>
+                                                                                <div className={`font-bold text-[12px] leading-tight transition-colors ${mentionIndex === idx ? agent.color : 'text-slate-700'}`}>
                                                                                     {agent.label}
                                                                                 </div>
-                                                                                <div className="text-[10px] text-slate-400 mt-0.5 truncate font-medium">
+                                                                                <div className="text-[9px] text-slate-400 mt-0.5 truncate font-medium">
                                                                                     {agent.detail}
                                                                                 </div>
                                                                             </div>
@@ -611,7 +611,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                     ))}
 
                                                                     {visibleAgents.length === 0 && (
-                                                                        <div className="py-8 text-center text-xs text-slate-400 font-medium">No agents found</div>
+                                                                        <div className="py-6 text-center text-xs text-slate-400 font-medium">No agents found</div>
                                                                     )}
                                                                 </div>
                                                             </motion.div>
