@@ -34,7 +34,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     const [activeAgent, setActiveAgent] = useState<typeof AGENTS[0] | null>(null);
 
     const AGENTS = [
-        { id: 'frog', label: '@frog', detail: 'Master Swarm Orchestrator (Elite)', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🐸' },
+        { id: 'frog', label: '@frog', detail: 'Swarm Orchestrator', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🐸' },
         { id: 'crock', label: '@crock', detail: 'Default Klyo Assistant', color: 'text-blue-600', bg: 'hover:bg-blue-50', icon: '🤖' },
         { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-teal-600', bg: 'hover:bg-teal-50', icon: '🌱' },
         { id: 'analyst', label: '@analyst', detail: 'Data Strategist', color: 'text-purple-600', bg: 'hover:bg-purple-50', icon: '📊' },
