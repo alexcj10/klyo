@@ -103,7 +103,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         const lastAt = val.lastIndexOf('@', cursorPos - 1);
         if (lastAt !== -1 && (lastAt === 0 || val[lastAt - 1] === ' ' || val[lastAt - 1] === '\n')) {
             const search = val.slice(lastAt + 1, cursorPos);
-            if (!search.includes(' ')) {
+            if (!search.includes(' ') && !search.includes('/')) {
                 setMentionSearch(search);
                 setShowMentionPopup(true);
                 setMentionIndex(0);
@@ -120,8 +120,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         const before = inputValue.slice(0, lastAt);
         const after = inputValue.slice(cursorPos);
 
-        // Per user request: "@agent/type your queries here"
-        const newValue = `${before}${agent.label}/type your queries here ${after}`;
+        const newValue = `${before}${agent.label}/${after}`;
         setInputValue(newValue);
         setShowMentionPopup(false);
 
@@ -129,8 +128,8 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         setTimeout(() => {
             if (textareaRef.current) {
                 textareaRef.current.focus();
-                const newPos = before.length + agent.label.length + 1; // After the slash
-                textareaRef.current.setSelectionRange(newPos, newPos + 23); // Select "type your queries here"
+                const newPos = before.length + agent.label.length + 1;
+                textareaRef.current.setSelectionRange(newPos, newPos);
             }
         }, 10);
     };
