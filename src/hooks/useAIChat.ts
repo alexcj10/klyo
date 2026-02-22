@@ -98,13 +98,14 @@ export function useAIChat(events: Event[], tasks: Task[]) {
 
         try {
             // Call RAG Engine
-            const { answer, agent } = await ragQuery(text, events, tasks);
+            const { answer, agent, discussion } = await ragQuery(text, events, tasks);
 
             const aiMsg: Message = {
                 id: (Date.now() + 1).toString(),
                 role: 'ai',
                 content: answer,
                 agent: agent,
+                discussion: discussion,
                 timestamp: new Date()
             };
 

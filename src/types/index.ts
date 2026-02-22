@@ -30,8 +30,9 @@ export interface Message {
   id: string;
   role: 'user' | 'ai';
   content: string;
-  timestamp: Date;
   agent?: string;
+  discussion?: Array<{ agent: string, content: string }>;
+  timestamp: Date;
 }
 
 export interface Session {

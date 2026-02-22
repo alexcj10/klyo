@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAIChat } from '../hooks/useAIChat';
 import { Event, Task, Session } from '../types';
 import crockLogo from '../assets/crock.png';
+import frogLogo from '../assets/frog.png';
 import { format } from 'date-fns';
 
 interface AIChatProps {
@@ -30,6 +31,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
     const [mentionIndex, setMentionIndex] = useState(0);
 
     const AGENTS = [
+        { id: 'frog', label: '@frog', detail: 'Master Swarm Orchestrator (Elite)', color: 'text-emerald-800', bg: 'hover:bg-emerald-100/50', icon: '🐸' },
         { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-emerald-600', bg: 'hover:bg-emerald-50', icon: '🌱' },
         { id: 'analyst', label: '@analyst', detail: 'Data Strategist', color: 'text-purple-600', bg: 'hover:bg-purple-50', icon: '📊' },
         { id: 'planner', label: '@planner', detail: 'Calendar Expert', color: 'text-orange-600', bg: 'hover:bg-orange-50', icon: '📅' },
@@ -374,10 +376,62 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 <div className={`flex items-center gap-2 mb-1.5 text-xs font-bold tracking-wide border-b pb-1 ${msg.agent === 'Coach' ? 'text-emerald-600 border-emerald-100' :
                                                                     msg.agent === 'Analyst' ? 'text-purple-600 border-purple-100' :
                                                                         msg.agent === 'Planner' ? 'text-orange-600 border-orange-100' :
-                                                                            'text-blue-600/90 border-blue-100'
+                                                                            msg.agent === 'Dr. Frog' ? 'text-emerald-700 border-emerald-200 bg-emerald-50/50 -mx-1 px-1 rounded-t' :
+                                                                                'text-blue-600/90 border-blue-100'
                                                                     }`}>
-                                                                    <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
+                                                                    {msg.agent === 'Dr. Frog' ? (
+                                                                        <img src={frogLogo} className="w-4 h-4 rounded-full object-cover border border-emerald-200 shadow-sm" />
+                                                                    ) : (
+                                                                        <img src={crockLogo} className="w-3 h-3 rounded-full object-cover" />
+                                                                    )}
                                                                     {msg.agent || 'Mr. Crock'}
+                                                                </div>
+                                                            )}
+
+                                                            {/* Swarm Discussion Transcript */}
+                                                            {msg.discussion && msg.discussion.length > 0 && (
+                                                                <div className="mb-4 space-y-2 bg-slate-50/80 p-3 rounded-xl border border-slate-100/50">
+                                                                    <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                                                                        <div className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse" />
+                                                                        Agent Swarm Insight
+                                                                    </div>
+                                                                    <motion.div
+                                                                        className="space-y-2"
+                                                                        initial="hidden"
+                                                                        animate="visible"
+                                                                        variants={{
+                                                                            visible: { transition: { staggerChildren: 0.8 } }
+                                                                        }}
+                                                                    >
+                                                                        {msg.discussion.map((step, i) => (
+                                                                            <motion.div
+                                                                                key={i}
+                                                                                variants={{
+                                                                                    hidden: { opacity: 0, x: -10 },
+                                                                                    visible: { opacity: 1, x: 0 }
+                                                                                }}
+                                                                                className={`p-2 rounded-lg border text-[11px] leading-relaxed relative ${step.agent === 'Coach' ? 'bg-emerald-50/30 border-emerald-100 shadow-sm' :
+                                                                                    step.agent === 'Analyst' ? 'bg-purple-50/30 border-purple-100 shadow-sm' :
+                                                                                        step.agent === 'Planner' ? 'bg-orange-50/30 border-orange-100 shadow-sm' :
+                                                                                            'bg-blue-50/30 border-blue-100 shadow-sm'
+                                                                                    }`}
+                                                                            >
+                                                                                <div className="flex items-center gap-1.5 mb-1">
+                                                                                    <div className={`w-2 h-2 rounded-sm rotate-45 ${step.agent === 'Coach' ? 'bg-emerald-500' :
+                                                                                        step.agent === 'Analyst' ? 'bg-purple-500' :
+                                                                                            step.agent === 'Planner' ? 'bg-orange-500' :
+                                                                                                'bg-blue-500'
+                                                                                        }`} />
+                                                                                    <span className={`font-black uppercase tracking-tighter text-[9px] ${step.agent === 'Coach' ? 'text-emerald-700' :
+                                                                                        step.agent === 'Analyst' ? 'text-purple-700' :
+                                                                                            step.agent === 'Planner' ? 'text-orange-700' :
+                                                                                                'text-blue-700'
+                                                                                        }`}>{step.agent}</span>
+                                                                                </div>
+                                                                                <span className="text-slate-600 block pl-3 border-l-2 border-slate-200 ml-1 italic leading-normal">"{step.content}"</span>
+                                                                            </motion.div>
+                                                                        ))}
+                                                                    </motion.div>
                                                                 </div>
                                                             )}
                                                             <div className="markdown-body">
@@ -438,7 +492,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 <span className="text-[10px] text-slate-400">↑↓ to navigate • Enter to select</span>
                                                             </div>
                                                             <div className="max-h-48 overflow-y-auto p-1">
-                                                                {AGENTS.filter(a => a.label.toLowerCase().includes(mentionSearch.toLowerCase())).map((agent, idx) => (
+                                                                {AGENTS.filter(a => a.id.includes(mentionSearch.toLowerCase()) || a.label.includes(mentionSearch.toLowerCase())).map((agent, idx) => (
                                                                     <div
                                                                         key={agent.id}
                                                                         onClick={() => selectAgent(agent)}
@@ -446,7 +500,13 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                         className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all ${mentionIndex === idx ? `${agent.bg} ${agent.color} translate-x-1` : 'text-slate-600 hover:bg-slate-50'
                                                                             }`}
                                                                     >
-                                                                        <span className="text-lg">{agent.icon}</span>
+                                                                        {agent.id === 'frog' ? (
+                                                                            <img src={frogLogo} className="w-5 h-5 rounded-full object-cover border border-emerald-200" />
+                                                                        ) : agent.id === 'crock' ? (
+                                                                            <img src={crockLogo} className="w-5 h-5 rounded-full object-cover border border-blue-200" />
+                                                                        ) : (
+                                                                            <span className="text-lg">{agent.icon}</span>
+                                                                        )}
                                                                         <div className="flex-1 min-w-0">
                                                                             <div className="font-bold text-sm">{agent.label}</div>
                                                                             <div className="text-[10px] opacity-70 italic">{agent.detail}</div>

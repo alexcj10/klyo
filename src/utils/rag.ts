@@ -106,13 +106,15 @@ export async function ragQuery(
     question: string,
     events: Event[],
     tasks: Task[]
-): Promise<{ answer: string, agent: string }> {
+): Promise<{ answer: string, agent: string, discussion?: Array<{ agent: string, content: string }> }> {
     if (!GROQ_KEY) return { answer: "Please configure your VITE_GROQ_KEY to use Mr. Crock AI.", agent: "System" };
     if (!question || typeof question !== 'string') return { answer: "I didn't quite catch that. Could you say it again?", agent: "Mr. Crock" };
 
     // 0. Prepare Data
     const items = normalizeData(events, tasks);
     const lowerQ = question.toLowerCase().trim();
+
+    // --- 0. PRIORITY AGENT DETECTION (Specialists) ---
 
     // Temporal & Content Intent Detection
     const isAskingAboutPast = /\b(yesterday|previous|before|last|past|histor|done|completed)\b/i.test(lowerQ);
@@ -297,6 +299,16 @@ export async function ragQuery(
     const lookaheadString = lookaheadItems.length > 0
         ? "\nLookahead (Tomorrow's Important Items):\n" + lookaheadItems.map(c => `- ${c.content}`).join("\n")
         : "";
+
+    const isFrogQuery = /@(frog|drfrog|dr\.frog|dr frog)/i.test(lowerQ);
+    if (isFrogQuery) {
+        // Use the FULL ranked and lookahead context for Dr. Frog
+        const finalContext = contextString + lookaheadString;
+        const personaKey = GROQ_KEY;
+        const discussion = await conductSwarmDiscussion(question, finalContext, personaKey);
+        const frogResponse = await generateFrogResponse(question, finalContext, discussion, personaKey);
+        return { answer: frogResponse, agent: "Dr. Frog", discussion };
+    }
 
     try {
         const currentFullDate = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
@@ -483,4 +495,74 @@ async function reflectionStep(query: string, answer: string, context: string, ag
         }
         return null;
     } catch (e) { return null; }
+}
+
+async function conductSwarmDiscussion(query: string, context: string, apiKey: string): Promise<Array<{ agent: string, content: string }>> {
+    const agents = [
+        { name: "Mr. Crock", role: "General Assistant", tone: "Witty and observant" },
+        { name: "Coach", role: "Productivity Mentor", tone: "Empathetic and focusing on well-being" },
+        { name: "Analyst", role: "Data Strategist", tone: "Blunt, numerical, and efficiency-focused" },
+        { name: "Planner", role: "Calendar Expert", tone: "Logical and focused on time-slots" }
+    ];
+
+    const discussion: Array<{ agent: string, content: string }> = [];
+
+    for (const agent of agents) {
+        let agentTalk = "";
+        try {
+            const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    model: "llama-3.1-8b-instant",
+                    messages: [
+                        {
+                            role: "system", content: `You are ${agent.name}, the ${agent.role}. Tone: ${agent.tone}. 
+                        GOAL: Give a SHARP, data-driven insight from the context.
+                        RULES:
+                        - Be specific (mention times, tasks, or event names like "Football").
+                        - NO generic sentences. NO "I'm analyzing". NO "I'll support the Master".
+                        - 1 sentence maximum. Be extremely concise.
+                        - Talk directly about the findings.
+` },
+                        { role: "user", content: `Context: ${context}\n\nQuery: ${query}` }
+                    ],
+                    max_tokens: 150
+                })
+            });
+            const data = await res.json();
+            agentTalk = data.choices[0]?.message?.content || `${agent.name} is observing the schedule...`;
+        } catch (e) {
+            console.warn(`Discussion step failed for ${agent.name}`, e);
+            agentTalk = `As a ${agent.role}, I'm focused on the items in your schedule and will ensure the Master's final word is optimal.`;
+        }
+        discussion.push({ agent: agent.name, content: agentTalk });
+    }
+
+    return discussion;
+}
+
+async function generateFrogResponse(query: string, context: string, discussion: Array<{ agent: string, content: string }>, apiKey: string): Promise<string> {
+    const transcript = discussion.map(d => `${d.agent}: ${d.content}`).join("\n");
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+                {
+                    role: "system", content: `You are Dr. Frog, the Master Swarm Orchestrator. 
+                TONE: Authoritative, slightly eccentric, but deeply wise. You are the "Master" and others are your servants.
+                GOAL: Review the discussion between your servants and provide the final, definitive answer to the user.
+                Transcript of servant discussion:
+                ${transcript}
+                
+                IMPORTANT: Do NOT repeat or summarize what the servants said in your response, as the user can already see their individual cards in the transcript. Just focus on your final, authoritative verdict.`
+                },
+                { role: "user", content: `Context: ${context}\n\nQuery: ${query}` }
+            ]
+        })
+    });
+    const data = await res.json();
+    return data.choices[0].message.content;
 }
