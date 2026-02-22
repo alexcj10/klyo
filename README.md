@@ -21,12 +21,19 @@
 
 Klyo isn't just a calendar; it's a unified environment designed to reduce cognitive load and keep you in the flow.
 
-### Mr. Crock RAG AI
-Meet your new executive assistant. Mr. Crock isn't a standard chatbot—he's powered by a **Hybrid Retrieval-Augmented Generation (RAG)** engine.
-*   **Context Aware**: He knows your schedule better than you do.
-*   **Smart Filtering**: He distinguishes between past, present, and future events with strict temporal logic.
-*   **Blazing Fast**: Integrated with **Groq llama-3.3-70b** for near-instant responses.
-*   **Witty & Adaptable**: Whether you need a serious briefing or a witty joke, Mr. Crock adapts his tone to yours.
+### Specialized AI Agent Swarm (@mentions)
+Meet your new executive elite team. Klyo now features a multi-specialist Swarm powered by a **Hybrid Retrieval-Augmented Generation (RAG)** engine.
+*   **@crock**: Your charismatic, witty, and versatile lead assistant.
+*   **@coach**: An empathetic productivity mentor focused on well-being and identifying burnout risk.
+*   **@analyst**: A high-performance, data-driven strategist for optimization and trends.
+*   **@planner**: A master of spatial-temporal coordination for resolving calendar conflicts.
+*   **@frog**: The **Swarm Orchestrator**. Invoke Dr. Frog to have all specialists debate your schedule in a multi-perspective discussion before delivering a unified master verdict.
+
+### Advanced Temporal Intelligence
+*   **Context Aware**: AI agents know your schedule better than you do, resolution-focused on high-priority items.
+*   **Year-Aware Filtering**: Strict temporal logic that prioritizes current (2026) and future events, with automatic fallback for historical queries.
+*   **Timing Precision**: Strict enforcement of exact [TIME] brackets in all responses to ensure professional-level reliability.
+*   **Blazing Fast**: Integrated with **Groq llama-3.3-70b** for near-instant execution.
 
 ### Dynamic Calendar View
 A fluid, interactive calendar with multiple views designed for peak organization:
