@@ -96,26 +96,40 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!inputValue.trim() || isLoading) return;
+        const trimmedValue = inputValue.trim();
+        if (!trimmedValue || isLoading) return;
 
-        let msgToSend = inputValue;
-        const hasExplicitMention = /@(frog|drfrog|coach|analyst|planner|crock)/i.test(inputValue);
+        let msgToSend = trimmedValue;
+        let targetAgent = activeAgent;
 
-        // If an agent is active but this message doesn't mention one, auto-prepend
-        if (activeAgent && activeAgent.id !== 'crock' && !hasExplicitMention) {
-            msgToSend = `${activeAgent.label}/ ${inputValue}`;
+        // Detect if the message starts with or contains an agent mention
+        const agentHandleMatch = trimmedValue.match(/@(frog|drfrog|coach|analyst|planner|crock)/i);
+
+        if (agentHandleMatch) {
+            const mentionedId = agentHandleMatch[0].substring(1).toLowerCase().replace('drfrog', 'frog');
+            const found = mentionedId === 'crock' ? null : AGENTS.find(a => a.id === mentionedId);
+
+            // If mention is found, it switches the context
+            targetAgent = found || null;
+            setActiveAgent(targetAgent);
+
+            // Strip the handle from the message to send
+            msgToSend = trimmedValue.replace(agentHandleMatch[0], '').trim();
+
+            // If the message was JUST the handle, we just switch context and stop here
+            if (!msgToSend) {
+                setInputValue('');
+                setShowMentionPopup(false);
+                return;
+            }
         }
 
-        // Detect if a new agent mention switches the active agent
-        const agentMatch = inputValue.match(/@(frog|drfrog|coach|analyst|planner|crock)/i);
-        if (agentMatch) {
-            const mentionedId = agentMatch[1].toLowerCase().replace('drfrog', 'frog');
-            if (mentionedId === 'crock') {
-                setActiveAgent(null); // Reset to default
-            } else {
-                const found = AGENTS.find(a => a.id === mentionedId);
-                if (found) setActiveAgent(found);
-            }
+        // If no explicit mention in this message, and we have an active agent, use it
+        if (!agentHandleMatch && targetAgent && targetAgent.id !== 'crock') {
+            msgToSend = `${targetAgent.label} ${msgToSend}`;
+        } else if (agentHandleMatch && targetAgent && targetAgent.id !== 'crock') {
+            // Include the handle for the backend if we just switched
+            msgToSend = `${targetAgent.label} ${msgToSend}`;
         }
 
         sendMessage(msgToSend);
@@ -132,6 +146,21 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         const lastAt = val.lastIndexOf('@', cursorPos - 1);
         if (lastAt !== -1 && (lastAt === 0 || val[lastAt - 1] === ' ' || val[lastAt - 1] === '\n')) {
             const search = val.slice(lastAt + 1, cursorPos);
+
+            // If user types a space after a valid handle, attempt to auto-activate
+            if (search.endsWith(' ')) {
+                const handle = `@${search.trim().toLowerCase().replace('drfrog', 'frog')}`;
+                const found = AGENTS.find(a => a.label.toLowerCase() === handle);
+                if (found) {
+                    setActiveAgent(found);
+                    const before = val.slice(0, lastAt);
+                    const after = val.slice(cursorPos);
+                    setInputValue(`${before}${after}`.trimStart());
+                    setShowMentionPopup(false);
+                    return;
+                }
+            }
+
             if (!search.includes(' ') && !search.includes('/')) {
                 setMentionSearch(search);
                 setShowMentionPopup(true);
@@ -149,16 +178,18 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         const before = inputValue.slice(0, lastAt);
         const after = inputValue.slice(cursorPos);
 
-        const newValue = `${before}${agent.label}/${after}`;
+        // When selecting an agent, we remove the "@mention" text and switch context
+        // This keeps the input clean for the actual query
+        const newValue = `${before}${after}`.trimStart();
         setInputValue(newValue);
         setShowMentionPopup(false);
-        setActiveAgent(agent); // Sticky: lock to this agent
+        setActiveAgent(agent);
 
         // Focus and set cursor
         setTimeout(() => {
             if (textareaRef.current) {
                 textareaRef.current.focus();
-                const newPos = before.length + agent.label.length + 1;
+                const newPos = before.length;
                 textareaRef.current.setSelectionRange(newPos, newPos);
             }
         }, 10);
