@@ -1,5 +1,10 @@
-# <p align="center"> <img src="src/assets/crock.png" width="80" height="80" alt="Klyo Logo" /><br/>Klyo: The Intelligent Workspace</p>
+<p align="center">
+  <img src="src/assets/crock.png" width="90" height="90" alt="Mr Croc" />
+  &nbsp;&nbsp;
+  <img src="src/assets/frog.png" width="100" height="100" alt="Frog" />
+</p>
 
+<h1 align="center"><strong>Klyo: The Intelligent Workspace</strong></h1>
 <p align="center">
   <strong>Get more done without the stress.</strong><br/>
   Klyo is a simple, all-in-one place for your calendar, tasks, and <strong>Mr. Crock AI</strong> assistant.
