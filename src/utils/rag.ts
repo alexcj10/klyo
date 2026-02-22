@@ -260,26 +260,26 @@ export async function ragQuery(
             if (!c.date) return false;
             return new Date(c.date).toLocaleDateString('en-CA') === todayStr;
         });
-        // Year-Aware Filtering: Prioritize "Today or Future" for general queries
+    } else if (targetMonthIndex !== -1) {
+        // Year-Aware Filtering: Only apply when a specific month/day was detected (e.g., "Sep 5", "March")
         const prioritizedCandidates = candidates.filter(c => {
             if (!c.date) return false;
             const d = new Date(c.date);
             const isTargetMonthDay = d.getMonth() === targetMonthIndex && (targetDay === -1 || d.getDate() === targetDay);
 
             if (!isAskingAboutPast) {
-                // Return true if it matches month/day AND is today or in the future
-                // We set hours to 0 to compare just the date portion correctly
                 const compareDate = new Date(d);
                 compareDate.setHours(0, 0, 0, 0);
                 const compareToday = new Date(today);
                 compareToday.setHours(0, 0, 0, 0);
-
                 return isTargetMonthDay && compareDate >= compareToday;
             }
-            return isTargetMonthDay; // Include everything if user asked for "past/history"
+            return isTargetMonthDay;
         });
 
-        candidates = prioritizedCandidates;
+        if (prioritizedCandidates.length > 0) {
+            candidates = prioritizedCandidates;
+        }
     }
 
     // Smart Filtering: If one type is asked for, prioritize it but keep the other if it's high priority
@@ -381,13 +381,13 @@ export async function ragQuery(
                          1. **TIMING PRECISION**: Always lead with the exact [TIME] brackets found in the context when discussing an event or task. Never omit the start or end times.
                          2. FOCUS ON REQUEST: If the user asks for "events", primarily list events. If they ask for "tasks", primarily list tasks. 
                          3. PROACTIVE "LOOKAHEAD" SMARTNESS: You have access to "Lookahead" context for tomorrow. If you see something important coming up (like an early morning event or high-priority task), add a smart reminder like "By the way, you have [Event] tomorrow morning—don't forget to prepare tonight!"
-                         3. BE SMART & HELPFUL: Always identify high-priority items. 
-                         4. MOOD AWARENESS (NEW): You now have access to "Mood" data for items (focus, stress, easy, exhausting). 
+                         4. BE SMART & HELPFUL: Always identify high-priority items. 
+                         5. MOOD AWARENESS (NEW): You now have access to "Mood" data for items (focus, stress, easy, exhausting). 
                             - Use this to identify if the user is having a stressful day.
                             - If you see many "exhausting" or "stress" tags, offer words of encouragement or suggest a break.
                             - If they are in a "focus" flow, praise their productivity.
-                         5. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
-                         6. ONLY use information strictly found in your Context.
+                         6. GIVE EQUAL PRIORITY: In general queries like "my schedule" or "today", always mention both.
+                         7. ONLY use information strictly found in your Context.
                          
                          Context (User's Schedule Today/Target):
                          ${contextString}
