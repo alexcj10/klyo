@@ -560,29 +560,29 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 <img src={crockLogo} className="w-6 h-6 rounded-full object-cover border border-blue-200" />
                                                             ) : (
                                                                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm border ${activeAgent.id === 'coach' ? 'bg-rose-50 border-rose-200' :
-                                                                        activeAgent.id === 'analyst' ? 'bg-purple-50 border-purple-200' :
-                                                                            'bg-orange-50 border-orange-200'
+                                                                    activeAgent.id === 'analyst' ? 'bg-purple-50 border-purple-200' :
+                                                                        'bg-orange-50 border-orange-200'
                                                                     }`}>{activeAgent.icon}</div>
                                                             )}
                                                         </div>
                                                         <div className="bg-white p-3 rounded-2xl rounded-tl-sm border border-slate-100 shadow-sm flex gap-1.5 items-center">
                                                             <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${activeAgent?.id === 'frog' ? 'bg-emerald-400' :
-                                                                    activeAgent?.id === 'coach' ? 'bg-rose-400' :
-                                                                        activeAgent?.id === 'analyst' ? 'bg-purple-400' :
-                                                                            activeAgent?.id === 'planner' ? 'bg-orange-400' :
-                                                                                'bg-blue-400'
+                                                                activeAgent?.id === 'coach' ? 'bg-rose-400' :
+                                                                    activeAgent?.id === 'analyst' ? 'bg-purple-400' :
+                                                                        activeAgent?.id === 'planner' ? 'bg-orange-400' :
+                                                                            'bg-blue-400'
                                                                 }`} style={{ animationDelay: '0ms' }} />
                                                             <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${activeAgent?.id === 'frog' ? 'bg-emerald-400' :
-                                                                    activeAgent?.id === 'coach' ? 'bg-rose-400' :
-                                                                        activeAgent?.id === 'analyst' ? 'bg-purple-400' :
-                                                                            activeAgent?.id === 'planner' ? 'bg-orange-400' :
-                                                                                'bg-blue-400'
+                                                                activeAgent?.id === 'coach' ? 'bg-rose-400' :
+                                                                    activeAgent?.id === 'analyst' ? 'bg-purple-400' :
+                                                                        activeAgent?.id === 'planner' ? 'bg-orange-400' :
+                                                                            'bg-blue-400'
                                                                 }`} style={{ animationDelay: '150ms' }} />
                                                             <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${activeAgent?.id === 'frog' ? 'bg-emerald-400' :
-                                                                    activeAgent?.id === 'coach' ? 'bg-rose-400' :
-                                                                        activeAgent?.id === 'analyst' ? 'bg-purple-400' :
-                                                                            activeAgent?.id === 'planner' ? 'bg-orange-400' :
-                                                                                'bg-blue-400'
+                                                                activeAgent?.id === 'coach' ? 'bg-rose-400' :
+                                                                    activeAgent?.id === 'analyst' ? 'bg-purple-400' :
+                                                                        activeAgent?.id === 'planner' ? 'bg-orange-400' :
+                                                                            'bg-blue-400'
                                                                 }`} style={{ animationDelay: '300ms' }} />
                                                         </div>
                                                     </div>
@@ -611,15 +611,15 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                                 exit={{ opacity: 0, y: 8, scale: 0.96 }}
                                                                 transition={{ duration: 0.15 }}
-                                                                className="absolute bottom-full left-2 right-2 mb-3 bg-white rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden z-[80]"
+                                                                className="absolute bottom-full left-2 mb-1 w-56 bg-white rounded-2xl shadow-xl border border-slate-200/60 overflow-hidden z-[80]"
                                                                 onClick={(e) => e.stopPropagation()}
                                                             >
                                                                 {/* Header */}
-                                                                <div className="px-4 py-3 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
+                                                                <div className="px-4 py-3 border-b border-slate-50 flex items-center bg-slate-50/30">
                                                                     <div className="flex items-center gap-2">
                                                                         <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Select Agent</span>
                                                                     </div>
-                                                                    <span className="text-[9px] text-slate-400/60 font-medium">↑↓ navigate · Enter select</span>
+
                                                                 </div>
 
                                                                 {/* Agent List */}
@@ -720,10 +720,10 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                         type="submit"
                                                         disabled={!inputValue.trim() || isLoading}
                                                         className={`flex-shrink-0 p-2 ml-1 mr-1 text-white rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-sm active:scale-95 z-10 ${activeAgent?.id === 'frog' ? 'bg-emerald-600 hover:bg-emerald-700' :
-                                                                activeAgent?.id === 'coach' ? 'bg-rose-600 hover:bg-rose-700' :
-                                                                    activeAgent?.id === 'analyst' ? 'bg-purple-600 hover:bg-purple-700' :
-                                                                        activeAgent?.id === 'planner' ? 'bg-orange-600 hover:bg-orange-700' :
-                                                                            'bg-blue-600 hover:bg-blue-700'
+                                                            activeAgent?.id === 'coach' ? 'bg-rose-600 hover:bg-rose-700' :
+                                                                activeAgent?.id === 'analyst' ? 'bg-purple-600 hover:bg-purple-700' :
+                                                                    activeAgent?.id === 'planner' ? 'bg-orange-600 hover:bg-orange-700' :
+                                                                        'bg-blue-600 hover:bg-blue-700'
                                                             }`}
                                                     >
                                                         <Send className="w-4 h-4" />
