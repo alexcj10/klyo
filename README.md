@@ -26,7 +26,7 @@
 
 Klyo isn't just a calendar; it's a unified environment designed to reduce cognitive load and keep you in the flow.
 
-### Specialized AI Agent Swarm (@mentions)
+### Specialized AI Assistant Swarm (@mentions)
 Meet your new executive elite team. Klyo now features a multi-specialist Swarm powered by a **Hybrid Retrieval-Augmented Generation (RAG)** engine.
 *   **@crock**: Your charismatic, witty, and versatile lead assistant.
 *   **@coach**: An empathetic productivity mentor focused on well-being and identifying burnout risk.
@@ -35,7 +35,7 @@ Meet your new executive elite team. Klyo now features a multi-specialist Swarm p
 *   **@frog**: The **Swarm Orchestrator**. Invoke Dr. Frog to have all specialists debate your schedule in a multi-perspective discussion before delivering a unified master verdict.
 
 ### Advanced Temporal Intelligence
-*   **Context Aware**: AI agents know your schedule better than you do, resolution-focused on high-priority items.
+*   **Context Aware**: AI assistant's know your schedule better than you do, resolution-focused on high-priority items.
 *   **Year-Aware Filtering**: Strict temporal logic that prioritizes current (2026) and future events, with automatic fallback for historical queries.
 *   **Timing Precision**: Strict enforcement of exact [TIME] brackets in all responses to ensure professional-level reliability.
 *   **Blazing Fast**: Integrated with **Groq llama-3.3-70b** for near-instant execution.
