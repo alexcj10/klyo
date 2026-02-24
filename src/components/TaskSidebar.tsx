@@ -690,7 +690,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
 
       {/* Delete Confirmation Dialog */}
       {deleteConfirmEvent && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[70] flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
