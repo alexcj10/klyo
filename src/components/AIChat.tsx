@@ -39,6 +39,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         { id: 'coach', label: '@coach', detail: 'Productivity Mentor', color: 'text-rose-600', bg: 'hover:bg-rose-50', icon: '🌱' },
         { id: 'analyst', label: '@analyst', detail: 'Data Strategist', color: 'text-purple-600', bg: 'hover:bg-purple-50', icon: '📊' },
         { id: 'planner', label: '@planner', detail: 'Calendar Expert', color: 'text-orange-600', bg: 'hover:bg-orange-50', icon: '📅' },
+        { id: 'historian', label: '@historian', detail: 'Historical Archivist', color: 'text-teal-600', bg: 'hover:bg-teal-50', icon: '📜' },
     ];
 
     const {
@@ -103,7 +104,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
         let targetAgent = activeAgent;
 
         // Detect if the message starts with or contains an agent mention
-        const agentHandleMatch = trimmedValue.match(/@(frog|drfrog|coach|analyst|planner|crock)/i);
+        const agentHandleMatch = trimmedValue.match(/@(frog|drfrog|coach|analyst|planner|crock|historian)/i);
 
         if (agentHandleMatch) {
             const mentionedId = agentHandleMatch[0].substring(1).toLowerCase().replace('drfrog', 'frog');
@@ -269,7 +270,8 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                 activeAgent?.id === 'coach' ? 'bg-gradient-to-r from-rose-500 to-rose-600' :
                                     activeAgent?.id === 'analyst' ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
                                         activeAgent?.id === 'planner' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
-                                            'bg-gradient-to-r from-blue-500 to-blue-600'
+                                            activeAgent?.id === 'historian' ? 'bg-gradient-to-r from-teal-500 to-teal-600' :
+                                                'bg-gradient-to-r from-blue-500 to-blue-600'
                                 }`}>
                                 <div className="flex items-center gap-3">
                                     <div className="drop-shadow-md">
@@ -285,7 +287,8 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                 activeAgent.id === 'frog' ? 'Dr. Frog' :
                                                     activeAgent.id === 'coach' ? 'Coach' :
                                                         activeAgent.id === 'analyst' ? 'Analyst' :
-                                                            activeAgent.id === 'planner' ? 'Planner' : 'Mr. Crock'
+                                                            activeAgent.id === 'planner' ? 'Planner' :
+                                                                activeAgent.id === 'historian' ? 'Historian' : 'Mr. Crock'
                                             ) : 'Mr. Crock'}
                                         </h3>
                                         <p className="text-xs text-white/80 truncate">
@@ -454,7 +457,8 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                     msg.content.includes('@coach') ? 'bg-rose-600' :
                                                                         msg.content.includes('@analyst') ? 'bg-purple-600' :
                                                                             msg.content.includes('@planner') ? 'bg-orange-600' :
-                                                                                'bg-blue-600'
+                                                                                msg.content.includes('@historian') ? 'bg-teal-600' :
+                                                                                    'bg-blue-600'
                                                                 } text-white rounded-tr-sm`
                                                                 : 'bg-white text-slate-700 border border-slate-100 rounded-tl-sm'
                                                                 }`}
@@ -463,8 +467,9 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 <div className={`flex items-center gap-2 mb-1.5 text-xs font-bold tracking-wide border-b pb-1 ${msg.agent === 'Coach' ? 'text-rose-600 border-rose-100' :
                                                                     msg.agent === 'Analyst' ? 'text-purple-600 border-purple-100' :
                                                                         msg.agent === 'Planner' ? 'text-orange-600 border-orange-100' :
-                                                                            msg.agent === 'Dr. Frog' ? 'text-emerald-700 border-emerald-200 bg-emerald-50/50 -mx-1 px-1 rounded-t' :
-                                                                                'text-blue-600/90 border-blue-100'
+                                                                            msg.agent === 'Historian' ? 'text-teal-600 border-teal-100' :
+                                                                                msg.agent === 'Dr. Frog' ? 'text-emerald-700 border-emerald-200 bg-emerald-50/50 -mx-1 px-1 rounded-t' :
+                                                                                    'text-blue-600/90 border-blue-100'
                                                                     }`}>
                                                                     {msg.agent === 'Dr. Frog' ? (
                                                                         <img src={frogLogo} className="w-6 h-6 rounded-full object-cover border border-emerald-300 shadow-sm" />
@@ -561,7 +566,8 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                             ) : (
                                                                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm border ${activeAgent.id === 'coach' ? 'bg-rose-50 border-rose-200' :
                                                                     activeAgent.id === 'analyst' ? 'bg-purple-50 border-purple-200' :
-                                                                        'bg-orange-50 border-orange-200'
+                                                                        activeAgent.id === 'planner' ? 'bg-orange-50 border-orange-200' :
+                                                                            'bg-teal-50 border-teal-200'
                                                                     }`}>{activeAgent.icon}</div>
                                                             )}
                                                         </div>
@@ -570,19 +576,22 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                 activeAgent?.id === 'coach' ? 'bg-rose-400' :
                                                                     activeAgent?.id === 'analyst' ? 'bg-purple-400' :
                                                                         activeAgent?.id === 'planner' ? 'bg-orange-400' :
-                                                                            'bg-blue-400'
+                                                                            activeAgent?.id === 'historian' ? 'bg-teal-400' :
+                                                                                'bg-blue-400'
                                                                 }`} style={{ animationDelay: '0ms' }} />
                                                             <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${activeAgent?.id === 'frog' ? 'bg-emerald-400' :
                                                                 activeAgent?.id === 'coach' ? 'bg-rose-400' :
                                                                     activeAgent?.id === 'analyst' ? 'bg-purple-400' :
                                                                         activeAgent?.id === 'planner' ? 'bg-orange-400' :
-                                                                            'bg-blue-400'
+                                                                            activeAgent?.id === 'historian' ? 'bg-teal-400' :
+                                                                                'bg-blue-400'
                                                                 }`} style={{ animationDelay: '150ms' }} />
                                                             <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${activeAgent?.id === 'frog' ? 'bg-emerald-400' :
                                                                 activeAgent?.id === 'coach' ? 'bg-rose-400' :
                                                                     activeAgent?.id === 'analyst' ? 'bg-purple-400' :
                                                                         activeAgent?.id === 'planner' ? 'bg-orange-400' :
-                                                                            'bg-blue-400'
+                                                                            activeAgent?.id === 'historian' ? 'bg-teal-400' :
+                                                                                'bg-blue-400'
                                                                 }`} style={{ animationDelay: '300ms' }} />
                                                         </div>
                                                     </div>
@@ -723,7 +732,8 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                             activeAgent?.id === 'coach' ? 'bg-rose-600 hover:bg-rose-700' :
                                                                 activeAgent?.id === 'analyst' ? 'bg-purple-600 hover:bg-purple-700' :
                                                                     activeAgent?.id === 'planner' ? 'bg-orange-600 hover:bg-orange-700' :
-                                                                        'bg-blue-600 hover:bg-blue-700'
+                                                                        activeAgent?.id === 'historian' ? 'bg-teal-600 hover:bg-teal-700' :
+                                                                            'bg-blue-600 hover:bg-blue-700'
                                                             }`}
                                                     >
                                                         <Send className="w-4 h-4" />

@@ -5,6 +5,7 @@ import { Event, Task } from '../types';
 
 // Initialize Groq SDK
 const GROQ_KEY = import.meta.env.VITE_GROQ_KEY || '';
+const HISTORIAN_KEY = import.meta.env.VITE_HISTORIAN_KEY || GROQ_KEY;
 
 // --------------------------------------------------------
 // Types & Data Handling
@@ -291,6 +292,9 @@ export async function ragQuery(
 
 
     // --- 3. GENERATION ---
+    if (lowerQ.includes('@historian')) {
+        candidates = candidates.filter(c => c.content.includes("[PAST]"));
+    }
     const topCandidates = candidates.slice(0, 50);
 
     // --- 3. SMART LOOKAHEAD (Next 24-48 hours) ---
@@ -350,6 +354,14 @@ export async function ragQuery(
             GOAL: Resolve calendar conflicts and optimize the sequence of tasks.`;
             personaKey = import.meta.env.VITE_PLANNER_KEY || GROQ_KEY;
             specialistLabel = "Planner";
+        } else if (lowerQ.includes('@historian')) {
+            systemRole = `You are @historian (Klyo Edition), a dedicated archivist of the user's past. 
+            SKILL: Exhaustive and accurate retrieval of completed tasks and past events.
+            TONE: Nostalgic yet precise, reflective, and deeply knowledgeable about historical records.
+            GOAL: Help the user reflect on past achievements, identify recurring themes in their history, and provide "on this day" insights. 
+            RULE: You ONLY discuss items from the past. If asked about the future, gently remind the user of your historical focus.`;
+            personaKey = HISTORIAN_KEY;
+            specialistLabel = "Historian";
         }
 
         const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
