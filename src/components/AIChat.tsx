@@ -16,6 +16,57 @@ interface AIChatProps {
     setIsOpen?: (open: boolean) => void;
 }
 
+function AgentAvatar({
+    agentId,
+    agentName,
+    size = 'md',
+    className = "",
+    noBorder = false
+}: {
+    agentId?: string,
+    agentName?: string,
+    size?: 'sm' | 'md' | 'lg' | 'mini' | 'mini-plus',
+    className?: string,
+    noBorder?: boolean
+}) {
+    const sizeClasses = {
+        mini: 'w-4 h-4 text-[8px]',
+        'mini-plus': 'w-5 h-5 text-[9px]',
+        sm: 'w-6 h-6 text-[11px]',
+        md: 'w-7 h-7 text-[13px]',
+        lg: 'w-10 h-10 text-[18px]'
+    };
+
+    // Determine normalized ID
+    let id = agentId || (agentName === 'Dr. Frog' ? 'frog' : agentName === 'Mr. Crock' ? 'crock' : agentName?.toLowerCase()) || 'crock';
+    if (id === 'dr. frog') id = 'frog';
+
+    const borderClass = noBorder ? "" : (id === 'frog' ? "border-emerald-300" : id === 'crock' ? "border-blue-200" : "border-slate-200");
+
+    if (id === 'frog') {
+        return <img src={frogLogo} className={`${sizeClasses[size]} rounded-full object-cover border shadow-sm ${borderClass} ${className}`} alt="Dr. Frog" />;
+    }
+    if (id === 'crock') {
+        return <img src={crockLogo} className={`${sizeClasses[size]} rounded-full object-cover border shadow-sm ${borderClass} ${className}`} alt="Mr. Crock" />;
+    }
+
+    // Specialized text-based avatars
+    const theme = {
+        coach: { bg: 'bg-rose-50', border: 'border-rose-200', icon: '🌱' },
+        analyst: { bg: 'bg-purple-50', border: 'border-purple-200', icon: '📊' },
+        planner: { bg: 'bg-orange-50', border: 'border-orange-200', icon: '📅' },
+        historian: { bg: 'bg-teal-50', border: 'border-teal-200', icon: '📜' },
+    };
+
+    const activeTheme = (theme as any)[id] || { bg: 'bg-blue-50', border: 'border-blue-200', icon: '🤖' };
+
+    return (
+        <div className={`${sizeClasses[size]} rounded-full flex items-center justify-center shadow-sm border ${noBorder ? "" : activeTheme.border} ${activeTheme.bg} ${className}`}>
+            {activeTheme.icon}
+        </div>
+    );
+}
+
 export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () => { } }: AIChatProps) {
     const [showHistory, setShowHistory] = useState(false);
     const [inputValue, setInputValue] = useState('');
@@ -275,11 +326,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                 }`}>
                                 <div className="flex items-center gap-3">
                                     <div className="drop-shadow-md">
-                                        {activeAgent?.id === 'frog' ? (
-                                            <img src={frogLogo} alt="Dr. Frog" className="w-10 h-10 rounded-full object-cover border-2 border-white/30" />
-                                        ) : (
-                                            <img src={crockLogo} alt="Mr. Crock" className="w-10 h-10 rounded-full object-cover border-2 border-white/20" />
-                                        )}
+                                        <AgentAvatar agentId={activeAgent?.id} size="lg" className="border-2 border-white/30 shadow-lg" noBorder />
                                     </div>
                                     <div className="overflow-hidden">
                                         <h3 className="font-bold text-sm truncate">
@@ -471,21 +518,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                 msg.agent === 'Dr. Frog' ? 'text-emerald-700 border-emerald-200 bg-emerald-50/50 -mx-1 px-1 rounded-t' :
                                                                                     'text-blue-600/90 border-blue-100'
                                                                     }`}>
-                                                                    {msg.agent === 'Dr. Frog' ? (
-                                                                        <img src={frogLogo} className="w-6 h-6 rounded-full object-cover border border-emerald-300 shadow-sm" />
-                                                                    ) : msg.agent === 'Mr. Crock' || !msg.agent ? (
-                                                                        <img src={crockLogo} className="w-6 h-6 rounded-full object-cover border border-blue-200 shadow-sm" />
-                                                                    ) : (
-                                                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm border ${msg.agent === 'Coach' ? 'bg-rose-50 border-rose-200' :
-                                                                                msg.agent === 'Analyst' ? 'bg-purple-50 border-purple-200' :
-                                                                                    msg.agent === 'Planner' ? 'bg-orange-50 border-orange-200' :
-                                                                                        'bg-teal-50 border-teal-200'
-                                                                            }`}>
-                                                                            {msg.agent === 'Coach' ? '🌱' :
-                                                                                msg.agent === 'Analyst' ? '📊' :
-                                                                                    msg.agent === 'Planner' ? '📅' : '📜'}
-                                                                        </div>
-                                                                    )}
+                                                                    <AgentAvatar agentName={msg.agent} size="sm" />
                                                                     {msg.agent || 'Mr. Crock'}
                                                                 </div>
                                                             )}
@@ -519,15 +552,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                     }`}
                                                                             >
                                                                                 <div className="flex items-center gap-1.5 mb-1">
-                                                                                    <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] shadow-sm border ${step.agent === 'Coach' ? 'bg-rose-50 border-rose-200' :
-                                                                                            step.agent === 'Analyst' ? 'bg-purple-50 border-purple-200' :
-                                                                                                step.agent === 'Planner' ? 'bg-orange-50 border-orange-200' :
-                                                                                                    'bg-blue-50 border-blue-200'
-                                                                                        }`}>
-                                                                                        {step.agent === 'Coach' ? '🌱' :
-                                                                                            step.agent === 'Analyst' ? '📊' :
-                                                                                                step.agent === 'Planner' ? '📅' : '🤖'}
-                                                                                    </div>
+                                                                                    <AgentAvatar agentName={step.agent} size="mini-plus" />
                                                                                     <span className={`font-black uppercase tracking-tighter text-[9px] ${step.agent === 'Coach' ? 'text-rose-700' :
                                                                                         step.agent === 'Analyst' ? 'text-purple-700' :
                                                                                             step.agent === 'Planner' ? 'text-orange-700' :
@@ -573,17 +598,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                 {isLoading && (
                                                     <div className="flex justify-start items-end gap-2">
                                                         <div className="flex-shrink-0 drop-shadow-sm">
-                                                            {activeAgent?.id === 'frog' ? (
-                                                                <img src={frogLogo} className="w-6 h-6 rounded-full object-cover border border-emerald-300" />
-                                                            ) : activeAgent?.id === 'crock' || !activeAgent ? (
-                                                                <img src={crockLogo} className="w-6 h-6 rounded-full object-cover border border-blue-200" />
-                                                            ) : (
-                                                                <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm border ${activeAgent.id === 'coach' ? 'bg-rose-50 border-rose-200' :
-                                                                    activeAgent.id === 'analyst' ? 'bg-purple-50 border-purple-200' :
-                                                                        activeAgent.id === 'planner' ? 'bg-orange-50 border-orange-200' :
-                                                                            'bg-teal-50 border-teal-200'
-                                                                    }`}>{activeAgent.icon}</div>
-                                                            )}
+                                                            <AgentAvatar agentId={activeAgent?.id} size="sm" />
                                                         </div>
                                                         <div className="bg-white p-3 rounded-2xl rounded-tl-sm border border-slate-100 shadow-sm flex gap-1.5 items-center">
                                                             <span className={`w-1.5 h-1.5 rounded-full animate-bounce ${activeAgent?.id === 'frog' ? 'bg-emerald-400' :
@@ -667,16 +682,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
 
                                                                             {/* Avatar */}
                                                                             <div className="relative flex-shrink-0">
-                                                                                {agent.id === 'frog' ? (
-                                                                                    <img src={frogLogo} className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-sm" />
-                                                                                ) : agent.id === 'crock' ? (
-                                                                                    <img src={crockLogo} className="w-7 h-7 rounded-full object-cover border border-slate-200 shadow-sm" />
-                                                                                ) : (
-                                                                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[13px] shadow-sm border border-slate-100 ${agent.id === 'coach' ? 'bg-rose-50' :
-                                                                                        agent.id === 'analyst' ? 'bg-purple-50' :
-                                                                                            'bg-orange-50'
-                                                                                        }`}>{agent.icon}</div>
-                                                                                )}
+                                                                                <AgentAvatar agentId={agent.id} size="md" />
                                                                             </div>
 
                                                                             {/* Info */}
