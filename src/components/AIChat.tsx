@@ -473,8 +473,18 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                     }`}>
                                                                     {msg.agent === 'Dr. Frog' ? (
                                                                         <img src={frogLogo} className="w-6 h-6 rounded-full object-cover border border-emerald-300 shadow-sm" />
-                                                                    ) : (
+                                                                    ) : msg.agent === 'Mr. Crock' || !msg.agent ? (
                                                                         <img src={crockLogo} className="w-6 h-6 rounded-full object-cover border border-blue-200 shadow-sm" />
+                                                                    ) : (
+                                                                        <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] shadow-sm border ${msg.agent === 'Coach' ? 'bg-rose-50 border-rose-200' :
+                                                                                msg.agent === 'Analyst' ? 'bg-purple-50 border-purple-200' :
+                                                                                    msg.agent === 'Planner' ? 'bg-orange-50 border-orange-200' :
+                                                                                        'bg-teal-50 border-teal-200'
+                                                                            }`}>
+                                                                            {msg.agent === 'Coach' ? '🌱' :
+                                                                                msg.agent === 'Analyst' ? '📊' :
+                                                                                    msg.agent === 'Planner' ? '📅' : '📜'}
+                                                                        </div>
                                                                     )}
                                                                     {msg.agent || 'Mr. Crock'}
                                                                 </div>
@@ -509,11 +519,15 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                     }`}
                                                                             >
                                                                                 <div className="flex items-center gap-1.5 mb-1">
-                                                                                    <div className={`w-2 h-2 rounded-sm rotate-45 ${step.agent === 'Coach' ? 'bg-rose-500' :
-                                                                                        step.agent === 'Analyst' ? 'bg-purple-500' :
-                                                                                            step.agent === 'Planner' ? 'bg-orange-500' :
-                                                                                                'bg-blue-500'
-                                                                                        }`} />
+                                                                                    <div className={`w-4 h-4 rounded-full flex items-center justify-center text-[8px] shadow-sm border ${step.agent === 'Coach' ? 'bg-rose-50 border-rose-200' :
+                                                                                            step.agent === 'Analyst' ? 'bg-purple-50 border-purple-200' :
+                                                                                                step.agent === 'Planner' ? 'bg-orange-50 border-orange-200' :
+                                                                                                    'bg-blue-50 border-blue-200'
+                                                                                        }`}>
+                                                                                        {step.agent === 'Coach' ? '🌱' :
+                                                                                            step.agent === 'Analyst' ? '📊' :
+                                                                                                step.agent === 'Planner' ? '📅' : '🤖'}
+                                                                                    </div>
                                                                                     <span className={`font-black uppercase tracking-tighter text-[9px] ${step.agent === 'Coach' ? 'text-rose-700' :
                                                                                         step.agent === 'Analyst' ? 'text-purple-700' :
                                                                                             step.agent === 'Planner' ? 'text-orange-700' :
