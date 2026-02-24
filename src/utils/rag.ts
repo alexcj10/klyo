@@ -6,6 +6,7 @@ import { Event, Task } from '../types';
 // Initialize Groq SDK
 const GROQ_KEY = import.meta.env.VITE_GROQ_KEY || '';
 const HISTORIAN_KEY = import.meta.env.VITE_HISTORIAN_KEY || GROQ_KEY;
+const FROG_KEY = import.meta.env.VITE_FROG_KEY || GROQ_KEY;
 
 // --------------------------------------------------------
 // Types & Data Handling
@@ -319,7 +320,7 @@ export async function ragQuery(
     if (isFrogQuery) {
         // Use the FULL ranked and lookahead context for Dr. Frog
         const finalContext = contextString + lookaheadString;
-        const personaKey = GROQ_KEY;
+        const personaKey = FROG_KEY;
         const discussion = await conductSwarmDiscussion(question, finalContext, personaKey);
         const frogResponse = await generateFrogResponse(question, finalContext, discussion, personaKey);
         return { answer: frogResponse, agent: "Dr. Frog", discussion };
