@@ -33,10 +33,12 @@ Meet your new executive elite team. Klyo now features a multi-specialist Swarm p
 *   **@analyst**: A high-performance, data-driven strategist for optimization and trends.
 *   **@planner**: A master of spatial-temporal coordination for resolving calendar conflicts.
 *   **@frog**: The **Swarm Orchestrator**. Invoke Dr. Frog to have all specialists debate your schedule in a multi-perspective discussion before delivering a unified master verdict.
+*   **@historian**: A dedicated historical archivist. Uses strict RAG filtering to only access past events and tasks, helping you reflect on your journey without future distractions.
 
 ### Advanced Temporal Intelligence
 *   **Context Aware**: AI assistant's know your schedule better than you do, resolution-focused on high-priority items.
 *   **Year-Aware Filtering**: Strict temporal logic that prioritizes current (2026) and future events, with automatic fallback for historical queries.
+*   **Historian Isolation**: Specialized logic for `@historian` that strips all non-past items from the context, ensuring absolute historical focus.
 *   **Timing Precision**: Strict enforcement of exact [TIME] brackets in all responses to ensure professional-level reliability.
 *   **Blazing Fast**: Integrated with **Groq llama-3.3-70b** for near-instant execution.
 
@@ -92,6 +94,7 @@ Experience Klyo locally in minutes.
 ### Prerequisites
 *   Node.js (v18+)
 *   Groq API Key (Set in `.env` as `VITE_GROQ_KEY`)
+*   Optional: Specialized Keys (`VITE_HISTORIAN_KEY`, `VITE_FROG_KEY`, etc. for isolated operations)
 
 ### Installation
 ```bash
