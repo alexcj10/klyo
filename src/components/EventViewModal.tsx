@@ -91,7 +91,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[65] flex items-center justify-center p-3"
+        className="fixed inset-0 bg-black/40 z-[65] flex items-center justify-center p-3"
         onClick={onClose}
       >
         {/* Invisible Touch Zones for Navigation */}
@@ -244,7 +244,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
 
           {/* Delete Confirmation Dialog */}
           {showDeleteConfirm && (
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-20">
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center p-4 z-20">
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

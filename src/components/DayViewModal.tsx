@@ -77,7 +77,7 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[55] flex items-center justify-center p-4"
+        className="fixed inset-0 bg-black/40 z-[55] flex items-center justify-center p-4"
         onClick={onClose}
       >
         <motion.div
@@ -225,7 +225,7 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.1 }}
-                className="absolute inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 z-[60]"
+                className="absolute inset-0 bg-black/40 flex items-center justify-center p-4 z-[60]"
               >
                 <motion.div
                   key="delete-dialog"

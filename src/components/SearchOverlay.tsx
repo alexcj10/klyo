@@ -263,7 +263,7 @@ const SearchOverlay: React.FC<SearchOverlayProps> = ({ open, onClose, onSearch, 
           {/* Backdrop */}
           <motion.div
             variants={backdropVariants}
-            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/40"
             onClick={handleClose}
           />
 
