@@ -499,7 +499,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                                     >
                                                         <div
-                                                            className={`max-w-[85%] p-3 sm:p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm ${msg.role === 'user'
+                                                            className={`max-w-[85%] p-3 sm:p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm break-words overflow-hidden ${msg.role === 'user'
                                                                 ? `${msg.content.includes('@frog') ? 'bg-emerald-600' :
                                                                     msg.content.includes('@coach') ? 'bg-rose-600' :
                                                                         msg.content.includes('@analyst') ? 'bg-purple-600' :
@@ -525,7 +525,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
 
                                                             {/* Swarm Discussion Transcript */}
                                                             {msg.discussion && msg.discussion.length > 0 && (
-                                                                <div className="mb-4 space-y-2 bg-slate-50/80 p-3 rounded-xl border border-slate-100/50">
+                                                                <div className="mb-4 space-y-2 bg-slate-50/80 p-3 rounded-xl border border-slate-100/50 overflow-hidden">
                                                                     <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
                                                                         <div className="w-1 h-1 bg-emerald-400 rounded-full animate-pulse" />
                                                                         Agent Swarm Insight
@@ -545,7 +545,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                     hidden: { opacity: 0, x: -10 },
                                                                                     visible: { opacity: 1, x: 0 }
                                                                                 }}
-                                                                                className={`p-2 rounded-lg border text-[11px] leading-relaxed relative ${step.agent === 'Coach' ? 'bg-rose-50/30 border-rose-100 shadow-sm' :
+                                                                                className={`p-2 rounded-lg border text-[11px] leading-relaxed relative break-words overflow-hidden ${step.agent === 'Coach' ? 'bg-rose-50/30 border-rose-100 shadow-sm' :
                                                                                     step.agent === 'Analyst' ? 'bg-purple-50/30 border-purple-100 shadow-sm' :
                                                                                         step.agent === 'Planner' ? 'bg-orange-50/30 border-orange-100 shadow-sm' :
                                                                                             'bg-blue-50/30 border-blue-100 shadow-sm'
@@ -559,20 +559,20 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                                 'text-blue-700'
                                                                                         }`}>{step.agent}</span>
                                                                                 </div>
-                                                                                <span className="text-slate-600 block pl-3 border-l-2 border-slate-200 ml-1 italic leading-normal">"{step.content}"</span>
+                                                                                <span className="text-slate-600 block pl-3 border-l-2 border-slate-200 ml-1 italic leading-normal break-words">"{step.content}"</span>
                                                                             </motion.div>
                                                                         ))}
                                                                     </motion.div>
                                                                 </div>
                                                             )}
-                                                            <div className="markdown-body">
+                                                            <div className="markdown-body break-words overflow-hidden">
                                                                 <ReactMarkdown
                                                                     components={{
                                                                         strong: ({ node, ...props }) => <strong className="font-bold text-gray-900" {...props} />,
                                                                         ul: ({ node, ...props }) => <ul className="list-disc list-outside ml-4 space-y-1 my-2" {...props} />,
                                                                         ol: ({ node, ...props }) => <ol className="list-decimal list-outside ml-4 space-y-1 my-2" {...props} />,
                                                                         li: ({ node, ...props }) => <li className="pl-1" {...props} />,
-                                                                        p: ({ node, ...props }) => <p className="mb-2 last:mb-0 leading-relaxed" {...props} />,
+                                                                        p: ({ node, ...props }) => <p className="mb-2 last:mb-0 leading-relaxed break-words" {...props} />,
                                                                         h1: ({ node, ...props }) => <h1 className="text-lg font-bold mt-3 mb-2" {...props} />,
                                                                         h2: ({ node, ...props }) => <h2 className="text-base font-bold mt-2 mb-1" {...props} />,
                                                                         code: ({ node, className, children, ...props }: any) => {
@@ -582,7 +582,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                                                     {children}
                                                                                 </code>
                                                                             ) : (
-                                                                                <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono text-blue-600" {...props}>
+                                                                                <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono text-blue-600 break-all" {...props}>
                                                                                     {children}
                                                                                 </code>
                                                                             )
