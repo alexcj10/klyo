@@ -134,7 +134,7 @@ const EventViewModal: React.FC<EventViewModalProps> = ({
             damping: 30,
             duration: 0.4
           }}
-          className="bg-white rounded-xl shadow-xl w-[94%] max-w-[340px] sm:max-w-sm mx-auto overflow-hidden"
+          className="bg-white rounded-xl shadow-xl w-[94%] max-w-[340px] sm:max-w-sm mx-auto overflow-hidden relative z-20"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Simple Header */}
