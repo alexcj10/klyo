@@ -191,12 +191,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           scrollbarGutter: 'stable'
         }}
       >
-        <div className="p-2 border-r border-gray-100" />
-        <div className="p-2 text-center">
-          <div className="text-xs text-indigo-600 font-bold uppercase">
+        <div className="p-1 border-r border-gray-100" />
+        <div className="py-1 sm:py-2 text-center">
+          <div className="text-[10px] sm:text-xs text-indigo-600 font-bold uppercase tracking-wider">
             {format(currentDate, 'EEEE')}
           </div>
-          <div className="text-lg sm:text-2xl font-bold mt-1 text-blue-500">
+          <div className="text-base sm:text-2xl font-bold text-blue-500 leading-tight">
             {format(currentDate, 'd')}
           </div>
         </div>
@@ -213,7 +213,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               className="grid border-b border-blue-100/50 min-h-[64px]"
               style={{ gridTemplateColumns: '64px 1fr' }}
             >
-              <div className="p-1 sm:p-2 text-xs sm:text-sm text-gray-400 text-right pr-2 sm:pr-4 border-r border-blue-100/50 whitespace-nowrap">
+              <div className="p-1 sm:p-2 text-[10px] sm:text-sm text-gray-400 text-right pr-2 sm:pr-4 border-r border-blue-100/50 whitespace-nowrap">
                 {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
               </div>
 
@@ -678,7 +678,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 className="inline-block text-gray-900 transition-colors duration-200"
               >
                 {viewMode === 'day'
-                  ? format(currentDate, 'EEEE, MMMM d')
+                  ? (
+                    <>
+                      <span className="hidden sm:inline">{format(currentDate, 'EEEE, MMMM d')}</span>
+                      <span className="sm:hidden">{format(currentDate, 'MMMM yyyy')}</span>
+                    </>
+                  )
                   : viewMode === 'month'
                     ? format(currentDate, 'MMMM yyyy')
                     : viewMode === 'week'
