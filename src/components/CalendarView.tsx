@@ -353,6 +353,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                     animate={{ opacity: 1 }}
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (isDraggingRef.current) return;
                       onDayViewOpen(date);
                     }}
                     className="cursor-pointer flex-shrink-0 min-w-0"
@@ -375,6 +376,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   <div
                     onClick={(e) => {
                       e.stopPropagation();
+                      if (isDraggingRef.current) return;
                       onDayViewOpen(date);
                     }}
                     className="mt-0.5 text-[8px] sm:text-[9px] text-blue-600 font-bold px-0.5 hover:text-blue-700 transition-colors flex-shrink-0 whitespace-nowrap cursor-pointer"
