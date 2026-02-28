@@ -408,107 +408,124 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     const months = Array.from({ length: 12 }, (_, i) => new Date(year, i, 1));
 
     return (
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 sm:p-5 lg:p-6 flex flex-col">
-        {/* 12-Month Grid — stretches to fill available space */}
-        <div
-          className={`grid gap-4 sm:gap-5 lg:gap-6 flex-1 ${isSidebarOpen
-            ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'
-            : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
-            }`}
-          style={{ gridAutoRows: '1fr' }}
-        >
-          {months.map((monthDate, monthIndex) => {
-            const mStart = startOfMonth(monthDate);
-            const mEnd = endOfMonth(monthDate);
-            const calStart = startOfWeek(mStart, { weekStartsOn: 0 });
-            const calEnd = endOfWeek(mEnd, { weekStartsOn: 0 });
-            const days = eachDayOfInterval({ start: calStart, end: calEnd });
+      <motion.div
+        drag="x"
+        dragDirectionLock
+        dragConstraints={{ left: 0, right: 0 }}
+        dragElastic={0.2}
+        dragMomentum={false}
+        dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+        onDragEnd={(_, info) => {
+          const threshold = 30;
+          if (info.offset.x > threshold) {
+            navigatePrev();
+          } else if (info.offset.x < -threshold) {
+            navigateNext();
+          }
+        }}
+        className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing touch-pan-y select-none"
+      >
+        <div className="flex-1 overflow-y-auto custom-scrollbar p-3 sm:p-5 lg:p-6 flex flex-col touch-pan-y">
+          {/* 12-Month Grid — stretches to fill available space */}
+          <div
+            className={`grid gap-4 sm:gap-5 lg:gap-6 flex-1 ${isSidebarOpen
+              ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3'
+              : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
+              }`}
+            style={{ gridAutoRows: '1fr' }}
+          >
+            {months.map((monthDate, monthIndex) => {
+              const mStart = startOfMonth(monthDate);
+              const mEnd = endOfMonth(monthDate);
+              const calStart = startOfWeek(mStart, { weekStartsOn: 0 });
+              const calEnd = endOfWeek(mEnd, { weekStartsOn: 0 });
+              const days = eachDayOfInterval({ start: calStart, end: calEnd });
 
-            return (
-              <motion.div
-                key={monthIndex}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: monthIndex * 0.03 }}
-                className="bg-gradient-to-br from-white to-blue-50/30 rounded-xl border border-blue-100/60 shadow-sm p-3 sm:p-4 hover:shadow-lg hover:border-blue-200/80 transition-all duration-200 flex flex-col"
-              >
-                {/* Month Name */}
-                <button
-                  onClick={() => {
-                    setCurrentDate(monthDate);
-                    setViewMode('month');
-                  }}
-                  className="text-sm sm:text-base font-bold text-gray-800 mb-2 sm:mb-3 hover:text-blue-600 transition-colors cursor-pointer w-full text-left flex-shrink-0"
+              return (
+                <motion.div
+                  key={monthIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: monthIndex * 0.03 }}
+                  className="bg-gradient-to-br from-white to-blue-50/30 rounded-xl border border-blue-100/60 shadow-sm p-3 sm:p-4 hover:shadow-lg hover:border-blue-200/80 transition-all duration-200 flex flex-col"
                 >
-                  {format(monthDate, 'MMMM')}
-                </button>
+                  {/* Month Name */}
+                  <button
+                    onClick={() => {
+                      setCurrentDate(monthDate);
+                      setViewMode('month');
+                    }}
+                    className="text-sm sm:text-base font-bold text-gray-800 mb-2 sm:mb-3 hover:text-blue-600 transition-colors cursor-pointer w-full text-left flex-shrink-0"
+                  >
+                    {format(monthDate, 'MMMM')}
+                  </button>
 
-                {/* Day Headers */}
-                <div className="grid grid-cols-7 mb-1 sm:mb-1.5 flex-shrink-0">
-                  {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                    <div key={i} className="text-center text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase">
-                      {day}
-                    </div>
-                  ))}
-                </div>
+                  {/* Day Headers */}
+                  <div className="grid grid-cols-7 mb-1 sm:mb-1.5 flex-shrink-0">
+                    {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                      <div key={i} className="text-center text-[9px] sm:text-[10px] font-semibold text-gray-400 uppercase">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
 
-                {/* Day Grid with Heatmap — grows to fill card */}
-                <div className="grid grid-cols-7 gap-[2px] sm:gap-1 flex-1 content-start">
-                  {days.map((date, dayIndex) => {
-                    const inMonth = isSameMonth(date, monthDate);
-                    const eventCount = inMonth ? getEventsForDate(date).length : 0;
-                    const isTodayDate = isToday(date);
+                  {/* Day Grid with Heatmap — grows to fill card */}
+                  <div className="grid grid-cols-7 gap-[2px] sm:gap-1 flex-1 content-start">
+                    {days.map((date, dayIndex) => {
+                      const inMonth = isSameMonth(date, monthDate);
+                      const eventCount = inMonth ? getEventsForDate(date).length : 0;
+                      const isTodayDate = isToday(date);
 
-                    return (
-                      <button
-                        key={dayIndex}
-                        onClick={() => {
-                          if (inMonth) {
-                            setCurrentDate(date);
-                            setViewMode('month');
-                          }
-                        }}
-                        className={`
+                      return (
+                        <button
+                          key={dayIndex}
+                          onClick={() => {
+                            if (inMonth) {
+                              setCurrentDate(date);
+                              setViewMode('month');
+                            }
+                          }}
+                          className={`
                           w-full aspect-square rounded sm:rounded-md text-[8px] sm:text-[10px] lg:text-[11px] font-medium flex items-center justify-center transition-all relative
                           ${!inMonth
-                            ? 'opacity-0 pointer-events-none'
-                            : `${getHeatmapColor(eventCount)} hover:opacity-80 hover:scale-110 cursor-pointer`
-                          }
+                              ? 'opacity-0 pointer-events-none'
+                              : `${getHeatmapColor(eventCount)} hover:opacity-80 hover:scale-110 cursor-pointer`
+                            }
                           ${eventCount > 0 && inMonth ? 'text-white font-semibold' : 'text-gray-500'}
                         `}
-                        title={inMonth ? `${format(date, 'MMM d')} - ${eventCount} event${eventCount !== 1 ? 's' : ''}` : ''}
-                      >
-                        {inMonth && (
-                          <>
-                            {isTodayDate && (
-                              <div className="absolute inset-0 border-2 border-blue-600 rounded sm:rounded-md pointer-events-none z-10" />
-                            )}
-                            <span className="relative z-0">{format(date, 'd')}</span>
-                          </>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
+                          title={inMonth ? `${format(date, 'MMM d')} - ${eventCount} event${eventCount !== 1 ? 's' : ''}` : ''}
+                        >
+                          {inMonth && (
+                            <>
+                              {isTodayDate && (
+                                <div className="absolute inset-0 border-2 border-blue-600 rounded sm:rounded-md pointer-events-none z-10" />
+                              )}
+                              <span className="relative z-0">{format(date, 'd')}</span>
+                            </>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
 
-        {/* Heatmap Legend */}
-        <div className="flex items-center justify-center gap-2 sm:gap-2.5 mt-5 sm:mt-8 pb-3 flex-shrink-0">
-          <span className="text-[10px] sm:text-xs text-gray-500 font-medium">Less</span>
-          {[0, 1, 2, 3, 4, 5].map((level) => (
-            <div
-              key={level}
-              className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-sm ${getHeatmapColor(level)}`}
-              title={level === 0 ? '0 events' : level === 5 ? '5+ events' : `${level} event${level !== 1 ? 's' : ''}`}
-            />
-          ))}
-          <span className="text-[10px] sm:text-xs text-gray-500 font-medium">More</span>
+          {/* Heatmap Legend */}
+          <div className="flex items-center justify-center gap-2 sm:gap-2.5 mt-5 sm:mt-8 pb-3 flex-shrink-0">
+            <span className="text-[10px] sm:text-xs text-gray-500 font-medium">Less</span>
+            {[0, 1, 2, 3, 4, 5].map((level) => (
+              <div
+                key={level}
+                className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-sm ${getHeatmapColor(level)}`}
+                title={level === 0 ? '0 events' : level === 5 ? '5+ events' : `${level} event${level !== 1 ? 's' : ''}`}
+              />
+            ))}
+            <span className="text-[10px] sm:text-xs text-gray-500 font-medium">More</span>
+          </div>
         </div>
-      </div>
-
+      </motion.div>
     );
   };
 
