@@ -417,7 +417,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       <div
         className="grid border-b border-indigo-100 bg-indigo-50/80 backdrop-blur-sm z-10"
         style={{
-          gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)',
+          gridTemplateColumns: '64px repeat(7, 1fr)',
           scrollbarGutter: 'stable'
         }}
       >
@@ -459,7 +459,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             <div
               key={hour}
               className="grid border-b border-blue-100/50 min-h-[48px]"
-              style={{ gridTemplateColumns: 'minmax(45px, 1fr) repeat(7, 2fr)' }}
+              style={{ gridTemplateColumns: '64px repeat(7, 1fr)' }}
             >
               {/* Time Label */}
               <div className="p-0.5 sm:p-1 text-[11px] sm:text-xs text-gray-400 text-right pr-1 sm:pr-2 border-r border-blue-100/50 whitespace-nowrap">
