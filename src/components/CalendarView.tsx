@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ChevronLeft,
@@ -56,6 +56,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onEventDelete,
   isSidebarOpen
 }) => {
+  const isDraggingRef = useRef(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
@@ -170,6 +171,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       dragElastic={0.2}
       dragMomentum={false}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      onDragStart={() => { isDraggingRef.current = true; }}
       onDragEnd={(_, info) => {
         const threshold = 30;
         if (info.offset.x > threshold) {
@@ -177,13 +179,15 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         } else if (info.offset.x < -threshold) {
           navigateNext();
         }
+        // Small delay to ensure click handlers don't fire after drag ends
+        setTimeout(() => { isDraggingRef.current = false; }, 50);
       }}
       className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing touch-pan-y select-none"
     >
       <div
         className="grid border-b border-indigo-100 bg-indigo-50/80 backdrop-blur-sm z-10"
         style={{
-          gridTemplateColumns: 'minmax(45px, 1fr) 7fr',
+          gridTemplateColumns: '64px 1fr',
           scrollbarGutter: 'stable'
         }}
       >
@@ -207,7 +211,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             <div
               key={hour}
               className="grid border-b border-blue-100/50 min-h-[64px]"
-              style={{ gridTemplateColumns: 'minmax(45px, 1fr) 7fr' }}
+              style={{ gridTemplateColumns: '64px 1fr' }}
             >
               <div className="p-1 sm:p-2 text-xs sm:text-sm text-gray-400 text-right pr-2 sm:pr-4 border-r border-blue-100/50 whitespace-nowrap">
                 {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
@@ -215,6 +219,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
               <div
                 onClick={() => {
+                  if (isDraggingRef.current) return;
                   const clickedDateTime = setMinutes(setHours(currentDate, hour), 0);
                   onDateClick(clickedDateTime, true);
                 }}
@@ -231,6 +236,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                       key={event.id}
                       onClick={(e) => {
                         e.stopPropagation();
+                        if (isDraggingRef.current) return;
                         onEventView(event);
                       }}
                       className="text-xs sm:text-sm p-2 rounded-lg truncate cursor-pointer hover:shadow-md mb-1 border-l-4 shadow-sm"
@@ -263,6 +269,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       dragElastic={0.2}
       dragMomentum={false}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      onDragStart={() => { isDraggingRef.current = true; }}
       onDragEnd={(_, info) => {
         const threshold = 30;
         if (info.offset.x > threshold) {
@@ -270,6 +277,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         } else if (info.offset.x < -threshold) {
           navigateNext();
         }
+        setTimeout(() => { isDraggingRef.current = false; }, 50);
       }}
       className="flex flex-col flex-1 min-h-0 overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none"
     >
@@ -308,7 +316,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: index * 0.005 }}
-              onClick={() => onDateClick(date, false)}
+              onClick={() => {
+                if (isDraggingRef.current) return;
+                onDateClick(date, false);
+              }}
               className={`
                 p-1 sm:p-2 border-r border-b border-blue-100/50 last:border-r-0 flex flex-col min-h-0 overflow-hidden
                 ${!isCurrentMonth ? 'bg-gray-50/50' : 'bg-white'}
@@ -388,6 +399,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       dragElastic={0.2}
       dragMomentum={false}
       dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      onDragStart={() => { isDraggingRef.current = true; }}
       onDragEnd={(_, info) => {
         const threshold = 30;
         if (info.offset.x > threshold) {
@@ -395,6 +407,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         } else if (info.offset.x < -threshold) {
           navigateNext();
         }
+        setTimeout(() => { isDraggingRef.current = false; }, 50);
       }}
       className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing touch-pan-y select-none"
     >
@@ -463,6 +476,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   <div
                     key={`${date.toISOString()}-${hour}`}
                     onClick={() => {
+                      if (isDraggingRef.current) return;
                       const clickedDateTime = setMinutes(setHours(date, hour), 0);
                       onDateClick(clickedDateTime, true);
                     }}
@@ -473,6 +487,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                         key={event.id}
                         onClick={(e) => {
                           e.stopPropagation();
+                          if (isDraggingRef.current) return;
                           onEventView(event);
                         }}
                         className="text-[10px] sm:text-xs p-1 rounded truncate cursor-pointer hover:shadow-sm"
@@ -518,6 +533,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         dragElastic={0.2}
         dragMomentum={false}
         dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+        onDragStart={() => { isDraggingRef.current = true; }}
         onDragEnd={(_, info) => {
           const threshold = 30;
           if (info.offset.x > threshold) {
@@ -525,6 +541,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           } else if (info.offset.x < -threshold) {
             navigateNext();
           }
+          setTimeout(() => { isDraggingRef.current = false; }, 50);
         }}
         className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing touch-pan-y select-none"
       >
@@ -583,6 +600,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                         <button
                           key={dayIndex}
                           onClick={() => {
+                            if (isDraggingRef.current) return;
                             if (inMonth) {
                               setCurrentDate(date);
                               setViewMode('day');
