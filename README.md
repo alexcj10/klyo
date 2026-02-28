@@ -44,7 +44,7 @@ Meet your new executive elite team. Klyo now features a multi-specialist Swarm p
 
 ### Dynamic Calendar View
 A fluid, interactive calendar with multiple views designed for peak organization:
-*   **Month, Week, & Year Views**: Seamlessly toggle between granular schedules and high-level overviews.
+*   **Month, Week, Day & Year Views**: Seamlessly toggle between granular schedules and high-level overviews.
 *   **Smooth Transitions**: Fully responsive layouts with fluid animations powered by Framer Motion.
 *   **Deep Navigation**: Click any day in the Year or Month view to drill down instantly.
 
