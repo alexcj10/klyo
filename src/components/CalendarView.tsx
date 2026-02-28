@@ -333,7 +333,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
       {/* Time Grid - Scrollable area */}
       <div
-        className="flex-1 overflow-y-auto custom-scrollbar"
+        className="flex-1 overflow-y-auto custom-scrollbar touch-pan-y"
         style={{ scrollbarGutter: 'stable' }}
       >
         <div className="flex flex-col">
