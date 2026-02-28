@@ -24,6 +24,8 @@ import {
   subWeeks,
   addYears,
   subYears,
+  addDays,
+  subDays,
   getYear,
   isSameDay,
   setHours,
@@ -43,7 +45,7 @@ interface CalendarViewProps {
   isSidebarOpen?: boolean;
 }
 
-type ViewMode = 'month' | 'week' | 'year';
+type ViewMode = 'day' | 'week' | 'month' | 'year';
 
 const CalendarView: React.FC<CalendarViewProps> = ({
   events,
@@ -61,7 +63,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   // Navigation handlers
   const navigatePrev = () => {
-    if (viewMode === 'month') {
+    if (viewMode === 'day') {
+      setCurrentDate(subDays(currentDate, 1));
+    } else if (viewMode === 'month') {
       setCurrentDate(subMonths(currentDate, 1));
     } else if (viewMode === 'week') {
       setCurrentDate(subWeeks(currentDate, 1));
@@ -71,7 +75,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const navigateNext = () => {
-    if (viewMode === 'month') {
+    if (viewMode === 'day') {
+      setCurrentDate(addDays(currentDate, 1));
+    } else if (viewMode === 'month') {
       setCurrentDate(addMonths(currentDate, 1));
     } else if (viewMode === 'week') {
       setCurrentDate(addWeeks(currentDate, 1));
@@ -154,6 +160,99 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     window.addEventListener('resize', calculateMaxEvents);
     return () => window.removeEventListener('resize', calculateMaxEvents);
   }, [numWeeks]);
+
+  // Day View Component
+  const DayView = () => (
+    <motion.div
+      drag="x"
+      dragDirectionLock
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.2}
+      dragMomentum={false}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
+      onDragEnd={(_, info) => {
+        const threshold = 30;
+        if (info.offset.x > threshold) {
+          navigatePrev();
+        } else if (info.offset.x < -threshold) {
+          navigateNext();
+        }
+      }}
+      className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing touch-pan-y select-none"
+    >
+      <div
+        className="grid border-b border-indigo-100 bg-indigo-50/80 backdrop-blur-sm z-10"
+        style={{
+          gridTemplateColumns: 'minmax(45px, 1fr) 7fr',
+          scrollbarGutter: 'stable'
+        }}
+      >
+        <div className="p-2 border-r border-gray-100" />
+        <div className="p-2 text-center">
+          <div className="text-xs text-indigo-600 font-bold uppercase">
+            {format(currentDate, 'EEEE')}
+          </div>
+          <div className="text-lg sm:text-2xl font-bold mt-1 text-blue-500">
+            {format(currentDate, 'd')}
+          </div>
+        </div>
+      </div>
+
+      <div
+        className="flex-1 overflow-y-auto custom-scrollbar touch-pan-y"
+        style={{ scrollbarGutter: 'stable' }}
+      >
+        <div className="flex flex-col">
+          {hours.map((hour) => (
+            <div
+              key={hour}
+              className="grid border-b border-blue-100/50 min-h-[64px]"
+              style={{ gridTemplateColumns: 'minmax(45px, 1fr) 7fr' }}
+            >
+              <div className="p-1 sm:p-2 text-xs sm:text-sm text-gray-400 text-right pr-2 sm:pr-4 border-r border-blue-100/50 whitespace-nowrap">
+                {format(setMinutes(setHours(new Date(), hour), 0), 'h a')}
+              </div>
+
+              <div
+                onClick={() => {
+                  const clickedDateTime = setMinutes(setHours(currentDate, hour), 0);
+                  onDateClick(clickedDateTime, true);
+                }}
+                className="p-1 hover:bg-blue-50/30 cursor-pointer transition-colors relative min-w-0"
+              >
+                {getEventsForDate(currentDate)
+                  .filter(event => {
+                    if (event.isAllDay) return hour === 0;
+                    const eventHour = parseInt(event.startTime.split(':')[0]);
+                    return eventHour === hour;
+                  })
+                  .map((event) => (
+                    <div
+                      key={event.id}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onEventView(event);
+                      }}
+                      className="text-xs sm:text-sm p-2 rounded-lg truncate cursor-pointer hover:shadow-md mb-1 border-l-4 shadow-sm"
+                      style={{
+                        backgroundColor: `${event.color}15`,
+                        color: event.color,
+                        borderColor: event.color
+                      }}
+                    >
+                      <div className="font-bold truncate">{event.title}</div>
+                      <div className="text-[10px] opacity-80">
+                        {event.isAllDay ? 'All Day' : `${event.startTime} - ${event.endTime}`}
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </motion.div>
+  );
 
   // Month View Component
   const MonthView = () => (
@@ -313,7 +412,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           return (
             <div
               key={date.toISOString()}
-              className="p-2 text-center border-r border-gray-100 last:border-r-0"
+              onClick={() => {
+                setCurrentDate(date);
+                setViewMode('day');
+              }}
+              className="p-2 text-center border-r border-gray-100 last:border-r-0 cursor-pointer hover:bg-white/40 transition-colors"
             >
               <div className="text-xs text-indigo-600 font-bold uppercase">
                 {format(date, 'EEE')}
@@ -482,7 +585,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                           onClick={() => {
                             if (inMonth) {
                               setCurrentDate(date);
-                              setViewMode('month');
+                              setViewMode('day');
                             }
                           }}
                           className={`
@@ -554,11 +657,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 whileTap={{ scale: 0.98 }}
                 className="inline-block text-gray-900 transition-colors duration-200"
               >
-                {viewMode === 'month'
-                  ? format(currentDate, 'MMMM yyyy')
-                  : viewMode === 'week'
-                    ? `${format(startOfWeek(currentDate), 'MMMM d')}`
-                    : format(currentDate, 'yyyy')
+                {viewMode === 'day'
+                  ? format(currentDate, 'EEEE, MMMM d')
+                  : viewMode === 'month'
+                    ? format(currentDate, 'MMMM yyyy')
+                    : viewMode === 'week'
+                      ? `${format(startOfWeek(currentDate), 'MMMM d')}`
+                      : format(currentDate, 'yyyy')
                 }
               </motion.span>
             </h2>
@@ -588,6 +693,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
           {/* View Toggle - Simple Pills */}
           <div className="flex items-center bg-gray-100 rounded-full p-0.5 ml-1 flex-shrink-0">
+
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setViewMode('month')}
@@ -646,7 +752,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           transition={{ duration: 0.2 }}
           className="flex-1 flex flex-col min-h-0 overflow-hidden"
         >
-          {viewMode === 'month' ? <MonthView /> : viewMode === 'week' ? <WeekView /> : <YearView />}
+          {viewMode === 'day' ? <DayView /> : viewMode === 'month' ? <MonthView /> : viewMode === 'week' ? <WeekView /> : <YearView />}
         </motion.div>
       </AnimatePresence>
 
