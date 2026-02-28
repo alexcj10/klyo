@@ -159,17 +159,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const MonthView = () => (
     <motion.div
       drag="x"
+      dragDirectionLock
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
+      dragMomentum={false}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       onDragEnd={(_, info) => {
-        const threshold = 70;
+        const threshold = 30;
         if (info.offset.x > threshold) {
           navigatePrev();
         } else if (info.offset.x < -threshold) {
           navigateNext();
         }
       }}
-      className="flex flex-col flex-1 min-h-0 overflow-hidden cursor-grab active:cursor-grabbing"
+      className="flex flex-col flex-1 min-h-0 overflow-hidden cursor-grab active:cursor-grabbing touch-none select-none"
     >
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-indigo-100 bg-indigo-50/50">
@@ -281,17 +284,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const WeekView = () => (
     <motion.div
       drag="x"
+      dragDirectionLock
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
+      dragMomentum={false}
+      dragTransition={{ bounceStiffness: 600, bounceDamping: 20 }}
       onDragEnd={(_, info) => {
-        const threshold = 70;
+        const threshold = 30;
         if (info.offset.x > threshold) {
           navigatePrev();
         } else if (info.offset.x < -threshold) {
           navigateNext();
         }
       }}
-      className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing"
+      className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing touch-pan-y select-none"
     >
       {/* Header with days - Fixed at top */}
       <div
