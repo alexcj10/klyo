@@ -157,7 +157,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   // Month View Component
   const MonthView = () => (
-    <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+    <motion.div
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.2}
+      onDragEnd={(_, info) => {
+        const threshold = 70;
+        if (info.offset.x > threshold) {
+          navigatePrev();
+        } else if (info.offset.x < -threshold) {
+          navigateNext();
+        }
+      }}
+      className="flex flex-col flex-1 min-h-0 overflow-hidden cursor-grab active:cursor-grabbing"
+    >
       {/* Day Headers */}
       <div className="grid grid-cols-7 border-b border-indigo-100 bg-indigo-50/50">
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, idx) => (
@@ -261,12 +274,25 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           );
         })}
       </div>
-    </div>
+    </motion.div>
   );
 
   // Week View Component
   const WeekView = () => (
-    <div className="flex flex-col flex-1 min-h-0">
+    <motion.div
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={0.2}
+      onDragEnd={(_, info) => {
+        const threshold = 70;
+        if (info.offset.x > threshold) {
+          navigatePrev();
+        } else if (info.offset.x < -threshold) {
+          navigateNext();
+        }
+      }}
+      className="flex flex-col flex-1 min-h-0 cursor-grab active:cursor-grabbing"
+    >
       {/* Header with days - Fixed at top */}
       <div
         className="grid border-b border-indigo-100 bg-indigo-50/80 backdrop-blur-sm z-10"
@@ -357,7 +383,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 
   // Heatmap color helper
