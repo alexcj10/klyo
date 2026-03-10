@@ -5,7 +5,7 @@
 <h1 align="center"><strong>Klyo: The Intelligent Workspace</strong></h1>
 <p align="center">
   <strong>Get more done without the stress.</strong><br/>
-  Klyo is a simple, all-in-one place for your calendar, tasks, and <strong>AI assistants — Mr. Croc & Dr. Frog</strong>.
+  Klyo is a simple, all-in-one place for your calendar, tasks, and <strong>AI assistants — Mr. Crock & Dr. Frog</strong>.
 </p>
 
 <p align="center">
