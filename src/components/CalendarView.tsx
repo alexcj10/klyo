@@ -655,21 +655,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-blue-200/60 overflow-hidden h-full flex flex-col relative">
-      {/* Header - Clean Mobile Design */}
-      <div className="px-2 sm:px-6 py-3 border-b border-blue-200 flex-shrink-0 bg-blue-100/70 backdrop-blur-sm">
-        {/* Mobile: Centered nav layout */}
-        <div className="flex items-center justify-between">
+      {/* Header - Compact Responsive Single-Row Design */}
+      <div className="px-1.5 sm:px-6 py-3 border-b border-blue-200 flex-shrink-0 bg-blue-100/70 backdrop-blur-sm">
+        <div className="flex items-center justify-between gap-1 sm:gap-2">
           {/* Navigation Arrows + Title */}
           <div className="flex items-center flex-1 min-w-0">
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={navigatePrev}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+              className="p-1 sm:p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
             >
-              <ChevronLeft className="w-5 h-5 text-gray-600" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
             </motion.button>
 
-            <h2 className="text-base sm:text-xl font-bold flex-1 text-center whitespace-nowrap truncate px-1 relative group cursor-pointer"
+            <h2 className="text-sm sm:text-xl font-bold flex-1 text-center whitespace-nowrap truncate px-0.5 sm:px-1 relative group cursor-pointer"
               onClick={() => setIsSelectorOpen(true)}
             >
               <motion.span
@@ -681,13 +680,23 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   ? (
                     <>
                       <span className="hidden sm:inline">{format(currentDate, 'EEEE, MMMM d')}</span>
-                      <span className="sm:hidden">{format(currentDate, 'MMMM yyyy')}</span>
+                      <span className="sm:hidden">{format(currentDate, 'MMM d, yyyy')}</span>
                     </>
                   )
                   : viewMode === 'month'
-                    ? format(currentDate, 'MMMM yyyy')
+                    ? (
+                      <>
+                        <span className="hidden sm:inline">{format(currentDate, 'MMMM yyyy')}</span>
+                        <span className="sm:hidden">{format(currentDate, 'MMM yyyy')}</span>
+                      </>
+                    )
                     : viewMode === 'week'
-                      ? `${format(startOfWeek(currentDate), 'MMMM d')}`
+                      ? (
+                        <>
+                          <span className="hidden sm:inline">{format(startOfWeek(currentDate), 'MMMM d, yyyy')}</span>
+                          <span className="sm:hidden">{format(startOfWeek(currentDate), 'MMM d')}</span>
+                        </>
+                      )
                       : format(currentDate, 'yyyy')
                 }
               </motion.span>
@@ -701,7 +710,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   animate={{ opacity: 1, scale: 1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={goToToday}
-                  className="text-[10px] sm:text-xs text-blue-600 font-semibold px-2 py-0.5 bg-blue-50 hover:bg-blue-100 rounded-full transition-colors flex-shrink-0 mr-1"
+                  className="text-[9px] sm:text-xs text-blue-600 font-bold px-1.5 sm:px-2 py-0.5 bg-blue-50/80 hover:bg-blue-100 rounded-full border border-blue-100/50 transition-colors flex-shrink-0 mx-0.5 sm:mx-1"
                 >
                   Today
                 </motion.button>
@@ -710,9 +719,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={navigateNext}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+              className="p-1 sm:p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
             >
-              <ChevronRight className="w-5 h-5 text-gray-600" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
             </motion.button>
           </div>
 
