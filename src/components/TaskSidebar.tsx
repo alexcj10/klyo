@@ -123,6 +123,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
         category: newTaskCategory,
         dueDate: new Date(newTaskDate),
         mood: newTaskMood,
+        status: 'todo',
       });
       setNewTaskTitle('');
       setNewTaskDate(new Date().toISOString().split('T')[0]);
@@ -597,28 +598,26 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                           </p>
                         )}
 
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex items-center space-x-2 flex-1 min-w-0">
-                            <span className={`
-                              px-2.5 py-1 rounded-lg text-xs font-semibold border
-                              ${getCategoryColorClass(event.category)}
-                            `}>
-                              {event.category}
-                            </span>
-                            {event.isAllDay ? (
-                              <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
-                                <Clock className="w-3 h-3" />
-                                <span>All day</span>
-                              </div>
-                            ) : (
-                              <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg">
-                                <Clock className="w-3 h-3" />
-                                <span>{event.startTime}</span>
-                              </div>
-                            )}
-                          </div>
-                          <div className="flex items-center space-x-1 text-xs text-gray-500 bg-gray-50 px-2 py-1 rounded-lg whitespace-nowrap flex-shrink-0">
-                            <Calendar className="w-3 h-3" />
+                        <div className="flex items-center gap-1.5 sm:gap-2">
+                          <span className={`
+                            px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-lg text-[11px] sm:text-xs font-semibold border whitespace-nowrap
+                            ${getCategoryColorClass(event.category)}
+                          `}>
+                            {event.category}
+                          </span>
+                          {event.isAllDay ? (
+                            <div className="flex items-center space-x-1 text-[11px] sm:text-xs text-gray-500 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg whitespace-nowrap">
+                              <Clock className="w-3 h-3 flex-shrink-0" />
+                              <span>All day</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center space-x-1 text-[11px] sm:text-xs text-gray-500 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg whitespace-nowrap">
+                              <Clock className="w-3 h-3 flex-shrink-0" />
+                              <span>{event.startTime}</span>
+                            </div>
+                          )}
+                          <div className="flex items-center space-x-1 text-[11px] sm:text-xs text-gray-500 bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-lg whitespace-nowrap">
+                            <Calendar className="w-3 h-3 flex-shrink-0" />
                             <span>{format(event.date, 'MMM d')}</span>
                           </div>
                         </div>
