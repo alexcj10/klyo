@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
   MoreHorizontal, 
-  Tag, 
   Check,
   CheckCircle2,
   Trash2,
@@ -33,6 +32,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 }) => {
   const [addingToColumn, setAddingToColumn] = useState<KanbanStatus | null>(null);
   const [inlineTitle, setInlineTitle] = useState('');
+  const [inlineDescription, setInlineDescription] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<KanbanTicket | null>(null);
   
@@ -75,6 +75,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     if (inlineTitle.trim()) {
       onTicketAdd({
         title: inlineTitle.trim(),
+        description: inlineDescription.trim() || undefined,
         status,
         priority: inlinePriority,
         storyPoints: inlinePoints > 0 ? inlinePoints : undefined,
@@ -82,6 +83,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         subtasks: inlineSubtasks.map(t => ({ id: Math.random().toString(), title: t, completed: false }))
       });
       setInlineTitle('');
+      setInlineDescription('');
       setInlinePriority('medium');
       setInlinePoints(0);
       setInlineLabels([]);
@@ -260,14 +262,35 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               <AnimatePresence>
                 {addingToColumn === column.id && (
                   <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl border-2 border-blue-500 p-3 shadow-2xl ring-4 ring-blue-50 relative z-20">
-                    <textarea
-                      autoFocus placeholder="Ticket title..." value={inlineTitle} onChange={(e) => setInlineTitle(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } if (e.key === 'Escape') setAddingToColumn(null); }}
-                      className="w-full text-sm font-bold text-slate-800 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[36px] leading-relaxed outline-none caret-blue-600 mb-2"
-                    />
+                    <div className="flex flex-col gap-1">
+                      <div className="flex justify-between items-center mb-0.5">
+                        <span className={`text-[9px] font-black uppercase tracking-tighter ${inlineTitle.length > 90 ? 'text-red-500' : 'text-slate-300'}`}>Title ({inlineTitle.length}/100)</span>
+                        <div className="flex items-center gap-1.5">
+                          <button onClick={() => setAddingToColumn(null)} className="p-1 hover:bg-slate-50 rounded text-slate-300 hover:text-red-400 transition-all"><X className="w-3.5 h-3.5" /></button>
+                          <button 
+                            onClick={() => handleInlineSubmit(column.id)} 
+                            disabled={!inlineTitle.trim()} 
+                            className="w-6 h-6 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all shadow-sm active:scale-90"
+                          >
+                            <Check className="w-3 h-3 stroke-[3.5px]" />
+                          </button>
+                        </div>
+                      </div>
+                      <textarea
+                        autoFocus placeholder="What needs to be done?" value={inlineTitle} 
+                        onChange={(e) => setInlineTitle(e.target.value.slice(0, 100))}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } if (e.key === 'Escape') setAddingToColumn(null); }}
+                        className="w-full text-sm font-bold text-slate-800 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[32px] leading-relaxed outline-none caret-blue-600"
+                      />
+                      <textarea
+                        placeholder="Add more details here..." value={inlineDescription}
+                        onChange={(e) => setInlineDescription(e.target.value)}
+                        className="w-full text-[11px] font-medium text-slate-500 placeholder-slate-200 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[20px] max-h-[80px] leading-relaxed outline-none mt-0.5"
+                      />
+                    </div>
                     
                     {/* Inline Metadata Grid */}
-                    <div className="space-y-2 border-t border-slate-50 pt-3">
+                    <div className="space-y-2 border-t border-slate-50 pt-3 mt-1">
                       <div className="flex flex-wrap gap-2">
                         <select 
                           value={inlinePriority} onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
@@ -306,7 +329,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
                       {/* Inline Subtasks List */}
                       {inlineSubtasks.length > 0 && (
-                        <div className="space-y-1 pl-1">
+                        <div className="space-y-1 pl-1 max-h-[100px] overflow-y-auto custom-scrollbar">
                           {inlineSubtasks.map((st, i) => (
                             <div key={i} className="flex items-center gap-2 group">
                               <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
@@ -318,7 +341,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       )}
 
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-slate-100 flex items-center justify-center"><CheckCircle2 className="w-2.5 h-2.5 text-slate-400" /></div>
+                        <div className="w-4 h-4 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0"><CheckCircle2 className="w-2.5 h-2.5 text-slate-400" /></div>
                         <input 
                           type="text" placeholder="Add checklist item..." value={newSubtaskInput} onChange={(e) => setNewSubtaskInput(e.target.value)}
                           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newSubtaskInput.trim()) setInlineSubtasks([...inlineSubtasks, newSubtaskInput.trim()]); setNewSubtaskInput(''); } }}
@@ -327,28 +350,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-50">
-                      <div className="flex gap-2">
-                        <div className="p-1 px-1.5 bg-slate-50 rounded-md flex items-center gap-1.5 border border-slate-100 shadow-sm" title="Labels">
-                          <Tag className="w-3 h-3 text-slate-400" />
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Tags</span>
-                        </div>
-                        <div className="p-1 px-1.5 bg-slate-50 rounded-md flex items-center gap-1.5 border border-slate-100 shadow-sm" title="Checklist">
-                          <CheckCircle2 className="w-3 h-3 text-slate-400" />
-                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Tasks</span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <button onClick={() => setAddingToColumn(null)} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-red-500 transition-all active:scale-90"><X className="w-4 h-4" /></button>
-                        <button 
-                          onClick={() => handleInlineSubmit(column.id)} 
-                          disabled={!inlineTitle.trim()} 
-                          className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg shadow-blue-200 active:scale-90"
-                        >
-                          <Check className="w-4 h-4 stroke-[3px]" />
-                        </button>
-                      </div>
-                    </div>
+                    {/* Compact Action Footer Removed for Slimness - Buttons moved to top */}
                   </motion.div>
                 )}
               </AnimatePresence>
