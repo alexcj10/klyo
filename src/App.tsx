@@ -192,20 +192,57 @@ function App() {
 
   const handleTaskComplete = (taskId: string) => {
     setTasks(
-      tasks.map((task) => (task.id === taskId ? { ...task, completed: !task.completed } : task))
+      tasks.map((task) => {
+        if (task.id === taskId) {
+          const isCompleting = !task.completed;
+          return {
+            ...task,
+            completed: isCompleting,
+            status: isCompleting ? 'done' : 'todo'
+          };
+        }
+        return task;
+      })
     );
   };
 
-  const handleTaskAdd = (taskData: Omit<Task, 'id'>) => {
+  const handleTaskAdd = (taskData: Omit<Task, 'id' | 'status'>) => {
     const newTask: Task = {
       ...taskData,
       id: Date.now().toString(),
+      status: taskData.completed ? 'done' : 'todo'
+    };
+    setTasks([...tasks, newTask]);
+  };
+
+  const handleKanbanTaskAdd = (title: string, status: Task['status']) => {
+    const newTask: Task = {
+      id: Date.now().toString(),
+      title,
+      status,
+      completed: status === 'done',
+      category: 'personal',
+      priority: 'medium'
     };
     setTasks([...tasks, newTask]);
   };
 
   const handleTaskDelete = (taskId: string) => {
     setTasks(tasks.filter((task) => task.id !== taskId));
+  };
+
+  const handleTaskStatusChange = (taskId: string, newStatus: Task['status']) => {
+    setTasks(
+      tasks.map((task) =>
+        task.id === taskId
+          ? {
+            ...task,
+            status: newStatus,
+            completed: newStatus === 'done'
+          }
+          : task
+      )
+    );
   };
 
   const handleModalClose = () => {
@@ -289,6 +326,11 @@ function App() {
             onDayViewOpen={handleDayViewOpen}
             onEventDelete={(event) => handleEventDelete(event.id)}
             isSidebarOpen={isActuallySidebarOpen}
+            tasks={tasks}
+            onTaskStatusChange={handleTaskStatusChange}
+            onTaskDelete={handleTaskDelete}
+            onTaskComplete={handleTaskComplete}
+            onKanbanTaskAdd={handleKanbanTaskAdd}
           />
         </div>
 

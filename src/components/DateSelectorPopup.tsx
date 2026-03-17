@@ -16,7 +16,7 @@ interface DateSelectorPopupProps {
     onClose: () => void;
     currentDate: Date;
     onSelectDate: (date: Date) => void;
-    viewMode: 'day' | 'month' | 'week' | 'year';
+    viewMode: 'day' | 'month' | 'week' | 'year' | 'kanban';
 }
 
 const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({

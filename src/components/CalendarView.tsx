@@ -31,8 +31,9 @@ import {
   setHours,
   setMinutes
 } from 'date-fns';
-import { Event } from '../types';
+import { Event, Task } from '../types';
 import DateSelectorPopup from './DateSelectorPopup';
+import KanbanBoard from './KanbanBoard';
 
 interface CalendarViewProps {
   events: Event[];
@@ -43,9 +44,14 @@ interface CalendarViewProps {
   onDayViewOpen: (date: Date) => void;
   onEventDelete: (event: Event) => void;
   isSidebarOpen?: boolean;
+  tasks: Task[];
+  onTaskStatusChange: (taskId: string, newStatus: Task['status']) => void;
+  onTaskDelete: (taskId: string) => void;
+  onTaskComplete: (taskId: string) => void;
+  onKanbanTaskAdd: (title: string, status: Task['status']) => void;
 }
 
-type ViewMode = 'day' | 'week' | 'month' | 'year';
+type ViewMode = 'day' | 'week' | 'month' | 'year' | 'kanban';
 
 const CalendarView: React.FC<CalendarViewProps> = ({
   events,
@@ -54,7 +60,12 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onAddEvent,
   onDayViewOpen,
   onEventDelete,
-  isSidebarOpen
+  isSidebarOpen,
+  tasks,
+  onTaskStatusChange,
+  onTaskDelete,
+  onTaskComplete,
+  onKanbanTaskAdd
 }) => {
   const isDraggingRef = useRef(false);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -660,13 +671,15 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         <div className="flex items-center justify-between gap-1 sm:gap-2">
           {/* Navigation Arrows + Title */}
           <div className="flex items-center flex-1 min-w-0">
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={navigatePrev}
-              className="p-1 sm:p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
-            >
-              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-            </motion.button>
+            {viewMode !== 'kanban' ? (
+              <>
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={navigatePrev}
+                  className="p-1 sm:p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                >
+                  <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                </motion.button>
 
             <h2 className="text-sm sm:text-xl font-bold flex-1 text-center whitespace-nowrap truncate px-0.5 sm:px-1 relative group cursor-pointer"
               onClick={() => setIsSelectorOpen(true)}
@@ -716,13 +729,19 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 </motion.button>
               )}
 
-            <motion.button
-              whileTap={{ scale: 0.9 }}
-              onClick={navigateNext}
-              className="p-1 sm:p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
-            >
-              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
-            </motion.button>
+                <motion.button
+                  whileTap={{ scale: 0.9 }}
+                  onClick={navigateNext}
+                  className="p-1 sm:p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                >
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+                </motion.button>
+              </>
+            ) : (
+              <div className="flex items-center gap-2 px-1.5 sm:px-3 py-1 bg-blue-50/50 rounded-xl border border-blue-200/50">
+                <span className="text-[10px] sm:text-xs font-black text-blue-600 tracking-wider">PROJECT KANBAN</span>
+              </div>
+            )}
           </div>
 
           {/* View Toggle - Simple Pills */}
@@ -770,6 +789,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               <CalendarDays className="w-4 h-4" />
               <span className="hidden sm:inline text-sm font-medium">Year</span>
             </motion.button>
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setViewMode('kanban')}
+              className={`
+                p-1.5 sm:px-3 sm:py-1 rounded-full transition-all flex items-center space-x-1
+                ${viewMode === 'kanban'
+                  ? 'bg-white text-blue-600 shadow-sm'
+                  : 'text-gray-500'
+                }
+              `}
+            >
+              <LayoutGrid className="w-4 h-4 rotate-90" />
+              <span className="hidden sm:inline text-sm font-medium">Kanban</span>
+            </motion.button>
           </div>
         </div>
       </div>
@@ -786,7 +819,23 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           transition={{ duration: 0.2 }}
           className="flex-1 flex flex-col min-h-0 overflow-hidden"
         >
-          {viewMode === 'day' ? <DayView /> : viewMode === 'month' ? <MonthView /> : viewMode === 'week' ? <WeekView /> : <YearView />}
+          {viewMode === 'day' ? (
+            <DayView />
+          ) : viewMode === 'month' ? (
+            <MonthView />
+          ) : viewMode === 'week' ? (
+            <WeekView />
+          ) : viewMode === 'year' ? (
+            <YearView />
+          ) : (
+            <KanbanBoard 
+              tasks={tasks}
+              onTaskStatusChange={onTaskStatusChange}
+              onTaskDelete={onTaskDelete}
+              onTaskComplete={onTaskComplete}
+              onInlineTaskAdd={onKanbanTaskAdd}
+            />
+          )}
         </motion.div>
       </AnimatePresence>
 

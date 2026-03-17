@@ -24,6 +24,7 @@ export interface Task {
   estimatedTime?: number; // in minutes
   category: 'work' | 'personal' | 'health' | 'social' | 'other';
   mood?: Mood;
+  status: 'todo' | 'in-progress' | 'done';
 }
 
 export interface Message {
