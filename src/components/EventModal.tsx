@@ -155,29 +155,29 @@ const EventModal: React.FC<EventModalProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-6 py-4 border-b border-gray-200/50">
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 px-4 sm:px-5 py-2.5 border-b border-gray-200/50">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-800">
+              <h2 className="text-base sm:text-lg font-bold text-gray-800">
                 {event ? 'Edit Event' : 'Create Event'}
               </h2>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-1.5">
                 {event && onDelete && (
                   <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
                     onClick={() => onDeleteWithConfirm && onDeleteWithConfirm(event)}
-                    className="text-red-500 hover:text-red-700 transition-colors duration-200"
+                    className="p-2 rounded-lg hover:bg-red-50 text-red-400 hover:text-red-600 transition-colors"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4.5 h-4.5" />
                   </motion.button>
                 )}
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
                   onClick={onClose}
-                  className="text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                  className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
                 >
-                  <X className="w-6 h-6" />
+                  <X className="w-5 h-5 text-gray-500" />
                 </motion.button>
               </div>
             </div>
