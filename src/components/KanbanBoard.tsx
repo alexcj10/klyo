@@ -85,6 +85,27 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     return labelColorPalette[hash % labelColorPalette.length];
   };
 
+  // Unique border color per ticket based on ticket ID
+  const ticketBorderColors = [
+    'border-l-blue-500',
+    'border-l-emerald-500',
+    'border-l-purple-500',
+    'border-l-pink-500',
+    'border-l-amber-500',
+    'border-l-indigo-500',
+    'border-l-rose-500',
+    'border-l-cyan-500',
+    'border-l-teal-500',
+    'border-l-violet-500',
+    'border-l-sky-500',
+    'border-l-orange-500',
+  ];
+
+  const getTicketBorderColor = (ticketId: string) => {
+    const hash = ticketId.split('').reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
+    return ticketBorderColors[hash % ticketBorderColors.length];
+  };
+
   const handleInlineSubmit = (status: KanbanStatus) => {
     if (inlineTitle.trim()) {
       onTicketAdd({
@@ -123,26 +144,20 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-white">
       {/* Kanban Header / Filter Bar */}
-      <div className="px-6 py-3 border-b border-slate-100 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
+      <div className="px-4 sm:px-6 py-2.5 border-b border-slate-100 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <div className="flex items-center gap-1.5 flex-shrink-0">
             <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-            <h2 className="text-sm font-bold text-slate-800 tracking-tight">Project Board</h2>
+            <h2 className="text-sm font-bold text-slate-800 tracking-tight">Board</h2>
           </div>
-          <div className="h-4 w-px bg-slate-200" />
           <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
-            <span className="bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md text-slate-600">
-              {tickets.length} tickets
+            <span className="bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-md text-slate-500">
+              {tickets.length}
             </span>
-            <span className="bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md text-blue-600">
-              {tickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} total points
+            <span className="bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-md text-blue-500">
+              {tickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} pts
             </span>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-           <button className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold transition-all border border-slate-200/50">
-            Filters
-           </button>
         </div>
       </div>
 
@@ -181,7 +196,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-2xl border border-slate-100 z-50 py-1.5 overflow-hidden"
                     >
-                       <button onClick={() => { setAddingToColumn(column.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
+                       <button onClick={() => { handleCancelInline(); setAddingToColumn(column.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
                         <Plus className="w-3.5 h-3.5" /> Add New Ticket
                       </button>
                       <button className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-400 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
@@ -204,7 +219,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     <motion.div
                       key={ticket.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
                       onClick={(e) => { e.stopPropagation(); setSelectedTicket(ticket); }}
-                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer ${p.border}`}
+                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer ${getTicketBorderColor(ticket.id)}`}
                     >
                       <div className="flex flex-col gap-3">
                         {/* Tags / Labels Row */}
@@ -222,7 +237,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           <h4 className="text-[13px] font-bold text-slate-800 leading-tight break-all flex-1 tracking-tight">
                             {ticket.title}
                           </h4>
-                          <button onClick={() => onTicketDelete(ticket.id)} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all flex-shrink-0 active:scale-90">
+                          <button onClick={(e) => { e.stopPropagation(); onTicketDelete(ticket.id); }} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex-shrink-0 active:scale-90">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -493,7 +508,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
               {!addingToColumn && (
                 <button
-                  onClick={() => setAddingToColumn(column.id)}
+                  onClick={() => { handleCancelInline(); setAddingToColumn(column.id); }}
                   className="w-full py-3 flex items-center justify-center gap-2 px-3 text-slate-400 hover:text-blue-600 hover:bg-white border-2 border-dashed border-slate-100 hover:border-blue-200 rounded-2xl transition-all text-xs font-bold group active:scale-[0.98] mt-1"
                 >
                   <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
