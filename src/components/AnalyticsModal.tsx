@@ -35,14 +35,14 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header - Compact */}
-            <div className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 bg-white border-b border-gray-100">
+            <div className="flex items-center justify-between px-4 py-2.5 sm:px-5 sm:py-3 bg-white border-b border-gray-100">
               <div className="flex items-center gap-3 min-w-0 flex-1">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <BarChart3 className="w-5 h-5 sm:w-6 sm:h-6" />
+                <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
                 <div className="min-w-0 flex-1 flex flex-col justify-center">
-                  <h2 className="text-lg sm:text-xl font-bold text-gray-800 truncate leading-tight">Analytics</h2>
-                  <p className="text-xs text-gray-500 truncate">Activity insights</p>
+                  <h2 className="text-base sm:text-lg font-bold text-gray-800 truncate leading-tight">Analytics</h2>
+                  <p className="text-[10px] sm:text-xs text-gray-500 truncate">Activity insights</p>
                 </div>
               </div>
               <motion.button
