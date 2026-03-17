@@ -219,7 +219,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     <motion.div
                       key={ticket.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
                       onClick={(e) => { e.stopPropagation(); setSelectedTicket(ticket); }}
-                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:border-blue-300 hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer ${getTicketBorderColor(ticket.id)}`}
+                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer ${getTicketBorderColor(ticket.id)}`}
                     >
                       <div className="flex flex-col gap-3">
                         {/* Tags / Labels Row */}
