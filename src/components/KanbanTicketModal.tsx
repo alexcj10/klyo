@@ -124,7 +124,7 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }} 
           animate={{ opacity: 1, scale: 1, y: 0 }} 
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[65vh] sm:max-h-[85vh]"
+          className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[65vh] sm:max-h-[80vh]"
         >
           {/* Header with Save button */}
           <div className="px-4 sm:px-5 py-2.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
