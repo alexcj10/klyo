@@ -49,10 +49,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   // Standalone Kanban Columns
   const columns: { id: KanbanStatus; title: string; color: string; bgColor: string }[] = [
-    { id: 'backlog', title: 'Backlog', color: 'bg-slate-500', bgColor: 'bg-slate-50/50' },
-    { id: 'todo', title: 'To Do', color: 'bg-blue-600', bgColor: 'bg-blue-50/30' },
-    { id: 'in-progress', title: 'In Progress', color: 'bg-amber-600', bgColor: 'bg-amber-50/30' },
-    { id: 'done', title: 'Done', color: 'bg-emerald-600', bgColor: 'bg-emerald-50/30' }
+    { id: 'backlog', title: 'Backlog', color: 'bg-slate-500', bgColor: 'bg-slate-100/80' },
+    { id: 'todo', title: 'To Do', color: 'bg-blue-600', bgColor: 'bg-blue-50/80' },
+    { id: 'in-progress', title: 'In Progress', color: 'bg-amber-600', bgColor: 'bg-amber-50/80' },
+    { id: 'done', title: 'Done', color: 'bg-emerald-600', bgColor: 'bg-emerald-50/80' }
   ];
 
   const getPriorityInfo = (priority: KanbanPriority) => {
