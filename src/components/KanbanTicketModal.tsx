@@ -31,6 +31,7 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
   const [labels, setLabels] = useState<string[]>(ticket.labels);
   const [isAddingLabel, setIsAddingLabel] = useState(false);
   const [newLabelText, setNewLabelText] = useState('');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
   useEffect(() => {
     setTitle(ticket.title);
@@ -48,7 +49,10 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
       storyPoints: storyPoints > 0 ? storyPoints : undefined,
       labels
     });
+    setHasUnsavedChanges(false);
   };
+
+  const markDirty = () => setHasUnsavedChanges(true);
 
   const toggleSubtask = (id: string) => {
     const updated = ticket.subtasks.map(s => s.id === id ? { ...s, completed: !s.completed } : s);
@@ -57,9 +61,8 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
 
   const addSubtask = () => {
     if (newSubtask.trim()) {
-      onUpdate({
-        subtasks: [...ticket.subtasks, { id: Date.now().toString(), title: newSubtask.trim(), completed: false }]
-      });
+      const updatedSubtasks = [...ticket.subtasks, { id: Date.now().toString(), title: newSubtask.trim(), completed: false }];
+      onUpdate({ subtasks: updatedSubtasks });
       setNewSubtask('');
     }
   };
@@ -110,7 +113,7 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-        {/* Dim overlay — no blur, matching app pattern */}
+        {/* Dim overlay */}
         <motion.div 
           initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           className="absolute inset-0 bg-black/50"
@@ -122,43 +125,64 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[75vh] sm:max-h-[85vh]"
         >
-          {/* Header */}
-          <div className="px-4 sm:px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
+          {/* Header with Save button */}
+          <div className="px-4 sm:px-5 py-2.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
             <span className="text-xs font-bold text-slate-600">Ticket Detail</span>
-            <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
-              <X className="w-4 h-4" />
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button 
+                onClick={saveChanges}
+                className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all active:scale-95 ${
+                  hasUnsavedChanges 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm' 
+                    : 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                }`}
+              >
+                <Check className="w-3 h-3 stroke-[3px]" />
+                {hasUnsavedChanges ? 'Save' : 'Saved'}
+              </button>
+              <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           </div>
 
           {/* Scrollable body */}
           <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-5">
-            <div className="space-y-5">
-              {/* Title */}
+            <div className="space-y-4">
+              {/* Title with 100 char limit */}
               <div>
-                <label className="text-[9px] font-bold text-slate-400 mb-1.5 block">Title</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[9px] font-bold text-slate-400">Title</label>
+                  <span className={`text-[9px] font-bold tabular-nums ${title.length > 90 ? 'text-red-500' : 'text-slate-300'}`}>
+                    {title.length}/100
+                  </span>
+                </div>
                 <input 
-                  type="text" value={title} onChange={(e) => setTitle(e.target.value)} onBlur={saveChanges}
-                  className="w-full text-lg font-bold text-slate-800 bg-transparent border-none focus:ring-0 p-0 placeholder-slate-200 outline-none"
+                  type="text" 
+                  value={title} 
+                  onChange={(e) => { setTitle(e.target.value.slice(0, 100)); markDirty(); }}
+                  className="w-full text-base font-bold text-slate-800 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 placeholder-slate-200 outline-none focus:ring-2 focus:ring-blue-50 focus:border-blue-200 transition-all"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="text-[9px] font-bold text-slate-400 mb-1.5 block">Description</label>
+                <label className="text-[9px] font-bold text-slate-400 mb-1 block">Description</label>
                 <textarea 
-                  value={description} onChange={(e) => setDescription(e.target.value)} onBlur={saveChanges}
+                  value={description} 
+                  onChange={(e) => { setDescription(e.target.value); markDirty(); }}
                   placeholder="Add a more detailed description..."
-                  className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-50 focus:border-blue-200 rounded-xl p-3 min-h-[80px] resize-none leading-relaxed outline-none transition-all"
+                  className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-50 focus:border-blue-200 rounded-xl p-3 min-h-[70px] resize-none leading-relaxed outline-none transition-all"
                 />
               </div>
 
-              {/* Properties Row — inline on desktop, stacked on mobile */}
+              {/* Properties Row */}
               <div className="flex flex-wrap gap-3 items-end">
-                {/* Priority */}
                 <div className="flex flex-col gap-1">
                   <span className="text-[9px] font-bold text-slate-400">Priority</span>
                   <select 
-                    value={priority} onChange={(e) => { setPriority(e.target.value as KanbanPriority); onUpdate({ priority: e.target.value as KanbanPriority }); }}
+                    value={priority} 
+                    onChange={(e) => { setPriority(e.target.value as KanbanPriority); markDirty(); }}
                     className="text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:ring-2 focus:ring-blue-50 transition-all outline-none cursor-pointer"
                   >
                     <option value="low">🟢 Low</option>
@@ -168,12 +192,13 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                   </select>
                 </div>
 
-                {/* Story Points */}
                 <div className="flex flex-col gap-1">
                   <span className="text-[9px] font-bold text-slate-400">Story Points</span>
                   <div className="flex items-center gap-1.5">
                     <input 
-                      type="number" value={storyPoints} onChange={(e) => setStoryPoints(parseInt(e.target.value) || 0)} onBlur={saveChanges}
+                      type="number" 
+                      value={storyPoints} 
+                      onChange={(e) => { setStoryPoints(parseInt(e.target.value) || 0); markDirty(); }}
                       className="w-16 text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none focus:ring-2 focus:ring-blue-50"
                     />
                     <span className="text-[10px] font-medium text-slate-400">pts</span>
@@ -192,7 +217,6 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                       className={`group relative text-[10px] font-bold border px-2.5 py-1 rounded-lg cursor-pointer hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all flex items-center gap-1 ${getLabelColor(l)}`}
                     >
                       {l}
-                      {/* Always visible X on touch, hover on desktop */}
                       <X className="w-2.5 h-2.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-current" />
                     </span>
                   ))}
@@ -236,7 +260,7 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                     </span>
                   )}
                 </label>
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   {ticket.subtasks.map(sub => (
                     <div key={sub.id} className="flex items-start gap-2.5 group py-1">
                       <button 
@@ -248,7 +272,6 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                       <span className={`text-sm flex-1 min-w-0 break-words ${sub.completed ? 'text-slate-400 line-through' : 'text-slate-700 font-medium'}`}>
                         {sub.title}
                       </span>
-                      {/* Always visible on touch, hover on desktop */}
                       <button 
                         onClick={() => removeSubtask(sub.id)} 
                         className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 hover:bg-red-50 text-slate-300 hover:text-red-500 rounded-lg transition-all flex-shrink-0"
@@ -262,8 +285,11 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                       <Plus className="w-3 h-3 text-slate-300" />
                     </div>
                     <input 
-                      type="text" placeholder="Add an item..." value={newSubtask} onChange={(e) => setNewSubtask(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && addSubtask()}
+                      type="text" 
+                      placeholder="Add an item & press Enter..." 
+                      value={newSubtask} 
+                      onChange={(e) => setNewSubtask(e.target.value)}
+                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask(); } }}
                       className="flex-1 text-sm bg-transparent border-none focus:ring-0 p-0 placeholder-slate-300 font-medium outline-none min-w-0"
                     />
                   </div>
@@ -273,7 +299,7 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
           </div>
 
           {/* Footer */}
-          <div className="px-4 sm:px-5 py-3 border-t border-slate-100 flex-shrink-0">
+          <div className="px-4 sm:px-5 py-2.5 border-t border-slate-100 flex-shrink-0">
             <button 
               onClick={() => { onDelete(); onClose(); }}
               className="w-full py-2 bg-red-50 hover:bg-red-100 text-red-500 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
