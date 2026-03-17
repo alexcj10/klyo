@@ -9,7 +9,7 @@ import EventModal from './components/EventModal';
 import EventViewModal from './components/EventViewModal';
 import DayViewModal from './components/DayViewModal';
 import AnalyticsModal from './components/AnalyticsModal';
-import { Event, Task } from './types';
+import { Event, Task, KanbanTicket } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
 import AIChat from './components/AIChat';
@@ -21,6 +21,33 @@ function App() {
 
   const [events, setEvents] = useLocalStorage<Event[]>('klyo-events', []);
   const [tasks, setTasks] = useLocalStorage<Task[]>('klyo-tasks', []);
+  const [kanbanTickets, setKanbanTickets] = useLocalStorage<KanbanTicket[]>('klyo-kanban-tickets', [
+    {
+      id: '1',
+      title: 'Design System Overhaul',
+      description: 'Implement a unified dark-mode focused design system across all components.',
+      status: 'in-progress',
+      priority: 'high',
+      storyPoints: 5,
+      labels: ['Design', 'UI/UX'],
+      createdAt: new Date(),
+      subtasks: [
+        { id: 's1', title: 'Define color tokens', completed: true },
+        { id: 's2', title: 'Build component library', completed: false }
+      ]
+    },
+    {
+      id: '2',
+      title: 'API Integration',
+      description: 'Connect the frontend with the new GraphQL backend endpoints.',
+      status: 'todo',
+      priority: 'medium',
+      storyPoints: 8,
+      labels: ['Backend', 'Refactor'],
+      createdAt: new Date(),
+      subtasks: []
+    }
+  ]);
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [viewEvent, setViewEvent] = useState<Event | null>(null);
@@ -215,35 +242,28 @@ function App() {
     setTasks([...tasks, newTask]);
   };
 
-  const handleKanbanTaskAdd = (title: string, status: Task['status']) => {
-    const newTask: Task = {
+
+  const handleKanbanTicketAdd = (ticket: Omit<KanbanTicket, 'id' | 'createdAt'>) => {
+    const newTicket: KanbanTicket = {
+      ...ticket,
       id: Date.now().toString(),
-      title,
-      status,
-      completed: status === 'done',
-      category: 'personal',
-      priority: 'medium'
+      createdAt: new Date()
     };
-    setTasks([...tasks, newTask]);
+    setKanbanTickets([...kanbanTickets, newTicket]);
+  };
+
+  const handleKanbanTicketUpdate = (ticketId: string, updates: Partial<KanbanTicket>) => {
+    setKanbanTickets(kanbanTickets.map(t => t.id === ticketId ? { ...t, ...updates } : t));
+  };
+
+  const handleKanbanTicketDelete = (ticketId: string) => {
+    setKanbanTickets(kanbanTickets.filter(t => t.id !== ticketId));
   };
 
   const handleTaskDelete = (taskId: string) => {
     setTasks(tasks.filter((task) => task.id !== taskId));
   };
 
-  const handleTaskStatusChange = (taskId: string, newStatus: Task['status']) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-            ...task,
-            status: newStatus,
-            completed: newStatus === 'done'
-          }
-          : task
-      )
-    );
-  };
 
   const handleModalClose = () => {
     setIsEventModalOpen(false);
@@ -326,11 +346,11 @@ function App() {
             onDayViewOpen={handleDayViewOpen}
             onEventDelete={(event) => handleEventDelete(event.id)}
             isSidebarOpen={isActuallySidebarOpen}
-            tasks={tasks}
-            onTaskStatusChange={handleTaskStatusChange}
-            onTaskDelete={handleTaskDelete}
             onTaskComplete={handleTaskComplete}
-            onKanbanTaskAdd={handleKanbanTaskAdd}
+            kanbanTickets={kanbanTickets}
+            onKanbanTicketAdd={handleKanbanTicketAdd}
+            onKanbanTicketUpdate={handleKanbanTicketUpdate}
+            onKanbanTicketDelete={handleKanbanTicketDelete}
           />
         </div>
 

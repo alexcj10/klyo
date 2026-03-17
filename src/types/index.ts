@@ -27,6 +27,21 @@ export interface Task {
   status: 'todo' | 'in-progress' | 'done';
 }
 
+export type KanbanStatus = 'backlog' | 'todo' | 'in-progress' | 'done';
+export type KanbanPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface KanbanTicket {
+  id: string;
+  title: string;
+  description?: string;
+  status: KanbanStatus;
+  priority: KanbanPriority;
+  storyPoints?: number;
+  labels: string[];
+  createdAt: Date;
+  subtasks: Array<{ id: string; title: string; completed: boolean }>;
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'ai';
