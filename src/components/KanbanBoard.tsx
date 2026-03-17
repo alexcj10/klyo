@@ -46,30 +46,37 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   // Standalone Kanban Columns
   const columns: { id: KanbanStatus; title: string; color: string; bgColor: string }[] = [
-    { id: 'backlog', title: 'BACKLOG', color: 'bg-slate-500', bgColor: 'bg-slate-50/50' },
-    { id: 'todo', title: 'TO DO', color: 'bg-blue-600', bgColor: 'bg-blue-50/30' },
-    { id: 'in-progress', title: 'IN PROGRESS', color: 'bg-amber-600', bgColor: 'bg-amber-50/30' },
-    { id: 'done', title: 'DONE', color: 'bg-emerald-600', bgColor: 'bg-emerald-50/30' }
+    { id: 'backlog', title: 'Backlog', color: 'bg-slate-500', bgColor: 'bg-slate-50/50' },
+    { id: 'todo', title: 'To Do', color: 'bg-blue-600', bgColor: 'bg-blue-50/30' },
+    { id: 'in-progress', title: 'In Progress', color: 'bg-amber-600', bgColor: 'bg-amber-50/30' },
+    { id: 'done', title: 'Done', color: 'bg-emerald-600', bgColor: 'bg-emerald-50/30' }
   ];
 
   const getPriorityInfo = (priority: KanbanPriority) => {
     switch (priority) {
-      case 'urgent': return { color: 'text-red-700', bg: 'bg-red-50', border: 'border-l-red-600', icon: AlertCircle, label: 'URGENT' };
-      case 'high': return { color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-l-orange-500', icon: Star, label: 'HIGH' };
-      case 'medium': return { color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-l-blue-400', icon: Clock, label: 'MEDIUM' };
-      default: return { color: 'text-slate-600', bg: 'bg-slate-50', border: 'border-l-slate-300', icon: Layers, label: 'LOW' };
+      case 'urgent': return { color: 'text-red-700', bg: 'bg-red-50', border: 'border-l-red-600', icon: AlertCircle, label: 'Urgent' };
+      case 'high': return { color: 'text-orange-700', bg: 'bg-orange-50', border: 'border-l-orange-500', icon: Star, label: 'High' };
+      case 'medium': return { color: 'text-blue-700', bg: 'bg-blue-50', border: 'border-l-blue-400', icon: Clock, label: 'Medium' };
+      default: return { color: 'text-slate-600', bg: 'bg-slate-50', border: 'border-l-slate-300', icon: Layers, label: 'Low' };
     }
   };
 
-  const labelColors: Record<string, string> = {
-    'Design': 'bg-pink-100 text-pink-700',
-    'UI/UX': 'bg-purple-100 text-purple-700',
-    'Backend': 'bg-blue-100 text-blue-700',
-    'Bug': 'bg-red-100 text-red-700',
-    'Feature': 'bg-emerald-100 text-emerald-700',
-    'Refactor': 'bg-amber-100 text-amber-700',
-    'API': 'bg-indigo-100 text-indigo-700',
+  const getLabelColor = (label: string) => {
+    const colors = [
+      'bg-blue-50 text-blue-600 border-blue-100',
+      'bg-emerald-50 text-emerald-600 border-emerald-100',
+      'bg-purple-50 text-purple-600 border-purple-100',
+      'bg-pink-50 text-pink-600 border-pink-100',
+      'bg-amber-50 text-amber-600 border-amber-100',
+      'bg-indigo-50 text-indigo-600 border-indigo-100',
+      'bg-rose-50 text-rose-600 border-rose-100',
+      'bg-cyan-50 text-cyan-600 border-cyan-100'
+    ];
+    // Simple hash to consistently pick a color for a label name
+    const index = label.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
+    return colors[index];
   };
+
 
   const handleInlineSubmit = (status: KanbanStatus) => {
     if (inlineTitle.trim()) {
@@ -101,15 +108,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-            <h2 className="text-sm font-black text-slate-800 tracking-tight uppercase">Project Board</h2>
+            <h2 className="text-sm font-bold text-slate-800 tracking-tight">Project Board</h2>
           </div>
           <div className="h-4 w-px bg-slate-200" />
           <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
             <span className="bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-md text-slate-600">
-              {tickets.length} TICKETS
+              {tickets.length} tickets
             </span>
             <span className="bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md text-blue-600">
-              {tickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} TOTAL POINTS
+              {tickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} total points
             </span>
           </div>
         </div>
@@ -131,10 +138,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               <div className="flex items-center gap-2.5">
                 <div className={`w-1.5 h-6 rounded-full ${column.color}`} />
                 <div className="flex flex-col">
-                  <h3 className="text-xs font-black text-slate-800 tracking-wider uppercase">
+                  <h3 className="text-xs font-bold text-slate-800 tracking-tight">
                     {column.title}
                   </h3>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">
+                  <span className="text-[9px] font-bold text-slate-400 tracking-tighter">
                     {columnTickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} story points
                   </span>
                 </div>
@@ -155,11 +162,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }}
                       className="absolute right-0 top-full mt-2 w-40 bg-white rounded-xl shadow-2xl border border-slate-100 z-50 py-1.5 overflow-hidden"
                     >
-                       <button onClick={() => { setAddingToColumn(column.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5">
-                        <Plus className="w-3.5 h-3.5" /> ADD NEW TICKET
+                       <button onClick={() => { setAddingToColumn(column.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
+                        <Plus className="w-3.5 h-3.5" /> Add New Ticket
                       </button>
                       <button className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-400 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
-                        <Layout className="w-3.5 h-3.5" /> COLUMN SETTINGS
+                        <Layout className="w-3.5 h-3.5" /> Column Settings
                       </button>
                     </motion.div>
                   )}
@@ -185,7 +192,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         {ticket.labels.length > 0 && (
                           <div className="flex flex-wrap gap-1.5">
                             {ticket.labels.map(label => (
-                              <span key={label} className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider ${labelColors[label] || 'bg-slate-100 text-slate-600'}`}>
+                              <span key={label} className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider ${getLabelColor(label) || 'bg-slate-100 text-slate-600'}`}>
                                 {label}
                               </span>
                             ))}
@@ -292,19 +299,19 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     {/* Inline Metadata Grid */}
                     <div className="space-y-2 border-t border-slate-50 pt-3 mt-1">
                       <div className="flex flex-wrap gap-2">
-                        <select 
+                         <select 
                           value={inlinePriority} onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
-                          className="text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
+                          className="text-[9px] font-bold bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
                         >
-                          <option value="low">LOW</option>
-                          <option value="medium">MEDIUM</option>
-                          <option value="high">HIGH</option>
-                          <option value="urgent">URGENT</option>
+                          <option value="low">Low</option>
+                          <option value="medium">Medium</option>
+                          <option value="high">High</option>
+                          <option value="urgent">Urgent</option>
                         </select>
                         
                         <input 
                           type="number" placeholder="Pts" value={inlinePoints || ''} onChange={(e) => setInlinePoints(parseInt(e.target.value) || 0)}
-                          className="w-10 text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
+                          className="w-10 text-[9px] font-bold bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
                         />
 
                         {/* Inline Custom Labels */}
@@ -312,7 +319,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           {inlineLabels.map(l => (
                             <button 
                               key={l} onClick={() => setInlineLabels(prev => prev.filter(x => x !== l))}
-                              className="text-[9px] font-black px-1.5 py-1 rounded-md bg-blue-100 text-blue-600 border border-blue-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all"
+                              className={`text-[9px] font-bold px-1.5 py-1 rounded-md border hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all ${getLabelColor(l)}`}
                             >
                               {l}
                             </button>
@@ -321,7 +328,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                             <input 
                               type="text" placeholder="+ Tag" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)}
                               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newLabelInput.trim() && !inlineLabels.includes(newLabelInput.trim())) setInlineLabels([...inlineLabels, newLabelInput.trim()]); setNewLabelInput(''); } }}
-                              className="w-14 text-[9px] font-black bg-slate-50/50 border border-dashed border-slate-200 rounded-md px-1.5 py-1 text-slate-400 focus:bg-white focus:border-blue-300 outline-none transition-all"
+                              className="w-14 text-[9px] font-bold bg-slate-50/50 border border-dashed border-slate-200 rounded-md px-1.5 py-1 text-slate-400 focus:bg-white focus:border-blue-300 outline-none transition-all"
                             />
                           </div>
                         </div>
