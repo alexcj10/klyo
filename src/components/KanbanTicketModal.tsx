@@ -230,7 +230,12 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                           type="text"
                           value={newLabelText}
                           onChange={(e) => setNewLabelText(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && addLabel()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              addLabel();
+                            }
+                          }}
                           onBlur={() => { if (!newLabelText) setIsAddingLabel(false); }}
                           placeholder="Label..."
                           className="text-[10px] font-bold bg-white border border-blue-200 rounded-lg px-2 py-1 outline-none w-20 shadow-sm focus:ring-2 focus:ring-blue-50"
