@@ -69,14 +69,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   };
 
   return (
-    <div className="flex-1 flex overflow-x-auto p-2 sm:p-4 gap-3 custom-scrollbar bg-white" onClick={() => setActiveMenu(null)}>
+    <div className="flex-1 flex overflow-x-auto p-2 sm:p-4 gap-3 custom-scrollbar bg-white snap-x snap-mandatory scroll-smooth" onClick={() => setActiveMenu(null)}>
       {columns.map((column) => {
         const columnTasks = tasks
           .map(getTaskWithStatus)
           .filter(t => t.status === column.id);
 
         return (
-          <div key={column.id} className={`flex-1 min-w-[260px] max-w-[400px] flex flex-col rounded-xl ${column.bgColor} p-2`}>
+          <div key={column.id} className={`flex-1 min-w-[280px] sm:min-w-[300px] max-w-[400px] flex flex-col rounded-xl ${column.bgColor} p-2 snap-center`}>
             {/* Column Header - Very Compact */}
             <div className="flex items-center justify-between mb-2 px-1.5 pt-1 relative">
               <div className="flex items-center gap-2">
@@ -93,7 +93,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     e.stopPropagation();
                     setActiveMenu(activeMenu === column.id ? null : column.id);
                   }}
-                  className="p-1 hover:bg-gray-200 rounded text-gray-400 transition-colors"
+                  className="p-1 hover:bg-gray-200 rounded text-gray-400 transition-colors active:scale-95"
                 >
                   <MoreHorizontal className="w-3.5 h-3.5" />
                 </button>
@@ -109,7 +109,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       {column.id === 'done' && (
                         <button 
                           onClick={handleClearDone}
-                          className="w-full text-left px-3 py-1.5 text-[10px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2"
+                          className="w-full text-left px-3 py-1.5 text-[10px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 transition-colors"
                         >
                           <Trash2 className="w-3 h-3" />
                           CLEAR DONE
@@ -120,7 +120,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           setAddingToColumn(column.id);
                           setActiveMenu(null);
                         }}
-                        className="w-full text-left px-3 py-1.5 text-[10px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                        className="w-full text-left px-3 py-1.5 text-[10px] font-bold text-gray-700 hover:bg-gray-50 flex items-center gap-2 transition-colors"
                       >
                         <Plus className="w-3 h-3" />
                         ADD TASK
@@ -148,18 +148,18 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         <h4 className={`text-xs font-bold text-gray-800 leading-snug break-all flex-1 ${task.completed ? 'line-through opacity-50' : ''}`}>
                           {task.title}
                         </h4>
-                        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+                        <div className="flex items-center gap-0.5 lg:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
                           <button 
                             onClick={() => onTaskComplete(task.id)}
-                            className={`p-1 rounded hover:bg-gray-100 ${task.completed ? 'text-emerald-500' : 'text-gray-400'}`}
+                            className={`p-1.5 rounded hover:bg-gray-100 active:bg-gray-100 transition-colors ${task.completed ? 'text-emerald-500' : 'text-gray-400 sm:text-gray-300 sm:hover:text-emerald-500'}`}
                           >
-                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <CheckCircle2 className="w-4 h-4" />
                           </button>
                           <button 
                             onClick={() => onTaskDelete(task.id)}
-                            className="p-1 rounded hover:bg-red-50 text-gray-400 hover:text-red-500"
+                            className="p-1.5 rounded hover:bg-red-50 active:bg-red-50 text-gray-400 sm:text-gray-300 sm:hover:text-red-500 transition-colors"
                           >
-                            <Trash2 className="w-3.5 h-3.5" />
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </div>
@@ -177,21 +177,21 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           )}
                         </div>
 
-                        <div className="flex items-center gap-0.5">
+                        <div className="flex items-center gap-0.5 lg:opacity-0 group-hover:opacity-100 transition-opacity">
                           {column.id !== 'todo' && (
                             <button 
                               onClick={() => onTaskStatusChange(task.id, column.id === 'done' ? 'in-progress' : 'todo')}
-                              className="p-0.5 hover:bg-gray-100 rounded text-gray-400 hover:text-blue-600 rotate-180"
+                              className="p-1 hover:bg-gray-100 active:bg-gray-100 rounded text-gray-400 hover:text-blue-600 transition-colors rotate-180"
                             >
-                              <ArrowRight className="w-3 h-3" />
+                              <ArrowRight className="w-3.5 h-3.5" />
                             </button>
                           )}
                           {column.id !== 'done' && (
                             <button 
                               onClick={() => onTaskStatusChange(task.id, column.id === 'todo' ? 'in-progress' : 'done')}
-                              className="p-0.5 hover:bg-gray-100 rounded text-gray-400 hover:text-blue-600"
+                              className="p-1 hover:bg-gray-100 active:bg-gray-100 rounded text-gray-400 hover:text-blue-600 transition-colors"
                             >
-                              <ArrowRight className="w-3 h-3" />
+                              <ArrowRight className="w-3.5 h-3.5" />
                             </button>
                           )}
                         </div>
@@ -227,16 +227,16 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     <div className="flex items-center justify-end gap-1 mt-1">
                       <button 
                         onClick={() => setAddingToColumn(null)}
-                        className="p-1 hover:bg-gray-100 rounded text-gray-400"
+                        className="p-1.5 hover:bg-gray-100 active:bg-gray-100 rounded text-gray-400"
                       >
-                        <X className="w-3.5 h-3.5" />
+                        <X className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleInlineSubmit(column.id)}
                         disabled={!inlineTitle.trim()}
-                        className="p-1 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                        className="px-3 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
                       >
-                        <Check className="w-3.5 h-3.5" />
+                        <Check className="w-4 h-4" />
                       </button>
                     </div>
                   </motion.div>
@@ -246,9 +246,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               {!addingToColumn && (
                 <button
                   onClick={() => setAddingToColumn(column.id)}
-                  className="w-full py-1.5 flex items-center gap-2 px-3 text-gray-400 hover:text-blue-600 hover:bg-gray-200/50 rounded-lg transition-all text-[11px] font-bold group"
+                  className="w-full py-2.5 flex items-center gap-2 px-3 text-gray-400 hover:text-blue-600 hover:bg-gray-200/50 active:bg-gray-200/50 rounded-lg transition-all text-[11px] font-bold group"
                 >
-                  <Plus className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+                  <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   CREATE
                 </button>
               )}
