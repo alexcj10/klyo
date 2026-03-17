@@ -317,16 +317,16 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                             className="fixed z-[70] flex flex-col overflow-hidden bg-white/95 backdrop-blur-md shadow-2xl border border-white/50 transition-all duration-300 ease-out bottom-6 left-6 right-6 h-[70vh] rounded-[2rem] sm:left-auto sm:right-6 sm:bottom-6 sm:rounded-2xl sm:w-[450px] sm:h-[75vh] md:h-[80vh]"
                         >
                             {/* Header - dynamic based on active agent */}
-                            <div className={`p-4 border-b border-gray-100 flex justify-between items-center text-white shadow-sm z-10 transition-all duration-500 ${activeAgent?.id === 'frog' ? 'bg-gradient-to-r from-emerald-600 to-emerald-700' :
+                            <div className={`px-4 py-2.5 border-b border-gray-100 flex justify-between items-center text-white shadow-sm z-10 transition-all duration-500 ${activeAgent?.id === 'frog' ? 'bg-gradient-to-r from-emerald-600 to-emerald-700' :
                                 activeAgent?.id === 'coach' ? 'bg-gradient-to-r from-rose-500 to-rose-600' :
                                     activeAgent?.id === 'analyst' ? 'bg-gradient-to-r from-purple-500 to-purple-600' :
                                         activeAgent?.id === 'planner' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
                                             activeAgent?.id === 'historian' ? 'bg-gradient-to-r from-teal-500 to-teal-600' :
                                                 'bg-gradient-to-r from-blue-500 to-blue-600'
                                 }`}>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-2.5">
                                     <div className="drop-shadow-md">
-                                        <AgentAvatar agentId={activeAgent?.id} size="lg" className="border-2 border-white/30 shadow-lg" noBorder />
+                                        <AgentAvatar agentId={activeAgent?.id} size="md" className="border-2 border-white/30 shadow-lg" noBorder />
                                     </div>
                                     <div className="overflow-hidden">
                                         <h3 className="font-bold text-sm truncate">
@@ -490,7 +490,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                             className="flex flex-col h-full overflow-hidden"
                                         >
                                             <div
-                                                className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain"
+                                                className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 overscroll-contain"
                                                 onClick={() => setShowMentionPopup(false)}
                                             >
                                                 {messages.map((msg) => (
@@ -629,7 +629,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                             </div>
 
                                             {/* Input */}
-                                            <form onSubmit={handleSubmit} className="p-3 bg-white border-t border-slate-100 z-10 relative">
+                                            <form onSubmit={handleSubmit} className="p-2 sm:p-2.5 bg-white border-t border-slate-100 z-10 relative">
                                                 {/* Mention Popup */}
                                                 <AnimatePresence>
                                                     {showMentionPopup && (() => {
