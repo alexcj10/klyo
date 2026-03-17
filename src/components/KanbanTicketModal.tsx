@@ -224,25 +224,28 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                   
                   <AnimatePresence>
                     {isAddingLabel ? (
-                      <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: 'auto', opacity: 1 }} className="flex items-center gap-1">
+                      <motion.form 
+                        initial={{ width: 0, opacity: 0 }} 
+                        animate={{ width: 'auto', opacity: 1 }} 
+                        className="flex items-center gap-1"
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          addLabel();
+                        }}
+                      >
                         <input 
                           autoFocus
                           type="text"
                           value={newLabelText}
                           onChange={(e) => setNewLabelText(e.target.value)}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              e.preventDefault();
-                              addLabel();
-                            }
-                          }}
                           onBlur={() => { if (!newLabelText) setIsAddingLabel(false); }}
                           placeholder="Label..."
+                          enterKeyHint="done"
                           className="text-[10px] font-bold bg-white border border-blue-200 rounded-lg px-2 py-1 outline-none w-20 shadow-sm focus:ring-2 focus:ring-blue-50"
                         />
-                        <button onClick={addLabel} className="p-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm"><Check className="w-3 h-3" /></button>
-                        <button onClick={() => setIsAddingLabel(false)} className="p-1 bg-slate-100 text-slate-500 rounded-md hover:bg-slate-200"><X className="w-3 h-3" /></button>
-                      </motion.div>
+                        <button type="submit" className="p-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm"><Check className="w-3 h-3" /></button>
+                        <button type="button" onClick={() => setIsAddingLabel(false)} className="p-1 bg-slate-100 text-slate-500 rounded-md hover:bg-slate-200"><X className="w-3 h-3" /></button>
+                      </motion.form>
                     ) : (
                       <button 
                         onClick={() => setIsAddingLabel(true)}
@@ -286,9 +289,15 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                       </button>
                     </div>
                   ))}
-                  <div className="flex items-center gap-2.5 pt-1">
+                  <form 
+                    className="flex items-center gap-2.5 pt-1"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      addSubtask();
+                    }}
+                  >
                     <button 
-                      onClick={addSubtask}
+                      type="submit"
                       className="w-5 h-5 rounded-md border-2 border-dashed border-slate-300 flex items-center justify-center flex-shrink-0 hover:border-blue-400 hover:text-blue-500 text-slate-400 transition-all active:scale-95 bg-white"
                     >
                       <Plus className="w-3 h-3" />
@@ -298,10 +307,10 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                       placeholder="Add an item & press Enter..." 
                       value={newSubtask} 
                       onChange={(e) => setNewSubtask(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addSubtask(); } }}
+                      enterKeyHint="done"
                       className="flex-1 text-sm bg-transparent border-none focus:ring-0 p-0 placeholder-slate-300 font-medium outline-none min-w-0"
                     />
-                  </div>
+                  </form>
                 </div>
               </div>
             </div>

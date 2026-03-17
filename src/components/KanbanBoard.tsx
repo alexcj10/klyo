@@ -424,23 +424,25 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                               <X className="w-2.5 h-2.5 opacity-0 group-hover/label:opacity-100 transition-opacity" />
                             </motion.button>
                           ))}
-                          <input 
-                            type="text" 
-                            placeholder={inlineLabels.length > 0 ? "+ Add" : "+ Type label & Enter"} 
-                            value={newLabelInput} 
-                            onChange={(e) => setNewLabelInput(e.target.value)}
-                            onKeyDown={(e) => { 
-                              if (e.key === 'Enter') { 
-                                e.preventDefault(); 
-                                e.stopPropagation();
-                                if (newLabelInput.trim() && !inlineLabels.includes(newLabelInput.trim())) {
-                                  setInlineLabels([...inlineLabels, newLabelInput.trim()]); 
-                                }
-                                setNewLabelInput(''); 
-                              } 
+                          <form 
+                            className="flex-1 flex flex-wrap gap-1.5 items-center"
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              if (newLabelInput.trim() && !inlineLabels.includes(newLabelInput.trim())) {
+                                setInlineLabels([...inlineLabels, newLabelInput.trim()]); 
+                              }
+                              setNewLabelInput('');
                             }}
-                            className="min-w-[80px] flex-1 text-[10px] font-bold bg-slate-50/50 border border-dashed border-slate-200 rounded-lg px-2 py-1 text-slate-500 focus:bg-white focus:border-blue-300 outline-none transition-all placeholder-slate-300"
-                          />
+                          >
+                            <input 
+                              type="text" 
+                              placeholder={inlineLabels.length > 0 ? "+ Add" : "+ Type label & Enter"} 
+                              value={newLabelInput} 
+                              onChange={(e) => setNewLabelInput(e.target.value)}
+                              enterKeyHint="done"
+                              className="min-w-[80px] flex-1 text-[10px] font-bold bg-slate-50/50 border border-dashed border-slate-200 rounded-lg px-2 py-1 text-slate-500 focus:bg-white focus:border-blue-300 outline-none transition-all placeholder-slate-300"
+                            />
+                          </form>
                         </div>
                       </div>
 
@@ -478,7 +480,16 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           </div>
                         )}
 
-                        <div className="flex items-center gap-2 px-1.5">
+                        <form 
+                          className="flex-1 flex items-center gap-2 px-1.5"
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            if (newSubtaskInput.trim()) {
+                              setInlineSubtasks([...inlineSubtasks, newSubtaskInput.trim()]); 
+                            }
+                            setNewSubtaskInput('');
+                          }}
+                        >
                           <div className="w-3.5 h-3.5 rounded border-2 border-dashed border-slate-200 flex items-center justify-center flex-shrink-0">
                             <Plus className="w-2 h-2 text-slate-300" />
                           </div>
@@ -487,19 +498,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                             placeholder="Add checklist item & Enter" 
                             value={newSubtaskInput} 
                             onChange={(e) => setNewSubtaskInput(e.target.value)}
-                            onKeyDown={(e) => { 
-                              if (e.key === 'Enter') { 
-                                e.preventDefault(); 
-                                e.stopPropagation();
-                                if (newSubtaskInput.trim()) {
-                                  setInlineSubtasks([...inlineSubtasks, newSubtaskInput.trim()]); 
-                                }
-                                setNewSubtaskInput(''); 
-                              } 
-                            }}
+                            enterKeyHint="done"
                             className="flex-1 text-[10px] font-medium text-slate-600 placeholder-slate-300 bg-transparent outline-none"
                           />
-                        </div>
+                        </form>
                       </div>
                     </div>
                   </motion.div>

@@ -666,7 +666,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-blue-200/60 overflow-hidden h-full flex flex-col relative">
       {/* Header - Compact Responsive Single-Row Design */}
-      <div className="px-1.5 sm:px-6 py-3 border-b border-blue-200 flex-shrink-0 bg-blue-100/70 backdrop-blur-sm">
+      <div className="px-4 sm:px-6 py-3 border-b border-blue-200 flex-shrink-0 bg-blue-100/70 backdrop-blur-sm">
         <div className="flex items-center justify-between gap-1 sm:gap-2">
           {/* Navigation Arrows + Title */}
           <div className="flex items-center flex-1 min-w-0">
