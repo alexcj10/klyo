@@ -282,12 +282,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
                           <div className="flex items-center gap-0.5">
                             {column.id !== 'backlog' && (
-                              <button onClick={() => onTicketUpdate(ticket.id, { status: columns[columns.findIndex(c => c.id === column.id) - 1].id })} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-blue-600 rotate-180 active:scale-75 transition-all">
+                              <button onClick={(e) => { e.stopPropagation(); onTicketUpdate(ticket.id, { status: columns[columns.findIndex(c => c.id === column.id) - 1].id }); }} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-blue-600 rotate-180 active:scale-75 transition-all">
                                 <ChevronRight className="w-4 h-4" />
                               </button>
                             )}
                             {column.id !== 'done' && (
-                              <button onClick={() => onTicketUpdate(ticket.id, { status: columns[columns.findIndex(c => c.id === column.id) + 1].id })} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-blue-600 active:scale-75 transition-all">
+                              <button onClick={(e) => { e.stopPropagation(); onTicketUpdate(ticket.id, { status: columns[columns.findIndex(c => c.id === column.id) + 1].id }); }} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-blue-600 active:scale-75 transition-all">
                                 <ChevronRight className="w-4 h-4" />
                               </button>
                             )}
