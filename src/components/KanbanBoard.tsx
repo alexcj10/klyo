@@ -4,6 +4,7 @@ import {
   Plus, 
   MoreHorizontal, 
   Tag, 
+  Check,
   CheckCircle2,
   Trash2,
   X,
@@ -35,10 +36,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<KanbanTicket | null>(null);
   
-  // Inline metadata state
+  // Inline creator state
   const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
   const [inlinePoints, setInlinePoints] = useState<number>(0);
   const [inlineLabels, setInlineLabels] = useState<string[]>([]);
+  const [inlineSubtasks, setInlineSubtasks] = useState<string[]>([]);
+  const [newLabelInput, setNewLabelInput] = useState('');
+  const [newSubtaskInput, setNewSubtaskInput] = useState('');
 
   // Standalone Kanban Columns
   const columns: { id: KanbanStatus; title: string; color: string; bgColor: string }[] = [
@@ -75,12 +79,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         priority: inlinePriority,
         storyPoints: inlinePoints > 0 ? inlinePoints : undefined,
         labels: inlineLabels,
-        subtasks: []
+        subtasks: inlineSubtasks.map(t => ({ id: Math.random().toString(), title: t, completed: false }))
       });
       setInlineTitle('');
       setInlinePriority('medium');
       setInlinePoints(0);
       setInlineLabels([]);
+      setInlineSubtasks([]);
+      setNewLabelInput('');
+      setNewSubtaskInput('');
       setAddingToColumn(null);
     }
   };
@@ -252,51 +259,93 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               {/* Inline Ticket Editor */}
               <AnimatePresence>
                 {addingToColumn === column.id && (
-                  <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl border-2 border-blue-500 p-4 shadow-2xl ring-4 ring-blue-50 relative z-20">
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl border-2 border-blue-500 p-3 shadow-2xl ring-4 ring-blue-50 relative z-20">
                     <textarea
                       autoFocus placeholder="Ticket title..." value={inlineTitle} onChange={(e) => setInlineTitle(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } if (e.key === 'Escape') setAddingToColumn(null); }}
-                      className="w-full text-sm font-bold text-slate-800 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[40px] leading-relaxed outline-none caret-blue-600"
+                      className="w-full text-sm font-bold text-slate-800 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[36px] leading-relaxed outline-none caret-blue-600 mb-2"
                     />
                     
-                    {/* Inline Metadata Selectors */}
-                    <div className="flex flex-wrap gap-2 mt-3 pb-3 border-b border-slate-50">
-                      <select 
-                        value={inlinePriority} onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
-                        className="text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
-                      >
-                        <option value="low">LOW</option>
-                        <option value="medium">MEDIUM</option>
-                        <option value="high">HIGH</option>
-                        <option value="urgent">URGENT</option>
-                      </select>
-                      
-                      <input 
-                        type="number" placeholder="Pts" value={inlinePoints || ''} onChange={(e) => setInlinePoints(parseInt(e.target.value) || 0)}
-                        className="w-12 text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
-                      />
+                    {/* Inline Metadata Grid */}
+                    <div className="space-y-2 border-t border-slate-50 pt-3">
+                      <div className="flex flex-wrap gap-2">
+                        <select 
+                          value={inlinePriority} onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
+                          className="text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
+                        >
+                          <option value="low">LOW</option>
+                          <option value="medium">MEDIUM</option>
+                          <option value="high">HIGH</option>
+                          <option value="urgent">URGENT</option>
+                        </select>
+                        
+                        <input 
+                          type="number" placeholder="Pts" value={inlinePoints || ''} onChange={(e) => setInlinePoints(parseInt(e.target.value) || 0)}
+                          className="w-10 text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
+                        />
 
-                      <div className="flex gap-1 items-center">
-                        {['Design', 'API'].map(l => (
-                          <button 
-                            key={l} onClick={() => setInlineLabels(prev => prev.includes(l) ? prev.filter(x => x !== l) : [...prev, l])}
-                            className={`text-[9px] font-black px-1.5 py-1 rounded-md transition-all ${inlineLabels.includes(l) ? 'bg-blue-100 text-blue-600 border border-blue-200' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}
-                          >
-                            {l}
-                          </button>
-                        ))}
+                        {/* Inline Custom Labels */}
+                        <div className="flex flex-wrap gap-1 items-center">
+                          {inlineLabels.map(l => (
+                            <button 
+                              key={l} onClick={() => setInlineLabels(prev => prev.filter(x => x !== l))}
+                              className="text-[9px] font-black px-1.5 py-1 rounded-md bg-blue-100 text-blue-600 border border-blue-200 hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all"
+                            >
+                              {l}
+                            </button>
+                          ))}
+                          <div className="flex items-center gap-1">
+                            <input 
+                              type="text" placeholder="+ Tag" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newLabelInput.trim() && !inlineLabels.includes(newLabelInput.trim())) setInlineLabels([...inlineLabels, newLabelInput.trim()]); setNewLabelInput(''); } }}
+                              className="w-14 text-[9px] font-black bg-slate-50/50 border border-dashed border-slate-200 rounded-md px-1.5 py-1 text-slate-400 focus:bg-white focus:border-blue-300 outline-none transition-all"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Inline Subtasks List */}
+                      {inlineSubtasks.length > 0 && (
+                        <div className="space-y-1 pl-1">
+                          {inlineSubtasks.map((st, i) => (
+                            <div key={i} className="flex items-center gap-2 group">
+                              <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
+                              <span className="text-[10px] font-bold text-slate-500 flex-1">{st}</span>
+                              <button onClick={() => setInlineSubtasks(prev => prev.filter((_, idx) => idx !== i))} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"><X className="w-3 h-3" /></button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 rounded-full bg-slate-100 flex items-center justify-center"><CheckCircle2 className="w-2.5 h-2.5 text-slate-400" /></div>
+                        <input 
+                          type="text" placeholder="Add checklist item..." value={newSubtaskInput} onChange={(e) => setNewSubtaskInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newSubtaskInput.trim()) setInlineSubtasks([...inlineSubtasks, newSubtaskInput.trim()]); setNewSubtaskInput(''); } }}
+                          className="flex-1 text-[10px] font-bold text-slate-600 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 outline-none"
+                        />
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex gap-1.5">
-                        <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 shadow-sm"><Tag className="w-3.5 h-3.5 text-slate-400" /></div>
-                        <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 shadow-sm"><CheckCircle2 className="w-3.5 h-3.5 text-slate-400" /></div>
+                    <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-50">
+                      <div className="flex gap-2">
+                        <div className="p-1 px-1.5 bg-slate-50 rounded-md flex items-center gap-1.5 border border-slate-100 shadow-sm" title="Labels">
+                          <Tag className="w-3 h-3 text-slate-400" />
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Tags</span>
+                        </div>
+                        <div className="p-1 px-1.5 bg-slate-50 rounded-md flex items-center gap-1.5 border border-slate-100 shadow-sm" title="Checklist">
+                          <CheckCircle2 className="w-3 h-3 text-slate-400" />
+                          <span className="text-[8px] font-black text-slate-400 uppercase tracking-tighter">Tasks</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button onClick={() => setAddingToColumn(null)} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-400 transition-colors active:scale-90"><X className="w-4 h-4" /></button>
-                        <button onClick={() => handleInlineSubmit(column.id)} disabled={!inlineTitle.trim()} className="px-5 py-2 bg-blue-600 text-white text-[10px] font-black rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg shadow-blue-200 active:scale-95 uppercase tracking-wider">
-                          CREATE
+                      <div className="flex items-center gap-1.5">
+                        <button onClick={() => setAddingToColumn(null)} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-red-500 transition-all active:scale-90"><X className="w-4 h-4" /></button>
+                        <button 
+                          onClick={() => handleInlineSubmit(column.id)} 
+                          disabled={!inlineTitle.trim()} 
+                          className="w-8 h-8 flex items-center justify-center bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg shadow-blue-200 active:scale-90"
+                        >
+                          <Check className="w-4 h-4 stroke-[3px]" />
                         </button>
                       </div>
                     </div>
