@@ -307,10 +307,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     animate={{ opacity: 1, y: 0 }} 
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    className="bg-white rounded-2xl border-2 border-blue-400 shadow-xl shadow-blue-100/50 overflow-hidden max-h-[65vh] flex flex-col"
+                    className="bg-white rounded-2xl border-2 border-blue-400 shadow-xl shadow-blue-100/50"
                   >
-                    {/* Sticky header bar */}
-                    <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50/50 border-b border-blue-100/50 flex-shrink-0">
+                    {/* Header bar */}
+                    <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50/50 border-b border-blue-100/50 rounded-t-2xl">
                       <div className="flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full ${column.color} animate-pulse`} />
                         <span className="text-[10px] font-bold text-slate-500">
@@ -335,11 +335,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       </div>
                     </div>
 
-                    {/* Scrollable content area */}
-                    <div className="p-3 space-y-2.5 overflow-y-auto custom-scrollbar flex-1 min-h-0">
+                    {/* Content area */}
+                    <div className="p-3 space-y-3">
                       {/* Title */}
-                      <div className="space-y-1">
-                        <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center gap-1.5 text-slate-400">
                             <Type className="w-3 h-3" />
                             <span className="text-[9px] font-bold">Title</span>
@@ -357,8 +357,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } 
                             if (e.key === 'Escape') handleCancelInline(); 
                           }}
-                          rows={1}
-                          className="w-full text-sm font-semibold text-slate-800 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2 resize-none leading-snug outline-none focus:ring-2 focus:ring-blue-50 transition-all caret-blue-600"
+                          rows={2}
+                          className="w-full text-sm font-semibold text-slate-800 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2.5 resize-none leading-relaxed outline-none focus:ring-2 focus:ring-blue-50 transition-all caret-blue-600"
                         />
                       </div>
 
