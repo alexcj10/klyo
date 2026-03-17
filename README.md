@@ -47,6 +47,15 @@ A fluid, interactive calendar with multiple views designed for peak organization
 *   **Smooth Transitions**: Fully responsive layouts with fluid animations powered by Framer Motion.    
 *   **Mobile-First**: Optimized for touch and swipe interactions on mobile devices.
 
+### Kanban System
+A project management board that works alongside your calendar:
+*   **Visual Workflow Columns**: Organize tickets across Backlog, To Do, In Progress, and Done states.
+*   **Story Point Tracking**: Automatically aggregates point totals per column and for the entire board to monitor capacity.
+*   **Rich Ticket Management**: Detailed modal for managing descriptions, priority levels, and dynamic labels.
+*   **Checklist Integration**: Built-in subtasks for every ticket with live progress tracking and completion visualization.
+*   **Inline Rapid Creation**: Add new tickets directly within columns using the streamlined quick-add interface.
+*   **Mobile Optimized Experience**: Form-based input handling and specialized keyboard hints ensure smooth entry without unwanted focus shifts.
+
 ### Intelligent Analytics & Visualization
 Visualize your productivity with high-fidelity tools.
 *   **GitHub-Style Heatmap**: An advanced yearly analysis engine.
