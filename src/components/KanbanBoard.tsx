@@ -4,7 +4,6 @@ import {
   Plus, 
   MoreHorizontal, 
   Check,
-  CheckCircle2,
   Trash2,
   X,
   ChevronRight,
@@ -12,7 +11,11 @@ import {
   Clock,
   Layout,
   Layers,
-  Star
+  Star,
+  Type,
+  AlignLeft,
+  Tag,
+  ListChecks
 } from 'lucide-react';
 import { KanbanTicket, KanbanStatus, KanbanPriority } from '../types';
 import KanbanTicketModal from './KanbanTicketModal';
@@ -61,22 +64,26 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     }
   };
 
-  const getLabelColor = (label: string) => {
-    const colors = [
-      'bg-blue-50 text-blue-600 border-blue-100',
-      'bg-emerald-50 text-emerald-600 border-emerald-100',
-      'bg-purple-50 text-purple-600 border-purple-100',
-      'bg-pink-50 text-pink-600 border-pink-100',
-      'bg-amber-50 text-amber-600 border-amber-100',
-      'bg-indigo-50 text-indigo-600 border-indigo-100',
-      'bg-rose-50 text-rose-600 border-rose-100',
-      'bg-cyan-50 text-cyan-600 border-cyan-100'
-    ];
-    // Simple hash to consistently pick a color for a label name
-    const index = label.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
-    return colors[index];
-  };
+  // Dynamic label color palette - each label gets a consistent unique color based on its name
+  const labelColorPalette = [
+    'bg-blue-50 text-blue-600 border-blue-200',
+    'bg-emerald-50 text-emerald-600 border-emerald-200',
+    'bg-purple-50 text-purple-600 border-purple-200',
+    'bg-pink-50 text-pink-600 border-pink-200',
+    'bg-amber-50 text-amber-700 border-amber-200',
+    'bg-indigo-50 text-indigo-600 border-indigo-200',
+    'bg-rose-50 text-rose-600 border-rose-200',
+    'bg-cyan-50 text-cyan-700 border-cyan-200',
+    'bg-teal-50 text-teal-600 border-teal-200',
+    'bg-violet-50 text-violet-600 border-violet-200',
+    'bg-sky-50 text-sky-600 border-sky-200',
+    'bg-fuchsia-50 text-fuchsia-600 border-fuchsia-200',
+  ];
 
+  const getLabelColor = (label: string) => {
+    const hash = label.split('').reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
+    return labelColorPalette[hash % labelColorPalette.length];
+  };
 
   const handleInlineSubmit = (status: KanbanStatus) => {
     if (inlineTitle.trim()) {
@@ -101,6 +108,18 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     }
   };
 
+  const handleCancelInline = () => {
+    setInlineTitle('');
+    setInlineDescription('');
+    setInlinePriority('medium');
+    setInlinePoints(0);
+    setInlineLabels([]);
+    setInlineSubtasks([]);
+    setNewLabelInput('');
+    setNewSubtaskInput('');
+    setAddingToColumn(null);
+  };
+
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-white">
       {/* Kanban Header / Filter Bar */}
@@ -122,7 +141,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </div>
         <div className="flex items-center gap-2">
            <button className="px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg text-[10px] font-bold transition-all border border-slate-200/50">
-            FILTERS
+            Filters
            </button>
         </div>
       </div>
@@ -141,7 +160,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   <h3 className="text-xs font-bold text-slate-800 tracking-tight">
                     {column.title}
                   </h3>
-                  <span className="text-[9px] font-bold text-slate-400 tracking-tighter">
+                  <span className="text-[9px] font-medium text-slate-400">
                     {columnTickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} story points
                   </span>
                 </div>
@@ -192,7 +211,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         {ticket.labels.length > 0 && (
                           <div className="flex flex-wrap gap-1.5">
                             {ticket.labels.map(label => (
-                              <span key={label} className={`text-[8px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider ${getLabelColor(label) || 'bg-slate-100 text-slate-600'}`}>
+                              <span key={label} className={`text-[8px] font-bold px-2 py-0.5 rounded-md border ${getLabelColor(label)}`}>
                                 {label}
                               </span>
                             ))}
@@ -217,8 +236,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         {/* Subtasks Progress */}
                         {ticket.subtasks.length > 0 && (
                           <div className="flex flex-col gap-1.5">
-                            <div className="flex items-center justify-between text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                              <span>PROGRESS</span>
+                            <div className="flex items-center justify-between text-[9px] font-bold text-slate-400">
+                              <span>Progress</span>
                               <span>{completedSubtasks}/{ticket.subtasks.length}</span>
                             </div>
                             <div className="h-1 bg-slate-100 rounded-full overflow-hidden shadow-inner">
@@ -235,12 +254,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           <div className="flex items-center gap-3">
                             {ticket.storyPoints !== undefined && (
                               <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-100 px-2 py-0.5 rounded-lg shadow-sm">
-                                <span className="text-[10px] font-black text-slate-700">{ticket.storyPoints}</span>
+                                <span className="text-[10px] font-bold text-slate-700">{ticket.storyPoints}</span>
                                 <div className="w-1 h-1 rounded-full bg-slate-300" />
-                                <span className="text-[9px] font-bold text-slate-400 tracking-tighter">POINTS</span>
+                                <span className="text-[9px] font-medium text-blue-400">pts</span>
                               </div>
                             )}
-                            <div className={`flex items-center gap-1 text-[9px] font-black tracking-widest ${p.color}`}>
+                            <div className={`flex items-center gap-1 text-[9px] font-bold ${p.color}`}>
                               <p.icon className="w-3 h-3" />
                               {p.label}
                             </div>
@@ -265,99 +284,209 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 })}
               </AnimatePresence>
 
-              {/* Inline Ticket Editor */}
+              {/* ===== REDESIGNED INLINE TICKET CREATOR ===== */}
               <AnimatePresence>
                 {addingToColumn === column.id && (
-                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl border-2 border-blue-500 p-3 shadow-2xl ring-4 ring-blue-50 relative z-20">
-                    <div className="flex flex-col gap-1">
-                      <div className="flex justify-between items-center mb-0.5">
-                        <span className={`text-[9px] font-black uppercase tracking-tighter ${inlineTitle.length > 90 ? 'text-red-500' : 'text-slate-300'}`}>Title ({inlineTitle.length}/100)</span>
-                        <div className="flex items-center gap-1.5">
-                          <button onClick={() => setAddingToColumn(null)} className="p-1 hover:bg-slate-50 rounded text-slate-300 hover:text-red-400 transition-all"><X className="w-3.5 h-3.5" /></button>
-                          <button 
-                            onClick={() => handleInlineSubmit(column.id)} 
-                            disabled={!inlineTitle.trim()} 
-                            className="w-6 h-6 flex items-center justify-center bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all shadow-sm active:scale-90"
-                          >
-                            <Check className="w-3 h-3 stroke-[3.5px]" />
-                          </button>
-                        </div>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    className="bg-white rounded-2xl border-2 border-blue-400 shadow-xl shadow-blue-100/50 overflow-hidden max-h-[65vh] flex flex-col"
+                  >
+                    {/* Sticky header bar */}
+                    <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50/50 border-b border-blue-100/50 flex-shrink-0">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-2 h-2 rounded-full ${column.color} animate-pulse`} />
+                        <span className="text-[10px] font-bold text-slate-500">
+                          Adding to <span className="text-blue-600">{column.title}</span>
+                        </span>
                       </div>
-                      <textarea
-                        autoFocus placeholder="What needs to be done?" value={inlineTitle} 
-                        onChange={(e) => setInlineTitle(e.target.value.slice(0, 100))}
-                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } if (e.key === 'Escape') setAddingToColumn(null); }}
-                        className="w-full text-sm font-bold text-slate-800 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[32px] leading-relaxed outline-none caret-blue-600"
-                      />
-                      <textarea
-                        placeholder="Add more details here..." value={inlineDescription}
-                        onChange={(e) => setInlineDescription(e.target.value)}
-                        className="w-full text-[11px] font-medium text-slate-500 placeholder-slate-200 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[20px] max-h-[80px] leading-relaxed outline-none mt-0.5"
-                      />
-                    </div>
-                    
-                    {/* Inline Metadata Grid */}
-                    <div className="space-y-2 border-t border-slate-50 pt-3 mt-1">
-                      <div className="flex flex-wrap gap-2">
-                         <select 
-                          value={inlinePriority} onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
-                          className="text-[9px] font-bold bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
+                      <div className="flex items-center gap-1.5">
+                        <button 
+                          onClick={handleCancelInline} 
+                          className="p-1 hover:bg-white/80 rounded-lg text-slate-400 hover:text-red-500 transition-all"
                         >
-                          <option value="low">Low</option>
-                          <option value="medium">Medium</option>
-                          <option value="high">High</option>
-                          <option value="urgent">Urgent</option>
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                        <button 
+                          onClick={() => handleInlineSubmit(column.id)} 
+                          disabled={!inlineTitle.trim()} 
+                          className="flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-[10px] font-bold shadow-sm active:scale-95"
+                        >
+                          <Check className="w-3 h-3 stroke-[3px]" />
+                          Save
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Scrollable content area */}
+                    <div className="p-3 space-y-2.5 overflow-y-auto custom-scrollbar flex-1 min-h-0">
+                      {/* Title */}
+                      <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 text-slate-400">
+                            <Type className="w-3 h-3" />
+                            <span className="text-[9px] font-bold">Title</span>
+                          </div>
+                          <span className={`text-[9px] font-bold tabular-nums ${inlineTitle.length > 90 ? 'text-red-500' : 'text-slate-300'}`}>
+                            {inlineTitle.length}/100
+                          </span>
+                        </div>
+                        <textarea
+                          autoFocus 
+                          placeholder="What needs to be done?" 
+                          value={inlineTitle} 
+                          onChange={(e) => setInlineTitle(e.target.value.slice(0, 100))}
+                          onKeyDown={(e) => { 
+                            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } 
+                            if (e.key === 'Escape') handleCancelInline(); 
+                          }}
+                          rows={1}
+                          className="w-full text-sm font-semibold text-slate-800 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2 resize-none leading-snug outline-none focus:ring-2 focus:ring-blue-50 transition-all caret-blue-600"
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                          <AlignLeft className="w-3 h-3" />
+                          <span className="text-[9px] font-bold">Description</span>
+                          <span className="text-[9px] font-medium text-slate-300">(optional)</span>
+                        </div>
+                        <textarea
+                          placeholder="Add more details, context, or notes..." 
+                          value={inlineDescription}
+                          onChange={(e) => setInlineDescription(e.target.value)}
+                          rows={1}
+                          className="w-full text-xs font-medium text-slate-600 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-1.5 resize-none leading-relaxed outline-none focus:ring-2 focus:ring-blue-50 transition-all max-h-[80px]"
+                        />
+                      </div>
+
+                      {/* Priority + Points Row */}
+                      <div className="flex flex-wrap gap-2 items-center">
+                        <select 
+                          value={inlinePriority} 
+                          onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
+                          className="text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600 hover:bg-white hover:border-blue-200 transition-all outline-none focus:ring-2 focus:ring-blue-50 cursor-pointer"
+                        >
+                          <option value="low">🟢 Low</option>
+                          <option value="medium">🔵 Medium</option>
+                          <option value="high">🟠 High</option>
+                          <option value="urgent">🔴 Urgent</option>
                         </select>
                         
-                        <input 
-                          type="number" placeholder="Pts" value={inlinePoints || ''} onChange={(e) => setInlinePoints(parseInt(e.target.value) || 0)}
-                          className="w-10 text-[9px] font-bold bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
-                        />
+                        <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 focus-within:border-blue-200 focus-within:ring-2 focus-within:ring-blue-50 transition-all">
+                          <Star className="w-3 h-3 text-amber-400" />
+                          <input 
+                            type="number" 
+                            placeholder="Pts" 
+                            min="0"
+                            max="99"
+                            value={inlinePoints || ''} 
+                            onChange={(e) => setInlinePoints(parseInt(e.target.value) || 0)}
+                            className="w-8 text-[10px] font-bold bg-transparent text-slate-600 outline-none placeholder-slate-400"
+                          />
+                        </div>
+                      </div>
 
-                        {/* Inline Custom Labels */}
-                        <div className="flex flex-wrap gap-1 items-center">
+                      {/* Labels */}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                          <Tag className="w-3 h-3" />
+                          <span className="text-[9px] font-bold">Labels</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5 items-center">
                           {inlineLabels.map(l => (
-                            <button 
-                              key={l} onClick={() => setInlineLabels(prev => prev.filter(x => x !== l))}
-                              className={`text-[9px] font-bold px-1.5 py-1 rounded-md border hover:bg-red-50 hover:text-red-500 hover:border-red-100 transition-all ${getLabelColor(l)}`}
+                            <motion.button 
+                              key={l} 
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              onClick={() => setInlineLabels(prev => prev.filter(x => x !== l))}
+                              className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all group/label flex items-center gap-1 ${getLabelColor(l)}`}
                             >
                               {l}
-                            </button>
+                              <X className="w-2.5 h-2.5 opacity-0 group-hover/label:opacity-100 transition-opacity" />
+                            </motion.button>
                           ))}
-                          <div className="flex items-center gap-1">
-                            <input 
-                              type="text" placeholder="+ Tag" value={newLabelInput} onChange={(e) => setNewLabelInput(e.target.value)}
-                              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newLabelInput.trim() && !inlineLabels.includes(newLabelInput.trim())) setInlineLabels([...inlineLabels, newLabelInput.trim()]); setNewLabelInput(''); } }}
-                              className="w-14 text-[9px] font-bold bg-slate-50/50 border border-dashed border-slate-200 rounded-md px-1.5 py-1 text-slate-400 focus:bg-white focus:border-blue-300 outline-none transition-all"
-                            />
-                          </div>
+                          <input 
+                            type="text" 
+                            placeholder={inlineLabels.length > 0 ? "+ Add" : "+ Type label & Enter"} 
+                            value={newLabelInput} 
+                            onChange={(e) => setNewLabelInput(e.target.value)}
+                            onKeyDown={(e) => { 
+                              if (e.key === 'Enter') { 
+                                e.preventDefault(); 
+                                e.stopPropagation();
+                                if (newLabelInput.trim() && !inlineLabels.includes(newLabelInput.trim())) {
+                                  setInlineLabels([...inlineLabels, newLabelInput.trim()]); 
+                                }
+                                setNewLabelInput(''); 
+                              } 
+                            }}
+                            className="min-w-[80px] flex-1 text-[10px] font-bold bg-slate-50/50 border border-dashed border-slate-200 rounded-lg px-2 py-1 text-slate-500 focus:bg-white focus:border-blue-300 outline-none transition-all placeholder-slate-300"
+                          />
                         </div>
                       </div>
 
-                      {/* Inline Subtasks List */}
-                      {inlineSubtasks.length > 0 && (
-                        <div className="space-y-1 pl-1 max-h-[100px] overflow-y-auto custom-scrollbar">
-                          {inlineSubtasks.map((st, i) => (
-                            <div key={i} className="flex items-center gap-2 group">
-                              <div className="w-1.5 h-1.5 rounded-full bg-slate-300" />
-                              <span className="text-[10px] font-bold text-slate-500 flex-1">{st}</span>
-                              <button onClick={() => setInlineSubtasks(prev => prev.filter((_, idx) => idx !== i))} className="opacity-0 group-hover:opacity-100 text-slate-300 hover:text-red-500 transition-all"><X className="w-3 h-3" /></button>
-                            </div>
-                          ))}
+                      {/* Checklist */}
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1.5 text-slate-400">
+                          <ListChecks className="w-3 h-3" />
+                          <span className="text-[9px] font-bold">Checklist</span>
+                          {inlineSubtasks.length > 0 && (
+                            <span className="text-[9px] font-bold text-blue-500 bg-blue-50 px-1.5 rounded-md">{inlineSubtasks.length}</span>
+                          )}
                         </div>
-                      )}
 
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0"><CheckCircle2 className="w-2.5 h-2.5 text-slate-400" /></div>
-                        <input 
-                          type="text" placeholder="Add checklist item..." value={newSubtaskInput} onChange={(e) => setNewSubtaskInput(e.target.value)}
-                          onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); if (newSubtaskInput.trim()) setInlineSubtasks([...inlineSubtasks, newSubtaskInput.trim()]); setNewSubtaskInput(''); } }}
-                          className="flex-1 text-[10px] font-bold text-slate-600 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 outline-none"
-                        />
+                        {inlineSubtasks.length > 0 && (
+                          <div className="space-y-0.5 max-h-[80px] overflow-y-auto custom-scrollbar">
+                            {inlineSubtasks.map((st, i) => (
+                              <motion.div 
+                                key={i} 
+                                initial={{ opacity: 0, x: -10 }} 
+                                animate={{ opacity: 1, x: 0 }}
+                                className="flex items-center gap-2 group py-0.5 px-1.5 hover:bg-slate-50 rounded-lg transition-colors"
+                              >
+                                <div className="w-3.5 h-3.5 rounded border-2 border-slate-200 flex items-center justify-center flex-shrink-0">
+                                  <div className="w-1 h-1 rounded-sm bg-slate-300" />
+                                </div>
+                                <span className="text-[10px] font-medium text-slate-600 flex-1">{st}</span>
+                                <button 
+                                  onClick={() => setInlineSubtasks(prev => prev.filter((_, idx) => idx !== i))} 
+                                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-red-50 rounded text-slate-300 hover:text-red-500 transition-all"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </motion.div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-2 px-1.5">
+                          <div className="w-3.5 h-3.5 rounded border-2 border-dashed border-slate-200 flex items-center justify-center flex-shrink-0">
+                            <Plus className="w-2 h-2 text-slate-300" />
+                          </div>
+                          <input 
+                            type="text" 
+                            placeholder="Add checklist item & Enter" 
+                            value={newSubtaskInput} 
+                            onChange={(e) => setNewSubtaskInput(e.target.value)}
+                            onKeyDown={(e) => { 
+                              if (e.key === 'Enter') { 
+                                e.preventDefault(); 
+                                e.stopPropagation();
+                                if (newSubtaskInput.trim()) {
+                                  setInlineSubtasks([...inlineSubtasks, newSubtaskInput.trim()]); 
+                                }
+                                setNewSubtaskInput(''); 
+                              } 
+                            }}
+                            className="flex-1 text-[10px] font-medium text-slate-600 placeholder-slate-300 bg-transparent outline-none"
+                          />
+                        </div>
                       </div>
                     </div>
-
-                    {/* Compact Action Footer Removed for Slimness - Buttons moved to top */}
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -365,10 +494,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               {!addingToColumn && (
                 <button
                   onClick={() => setAddingToColumn(column.id)}
-                  className="w-full py-3.5 flex items-center justify-center gap-2 px-3 text-slate-400 hover:text-blue-600 hover:bg-white border-2 border-dashed border-slate-100 hover:border-blue-100 rounded-2xl transition-all text-xs font-black group active:scale-[0.98] mt-1"
+                  className="w-full py-3 flex items-center justify-center gap-2 px-3 text-slate-400 hover:text-blue-600 hover:bg-white border-2 border-dashed border-slate-100 hover:border-blue-200 rounded-2xl transition-all text-xs font-bold group active:scale-[0.98] mt-1"
                 >
-                  <Plus className="w-4 h-4 group-hover:scale-125 transition-transform" />
-                  NEW TICKET
+                  <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                  New Ticket
                 </button>
               )}
             </div>
