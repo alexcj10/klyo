@@ -357,8 +357,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                             if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } 
                             if (e.key === 'Escape') handleCancelInline(); 
                           }}
-                          rows={2}
-                          className="w-full text-sm font-semibold text-slate-800 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2.5 resize-none leading-relaxed outline-none focus:ring-2 focus:ring-blue-50 transition-all caret-blue-600"
+                          rows={1}
+                          className="w-full text-sm font-semibold text-slate-800 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2 resize-none leading-snug outline-none focus:ring-2 focus:ring-blue-50 transition-all caret-blue-600"
                         />
                       </div>
 
@@ -373,8 +373,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           placeholder="Add more details, context, or notes..." 
                           value={inlineDescription}
                           onChange={(e) => setInlineDescription(e.target.value)}
-                          rows={1}
-                          className="w-full text-xs font-medium text-slate-600 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-1.5 resize-none leading-relaxed outline-none focus:ring-2 focus:ring-blue-50 transition-all max-h-[80px]"
+                          rows={2}
+                          className="w-full text-xs font-medium text-slate-600 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2 resize-none leading-relaxed outline-none focus:ring-2 focus:ring-blue-50 transition-all max-h-[120px]"
                         />
                       </div>
 

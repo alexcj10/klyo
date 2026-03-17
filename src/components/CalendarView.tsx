@@ -738,7 +738,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               </>
             ) : (
               <div className="flex items-center gap-2 px-1.5 sm:px-3 py-1 bg-blue-50/50 rounded-xl border border-blue-200/50">
-                <span className="text-[10px] sm:text-xs font-black text-blue-600 tracking-wider">PROJECT KANBAN</span>
+                <span className="text-[10px] sm:text-xs font-black text-blue-600 tracking-wider">Project Kanban</span>
               </div>
             )}
           </div>
