@@ -34,6 +34,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [inlineTitle, setInlineTitle] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedTicket, setSelectedTicket] = useState<KanbanTicket | null>(null);
+  
+  // Inline metadata state
+  const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
+  const [inlinePoints, setInlinePoints] = useState<number>(0);
+  const [inlineLabels, setInlineLabels] = useState<string[]>([]);
 
   // Standalone Kanban Columns
   const columns: { id: KanbanStatus; title: string; color: string; bgColor: string }[] = [
@@ -67,11 +72,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       onTicketAdd({
         title: inlineTitle.trim(),
         status,
-        priority: 'medium',
-        labels: [],
+        priority: inlinePriority,
+        storyPoints: inlinePoints > 0 ? inlinePoints : undefined,
+        labels: inlineLabels,
         subtasks: []
       });
       setInlineTitle('');
+      setInlinePriority('medium');
+      setInlinePoints(0);
+      setInlineLabels([]);
       setAddingToColumn(null);
     }
   };
@@ -243,20 +252,50 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               {/* Inline Ticket Editor */}
               <AnimatePresence>
                 {addingToColumn === column.id && (
-                  <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl border-2 border-blue-500 p-3 shadow-2xl ring-4 ring-blue-50">
+                  <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }} className="bg-white rounded-2xl border-2 border-blue-500 p-4 shadow-2xl ring-4 ring-blue-50 relative z-20">
                     <textarea
-                      autoFocus placeholder="Feature name or bug description..." value={inlineTitle} onChange={(e) => setInlineTitle(e.target.value)}
+                      autoFocus placeholder="Ticket title..." value={inlineTitle} onChange={(e) => setInlineTitle(e.target.value)}
                       onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } if (e.key === 'Escape') setAddingToColumn(null); }}
-                      className="w-full text-xs font-bold text-slate-800 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[50px] leading-relaxed"
+                      className="w-full text-sm font-bold text-slate-800 placeholder-slate-300 bg-transparent border-none focus:ring-0 p-0 resize-none min-h-[40px] leading-relaxed outline-none caret-blue-600"
                     />
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-50">
-                      <div className="flex gap-1">
-                        <div className="w-5 h-5 rounded bg-slate-100 flex items-center justify-center"><Tag className="w-3 h-3 text-slate-400" /></div>
-                        <div className="w-5 h-5 rounded bg-slate-100 flex items-center justify-center"><CheckCircle2 className="w-3 h-3 text-slate-400" /></div>
+                    
+                    {/* Inline Metadata Selectors */}
+                    <div className="flex flex-wrap gap-2 mt-3 pb-3 border-b border-slate-50">
+                      <select 
+                        value={inlinePriority} onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
+                        className="text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
+                      >
+                        <option value="low">LOW</option>
+                        <option value="medium">MEDIUM</option>
+                        <option value="high">HIGH</option>
+                        <option value="urgent">URGENT</option>
+                      </select>
+                      
+                      <input 
+                        type="number" placeholder="Pts" value={inlinePoints || ''} onChange={(e) => setInlinePoints(parseInt(e.target.value) || 0)}
+                        className="w-12 text-[9px] font-black bg-slate-50 border border-slate-100 rounded-md px-1.5 py-1 text-slate-500 hover:bg-white transition-all outline-none"
+                      />
+
+                      <div className="flex gap-1 items-center">
+                        {['Design', 'API'].map(l => (
+                          <button 
+                            key={l} onClick={() => setInlineLabels(prev => prev.includes(l) ? prev.filter(x => x !== l) : [...prev, l])}
+                            className={`text-[9px] font-black px-1.5 py-1 rounded-md transition-all ${inlineLabels.includes(l) ? 'bg-blue-100 text-blue-600 border border-blue-200' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}
+                          >
+                            {l}
+                          </button>
+                        ))}
                       </div>
-                      <div className="flex items-center gap-1.5">
-                        <button onClick={() => setAddingToColumn(null)} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"><X className="w-4 h-4" /></button>
-                        <button onClick={() => handleInlineSubmit(column.id)} disabled={!inlineTitle.trim()} className="px-4 py-1.5 bg-blue-600 text-white text-[11px] font-black rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg shadow-blue-200 active:scale-90">
+                    </div>
+
+                    <div className="flex items-center justify-between mt-3">
+                      <div className="flex gap-1.5">
+                        <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 shadow-sm"><Tag className="w-3.5 h-3.5 text-slate-400" /></div>
+                        <div className="w-6 h-6 rounded-lg bg-slate-50 flex items-center justify-center border border-slate-100 shadow-sm"><CheckCircle2 className="w-3.5 h-3.5 text-slate-400" /></div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button onClick={() => setAddingToColumn(null)} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-400 transition-colors active:scale-90"><X className="w-4 h-4" /></button>
+                        <button onClick={() => handleInlineSubmit(column.id)} disabled={!inlineTitle.trim()} className="px-5 py-2 bg-blue-600 text-white text-[10px] font-black rounded-xl hover:bg-blue-700 disabled:opacity-50 transition-all shadow-lg shadow-blue-200 active:scale-95 uppercase tracking-wider">
                           CREATE
                         </button>
                       </div>
