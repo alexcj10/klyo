@@ -37,7 +37,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [inlineTitle, setInlineTitle] = useState('');
   const [inlineDescription, setInlineDescription] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [selectedTicket, setSelectedTicket] = useState<KanbanTicket | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   
   // Inline creator state
   const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
@@ -218,7 +218,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   return (
                     <motion.div
                       key={ticket.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
-                      onClick={(e) => { e.stopPropagation(); setSelectedTicket(ticket); }}
+                      onClick={(e) => { e.stopPropagation(); setSelectedTicketId(ticket.id); }}
                       className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer ${getTicketBorderColor(ticket.id)}`}
                     >
                       <div className="flex flex-col gap-3">
@@ -521,13 +521,13 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       })}
 
       {/* Ticket Detail Modal */}
-      {selectedTicket && (
+      {selectedTicketId && tickets.find(t => t.id === selectedTicketId) && (
         <KanbanTicketModal 
-          isOpen={!!selectedTicket}
-          onClose={() => setSelectedTicket(null)}
-          ticket={selectedTicket}
-          onUpdate={(updates) => onTicketUpdate(selectedTicket.id, updates)}
-          onDelete={() => onTicketDelete(selectedTicket.id)}
+          isOpen={!!selectedTicketId}
+          onClose={() => setSelectedTicketId(null)}
+          ticket={tickets.find(t => t.id === selectedTicketId)!}
+          onUpdate={(updates) => onTicketUpdate(selectedTicketId, updates)}
+          onDelete={() => { onTicketDelete(selectedTicketId); setSelectedTicketId(null); }}
         />
       )}
     </div>

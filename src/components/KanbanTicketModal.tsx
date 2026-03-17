@@ -4,8 +4,7 @@ import {
   X, 
   Check, 
   Trash2, 
-  Plus, 
-  Maximize2
+  Plus
 } from 'lucide-react';
 import { KanbanTicket, KanbanPriority } from '../types';
 
@@ -121,16 +120,11 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
           initial={{ opacity: 0, scale: 0.95, y: 20 }} 
           animate={{ opacity: 1, scale: 1, y: 0 }} 
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+          className="relative bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[75vh] sm:max-h-[85vh]"
         >
           {/* Header */}
           <div className="px-4 sm:px-5 py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm">
-                <Maximize2 className="w-3.5 h-3.5 text-white" />
-              </div>
-              <span className="text-[10px] font-bold text-slate-400">Ticket Detail</span>
-            </div>
+            <span className="text-xs font-bold text-slate-600">Ticket Detail</span>
             <button onClick={onClose} className="p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors">
               <X className="w-4 h-4" />
             </button>
