@@ -311,11 +311,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     {column.title}
                   </h3>
                   <span className="text-[9px] font-medium text-slate-400">
-                    {columnTickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} story points
+                    {columnTickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0).toLocaleString()} story points
                   </span>
                 </div>
                 <span className="text-[10px] font-bold text-slate-400 bg-white border border-slate-100 px-2 py-0.5 rounded-full shadow-sm ml-1 flex-shrink-0">
-                  {columnTickets.length}
+                  {columnTickets.length > 99 ? '99+' : columnTickets.length}
                 </span>
               </div>
               <div className="relative">
