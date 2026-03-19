@@ -96,7 +96,7 @@ const ColumnSettingsModal: React.FC<ColumnSettingsModalProps> = ({
             <div>
               <div className="flex items-center gap-1 mb-1 text-slate-400">
                 <Type className="w-3 h-3" />
-                <span className="text-[9px] font-bold uppercase tracking-wider">Title</span>
+                <span className="text-[10px] font-bold text-slate-400">Title</span>
               </div>
               <input 
                 type="text" 
@@ -112,7 +112,7 @@ const ColumnSettingsModal: React.FC<ColumnSettingsModalProps> = ({
             <div>
               <div className="flex items-center gap-1 mb-2 text-slate-400">
                 <Palette className="w-3 h-3" />
-                <span className="text-[9px] font-bold uppercase tracking-wider">Theme</span>
+                <span className="text-[10px] font-bold text-slate-400">Theme</span>
               </div>
               <div className="grid grid-cols-4 gap-2">
                   {COLUMN_THEMES.map((theme) => (
@@ -141,7 +141,7 @@ const ColumnSettingsModal: React.FC<ColumnSettingsModalProps> = ({
             {/* Preview Section */}
             <div>
               <div className="flex items-center gap-1 mb-2 text-slate-400">
-                <div className="text-[9px] font-bold uppercase tracking-wider">Preview</div>
+                <div className="text-[10px] font-bold text-slate-400">Preview</div>
               </div>
               <div className={`p-2.5 rounded-lg border border-slate-100 ${selectedTheme?.bgColor}`}>
                 <div className="flex items-center gap-2">
