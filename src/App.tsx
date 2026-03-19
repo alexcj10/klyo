@@ -299,6 +299,73 @@ function App() {
             timestamp
           });
         }
+        if (updates.description !== undefined && updates.description !== t.description) {
+          newActivities.push({
+            id: Math.random().toString(36).substr(2, 9),
+            type: 'edit',
+            fieldName: 'description',
+            timestamp
+          });
+        }
+        if (updates.storyPoints !== undefined && updates.storyPoints !== t.storyPoints) {
+          newActivities.push({
+            id: Math.random().toString(36).substr(2, 9),
+            type: 'edit',
+            fieldName: 'story points',
+            oldValue: (t.storyPoints || 0).toString(),
+            newValue: (updates.storyPoints || 0).toString(),
+            timestamp
+          });
+        }
+        if (updates.labels && JSON.stringify(updates.labels) !== JSON.stringify(t.labels)) {
+          const added = updates.labels.filter(l => !t.labels.includes(l));
+          const removed = t.labels.filter(l => !updates.labels?.includes(l));
+          if (added.length > 0) {
+            newActivities.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: 'edit',
+              fieldName: 'label',
+              newValue: added.join(', '),
+              timestamp
+            });
+          }
+          if (removed.length > 0) {
+            newActivities.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: 'edit',
+              fieldName: 'label',
+              oldValue: removed.join(', '),
+              timestamp
+            });
+          }
+        }
+        if (updates.subtasks && JSON.stringify(updates.subtasks) !== JSON.stringify(t.subtasks)) {
+          const toggled = updates.subtasks.find((s, i) => s.completed !== t.subtasks[i]?.completed);
+          if (toggled) {
+            newActivities.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: 'subtask',
+              fieldName: toggled.title,
+              newValue: toggled.completed ? 'completed' : 'uncompleted',
+              timestamp
+            });
+          } else if (updates.subtasks.length > t.subtasks.length) {
+            newActivities.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: 'subtask',
+              fieldName: updates.subtasks[updates.subtasks.length - 1].title,
+              newValue: 'added',
+              timestamp
+            });
+          } else if (updates.subtasks.length < t.subtasks.length) {
+            newActivities.push({
+              id: Math.random().toString(36).substr(2, 9),
+              type: 'subtask',
+              newValue: 'removed',
+              timestamp
+            });
+          }
+        }
 
         return { ...t, ...updates, activities: newActivities };
       }

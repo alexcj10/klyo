@@ -131,8 +131,36 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
           </span>
         );
       case 'edit':
+        if (activity.fieldName === 'description') {
+          return <span className="text-slate-600">updated the <span className="font-bold text-slate-800">description</span></span>;
+        }
+        if (activity.fieldName === 'story points') {
+          return (
+            <span className="text-slate-600">
+              changed story points from <span className="font-bold text-slate-800">{activity.oldValue}</span> to <span className="font-bold text-slate-800">{activity.newValue}</span>
+            </span>
+          );
+        }
+        if (activity.fieldName === 'label') {
+          if (activity.newValue) {
+            return <span className="text-slate-600">added label <span className="font-bold text-slate-800">{activity.newValue}</span></span>;
+          }
+          return <span className="text-slate-600">removed label <span className="font-bold text-slate-800">{activity.oldValue}</span></span>;
+        }
         return <span className="text-slate-600">updated the <span className="font-bold text-slate-800">{activity.fieldName}</span></span>;
       case 'subtask':
+        if (activity.newValue === 'completed') {
+          return <span className="text-slate-600">completed subtask <span className="font-bold text-slate-800">"{activity.fieldName}"</span></span>;
+        }
+        if (activity.newValue === 'uncompleted') {
+          return <span className="text-slate-600">marked <span className="font-bold text-slate-800">"{activity.fieldName}"</span> as uncompleted</span>;
+        }
+        if (activity.newValue === 'added') {
+          return <span className="text-slate-600">added subtask <span className="font-bold text-slate-800">"{activity.fieldName}"</span></span>;
+        }
+        if (activity.newValue === 'removed') {
+          return <span className="text-slate-600">removed a subtask</span>;
+        }
         return <span className="text-slate-600">updated subtasks</span>;
       default:
         return <span className="text-slate-600">updated this ticket</span>;
