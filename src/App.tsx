@@ -374,7 +374,11 @@ function App() {
   };
 
   const handleKanbanTicketDelete = (ticketId: string) => {
-    setKanbanTickets(kanbanTickets.filter(t => t.id !== ticketId));
+    setKanbanTickets((prev: KanbanTicket[]) => prev.filter(t => t.id !== ticketId));
+  };
+
+  const handleKanbanTicketsBulkDelete = (ticketIds: string[]) => {
+    setKanbanTickets((prev: KanbanTicket[]) => prev.filter(t => !ticketIds.includes(t.id)));
   };
 
   const handleKanbanColumnUpdate = (columnId: string, updates: Partial<KanbanColumn>) => {
@@ -470,6 +474,7 @@ function App() {
             onKanbanTicketAdd={handleKanbanTicketAdd}
             onKanbanTicketUpdate={handleKanbanTicketUpdate}
             onKanbanTicketDelete={handleKanbanTicketDelete}
+            onKanbanTicketsBulkDelete={handleKanbanTicketsBulkDelete}
             kanbanColumns={kanbanColumns}
             onKanbanColumnUpdate={handleKanbanColumnUpdate}
           />

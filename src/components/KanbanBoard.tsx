@@ -31,6 +31,7 @@ interface KanbanBoardProps {
   onTicketAdd: (ticket: Omit<KanbanTicket, 'id' | 'createdAt'>) => void;
   onTicketUpdate: (ticketId: string, updates: Partial<KanbanTicket>) => void;
   onTicketDelete: (ticketId: string) => void;
+  onTicketsBulkDelete: (ticketIds: string[]) => void;
   columns: KanbanColumn[];
   onColumnUpdate: (columnId: string, updates: Partial<KanbanColumn>) => void;
 }
@@ -39,7 +40,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   tickets, 
   onTicketAdd, 
   onTicketUpdate, 
-  onTicketDelete,
+  onTicketDelete, 
+  onTicketsBulkDelete,
   columns,
   onColumnUpdate
 }) => {
@@ -52,6 +54,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPriority, setFilterPriority] = useState<KanbanPriority | 'all'>('all');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [confirmingClearColumn, setConfirmingClearColumn] = useState<string | null>(null);
   
   // Inline creator state
   const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
@@ -376,10 +379,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
                       <button 
                         onClick={() => { 
-                          if (confirm(`Are you sure you want to clear all tickets in ${column.title}?`)) {
-                            columnTickets.forEach(t => onTicketDelete(t.id));
-                            setActiveMenu(null);
-                          }
+                          setConfirmingClearColumn(column.id);
+                          setActiveMenu(null);
                         }}
                         className="w-full text-left px-4 py-2 text-[11px] font-bold text-red-500 hover:bg-red-50 flex items-center gap-2.5 transition-colors"
                       >
@@ -721,6 +722,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
           </div>
         );
       })}
+      </div>
 
       {/* Ticket Detail Modal */}
       {selectedTicketId && tickets.find(t => t.id === selectedTicketId) && (
@@ -735,13 +737,62 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       {/* Column Settings Modal */}
       {editingColumnId && columns.find(c => c.id === editingColumnId) && (
         <ColumnSettingsModal 
-          isOpen={!!editingColumnId}
+          isOpen={editingColumnId !== null}
           onClose={() => setEditingColumnId(null)}
-          column={columns.find(c => c.id === editingColumnId)!}
-          onUpdate={(updates) => onColumnUpdate(editingColumnId, updates)}
+          column={columns.find(c => c.id === editingColumnId) || columns[0]}
+          onUpdate={(updates) => editingColumnId && onColumnUpdate(editingColumnId, updates)}
         />
       )}
-    </div>
+
+      {/* Custom Confirmation Modal */}
+      <AnimatePresence>
+        {confirmingClearColumn && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              onClick={() => setConfirmingClearColumn(null)}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 overflow-hidden"
+            >
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 shadow-sm border border-red-100">
+                  <Trash2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800">Clear all tickets?</h3>
+                  <p className="text-[11px] font-medium text-slate-400 mt-1 px-4 leading-relaxed">
+                    Are you sure you want to remove all tickets from <span className="text-slate-600 font-bold">"{columns.find(c => c.id === confirmingClearColumn)?.title}"</span>? This action cannot be undone.
+                  </p>
+                </div>
+                <div className="flex items-center gap-3 w-full mt-2">
+                  <button 
+                    onClick={() => setConfirmingClearColumn(null)}
+                    className="flex-1 px-4 py-2 text-[11px] font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all border border-slate-100"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={() => {
+                      const curCol = confirmingClearColumn;
+                      if (curCol) {
+                        const ids = tickets.filter(t => t.status === curCol).map(t => t.id);
+                        onTicketsBulkDelete(ids);
+                      }
+                      setConfirmingClearColumn(null);
+                    }}
+                    className="flex-1 px-4 py-2 text-[11px] font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-100 transition-all active:scale-95"
+                  >
+                    Clear All
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

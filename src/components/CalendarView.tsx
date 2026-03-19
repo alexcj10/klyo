@@ -48,6 +48,7 @@ interface CalendarViewProps {
   onKanbanTicketAdd: (ticket: Omit<KanbanTicket, 'id' | 'createdAt'>) => void;
   onKanbanTicketUpdate: (ticketId: string, updates: Partial<KanbanTicket>) => void;
   onKanbanTicketDelete: (ticketId: string) => void;
+  onKanbanTicketsBulkDelete: (ticketIds: string[]) => void;
   kanbanColumns: KanbanColumn[];
   onKanbanColumnUpdate: (columnId: string, updates: Partial<KanbanColumn>) => void;
 }
@@ -66,6 +67,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onKanbanTicketAdd,
   onKanbanTicketUpdate,
   onKanbanTicketDelete,
+  onKanbanTicketsBulkDelete,
   kanbanColumns = [],
   onKanbanColumnUpdate
 }) => {
@@ -835,6 +837,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               onTicketAdd={onKanbanTicketAdd}
               onTicketUpdate={onKanbanTicketUpdate}
               onTicketDelete={onKanbanTicketDelete}
+              onTicketsBulkDelete={onKanbanTicketsBulkDelete}
               columns={kanbanColumns}
               onColumnUpdate={onKanbanColumnUpdate}
             />
