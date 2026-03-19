@@ -749,45 +749,55 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         {confirmingClearColumn && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div 
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
               onClick={() => setConfirmingClearColumn(null)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+              className="absolute inset-0 bg-black/40"
             />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-100 p-6 overflow-hidden"
+              initial={{ opacity: 0, scale: 0.95 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative bg-white rounded-2xl shadow-2xl p-5 max-w-[320px] w-full mx-auto overflow-hidden border border-gray-100"
             >
-              <div className="flex flex-col items-center text-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 shadow-sm border border-red-100">
-                  <Trash2 className="w-6 h-6" />
+              <div className="flex items-center space-x-3 mb-4 text-left">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Trash2 className="w-5 h-5 text-red-600" />
                 </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-800">Clear all tickets?</h3>
-                  <p className="text-[11px] font-medium text-slate-400 mt-1 px-4 leading-relaxed">
-                    Are you sure you want to remove all tickets from <span className="text-slate-600 font-bold">"{columns.find(c => c.id === confirmingClearColumn)?.title}"</span>? This action cannot be undone.
-                  </p>
-                </div>
-                <div className="flex items-center gap-3 w-full mt-2">
-                  <button 
-                    onClick={() => setConfirmingClearColumn(null)}
-                    className="flex-1 px-4 py-2 text-[11px] font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all border border-slate-100"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    onClick={() => {
-                      const curCol = confirmingClearColumn;
-                      if (curCol) {
-                        const ids = tickets.filter(t => t.status === curCol).map(t => t.id);
-                        onTicketsBulkDelete(ids);
-                      }
-                      setConfirmingClearColumn(null);
-                    }}
-                    className="flex-1 px-4 py-2 text-[11px] font-bold text-white bg-red-500 hover:bg-red-600 rounded-xl shadow-lg shadow-red-100 transition-all active:scale-95"
-                  >
-                    Clear All
-                  </button>
-                </div>
+                <h3 className="text-lg font-bold text-gray-900">
+                  Clear all tickets?
+                </h3>
+              </div>
+
+              <p className="text-[15px] text-gray-600 mb-6 leading-relaxed font-medium text-left">
+                Are you sure you want to remove all tickets from <span className="text-gray-900 font-bold">"{columns.find(c => c.id === confirmingClearColumn)?.title}"</span>? This action cannot be undone.
+              </p>
+
+              <div className="flex space-x-3">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setConfirmingClearColumn(null)}
+                  className="flex-1 px-4 py-2.5 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    const curCol = confirmingClearColumn;
+                    if (curCol) {
+                      const ids = tickets.filter(t => t.status === curCol).map(t => t.id);
+                      onTicketsBulkDelete(ids);
+                    }
+                    setConfirmingClearColumn(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-200 transition-all duration-200"
+                >
+                  Clear All
+                </motion.button>
               </div>
             </motion.div>
           </div>
