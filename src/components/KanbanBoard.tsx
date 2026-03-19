@@ -15,7 +15,10 @@ import {
   Type,
   AlignLeft,
   Tag,
-  ListChecks
+  ListChecks,
+  Search,
+  Inbox,
+  Filter
 } from 'lucide-react';
 import { KanbanTicket, KanbanStatus, KanbanPriority, KanbanColumn } from '../types';
 import KanbanTicketModal from './KanbanTicketModal';
@@ -44,6 +47,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterPriority, setFilterPriority] = useState<KanbanPriority | 'all'>('all');
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
   
   // Inline creator state
   const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
@@ -142,27 +148,120 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
   return (
     <div className="flex-1 flex flex-col min-h-0 bg-white">
-      {/* Kanban Header / Filter Bar */}
-      <div className="px-4 sm:px-6 py-2.5 border-b border-slate-100 flex items-center justify-between gap-2">
-        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-            <h2 className="text-sm font-bold text-slate-800 tracking-tight">Board</h2>
+      {/* Board Header - Ultra Compact Single Row */}
+      <div className="px-3 py-2 sm:px-6 sm:py-3 border-b border-slate-100 bg-white flex items-center justify-between gap-3 flex-shrink-0 overflow-visible">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm border border-blue-100">
+              <Layout className="w-4 h-4" />
+            </div>
+            <h2 className="text-xs sm:text-sm font-bold text-slate-800 tracking-tight whitespace-nowrap hidden sm:block">Board</h2>
           </div>
-          <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+          
+          <div className="hidden xs:flex items-center gap-1 text-[10px] font-bold text-slate-400">
             <span className="bg-slate-50 border border-slate-100 px-1.5 py-0.5 rounded-md text-slate-500">
               {tickets.length}
             </span>
-            <span className="bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-md text-blue-500">
-              {tickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} pts
-            </span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-3 flex-1 justify-end">
+          {/* Search Bar - Stretched on Mobile */}
+          <div className="relative group flex-1 max-w-none sm:max-w-xs lg:max-w-[280px]">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+            <input 
+              type="text" 
+              placeholder="Search..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-7 pr-7 py-1.5 bg-slate-50 border border-slate-100 rounded-lg text-[10px] sm:text-[11px] font-bold text-slate-700 focus:bg-white focus:border-blue-200 focus:ring-2 focus:ring-blue-50 outline-none transition-all placeholder:text-slate-300"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                className="absolute right-1 text-slate-300 hover:text-slate-500 p-1"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
+          
+          <div className="h-4 w-px bg-slate-100 flex-shrink-0" />
+          
+          {/* Filters - Menu on Mobile, Chips on Desktop */}
+          <div className="relative flex items-center">
+            {/* Mobile Filter Icon */}
+            <button 
+              onClick={() => setShowFilterMenu(!showFilterMenu)}
+              className={`sm:hidden p-1.5 rounded-lg border transition-all ${
+                filterPriority !== 'all' 
+                  ? 'bg-blue-50 border-blue-200 text-blue-600' 
+                  : 'bg-white border-slate-100 text-slate-400'
+              }`}
+            >
+              <Filter className="w-4 h-4" />
+            </button>
+
+            {/* Desktop Filter Chips */}
+            <div className="hidden sm:flex items-center gap-1">
+              {['all', 'low', 'medium', 'high', 'urgent'].map((p) => (
+                <button
+                  key={p}
+                  onClick={() => setFilterPriority(p as any)}
+                  className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all border whitespace-nowrap ${
+                    filterPriority === p 
+                      ? 'bg-blue-600 border-blue-700 text-white shadow-sm' 
+                      : 'bg-white border-slate-100 text-slate-400 hover:border-slate-200'
+                  } capitalize`}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Filter Menu Dropdown */}
+            <AnimatePresence>
+              {showFilterMenu && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                  className="absolute right-0 top-full mt-2 w-32 bg-white rounded-xl shadow-2xl border border-slate-100 z-[60] py-1.5 overflow-hidden sm:hidden"
+                >
+                  <div className="px-3 py-1.5 border-b border-slate-50 mb-1">
+                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Priority</span>
+                  </div>
+                  {['all', 'low', 'medium', 'high', 'urgent'].map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => { setFilterPriority(p as any); setShowFilterMenu(false); }}
+                      className={`w-full text-left px-4 py-2 text-[10px] font-bold capitalize transition-colors ${
+                        filterPriority === p 
+                          ? 'bg-blue-50 text-blue-600' 
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </div>
 
       <div className="flex-1 flex overflow-x-auto p-3 sm:p-5 gap-4 custom-scrollbar bg-slate-50/20 snap-x snap-mandatory scroll-smooth" onClick={() => setActiveMenu(null)}>
       {(columns || []).map((column) => {
-        const columnTickets = tickets.filter(t => t.status === column.id);
+        const columnTickets = tickets.filter(t => {
+          const matchesColumn = t.status === column.id;
+          const matchesSearch = !searchQuery || 
+            t.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            t.description?.toLowerCase().includes(searchQuery.toLowerCase());
+          const matchesPriority = filterPriority === 'all' || t.priority === filterPriority;
+          
+          return matchesColumn && matchesSearch && matchesPriority;
+        });
 
         return (
           <div key={column.id} className={`flex-1 min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl ${column.bgColor} border border-slate-100 p-3 snap-center shadow-sm`}>
@@ -213,7 +312,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             {/* Tickets List */}
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 min-h-0 pb-4">
               <AnimatePresence mode="popLayout">
-                {columnTickets.map((ticket) => {
+                {columnTickets.length > 0 ? (
+                  columnTickets.map((ticket) => {
                   const p = getPriorityInfo(ticket.priority);
                   const completedSubtasks = ticket.subtasks.filter(s => s.completed).length;
                   
@@ -298,7 +398,23 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       </div>
                     </motion.div>
                   );
-                })}
+                })
+                ) : (
+                  (searchQuery || filterPriority !== 'all') && (
+                    <motion.div 
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                      className="flex flex-col items-center justify-center py-8 text-center"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 mb-3 grayscale opacity-50">
+                        <Inbox className="w-6 h-6" />
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-400">No matching tickets</p>
+                      <button onClick={() => { setSearchQuery(''); setFilterPriority('all'); }} className="text-[10px] font-bold text-blue-500 mt-2 hover:underline">
+                        Clear filters
+                      </button>
+                    </motion.div>
+                  )
+                )}
               </AnimatePresence>
 
               {/* ===== REDESIGNED INLINE TICKET CREATOR ===== */}
