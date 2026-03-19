@@ -53,86 +53,84 @@ const ColumnSettingsModal: React.FC<ColumnSettingsModalProps> = ({
     }
   };
 
+  const selectedTheme = COLUMN_THEMES.find(t => t.id === selectedThemeId);
+
   return (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-          />
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100"
-          >
+        {/* Dim overlay */}
+        <motion.div 
+          initial={{ opacity: 0 }} 
+          animate={{ opacity: 1 }} 
+          exit={{ opacity: 0 }}
+          className="absolute inset-0 bg-black/50"
+          onClick={onClose}
+        />
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95, y: 20 }} 
+          animate={{ opacity: 1, scale: 1, y: 0 }} 
+          exit={{ opacity: 0, scale: 0.95, y: 20 }}
+          className="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-slate-100"
+        >
             {/* Header */}
-            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shadow-sm border border-blue-100">
-                  <Layout className="w-5 h-5" />
+            <div className="px-4 py-3 border-b border-slate-100 flex items-center bg-slate-50/50 relative">
+              <div className="flex items-center gap-2.5">
+                <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
+                  <Layout className="w-3.5 h-3.5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-slate-800 tracking-tight">Column Settings</h3>
-                  <p className="text-[11px] font-medium text-slate-400">Customize appearance and title</p>
+                  <h2 className="text-[13px] font-bold text-slate-800">Column Settings</h2>
                 </div>
               </div>
               <button 
-                onClick={onClose}
-                className="p-2 hover:bg-white rounded-xl text-slate-400 hover:text-slate-600 transition-all shadow-sm hover:shadow border border-transparent hover:border-slate-100 active:scale-95"
+                onClick={onClose} 
+                className="absolute top-2.5 right-2.5 p-1.5 hover:bg-slate-100 rounded-lg text-slate-400 transition-colors"
               >
-                <X className="w-5 h-5" />
+                <X className="w-3.5 h-3.5" />
               </button>
             </div>
-
-            <div className="p-6 space-y-6">
-              {/* Title Input */}
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 ml-1">
-                  <Type className="w-3.5 h-3.5" />
-                  Column Title
-                </label>
-                <input 
-                  autoFocus
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Enter column title..."
-                  className="w-full px-4 py-3 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-semibold text-slate-700 focus:bg-white focus:border-blue-400 focus:ring-4 focus:ring-blue-50 outline-none transition-all placeholder:text-slate-300"
-                />
+            {/* Scrollable body */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+            {/* Title Input */}
+            <div>
+              <div className="flex items-center gap-1 mb-1 text-slate-400">
+                <Type className="w-3 h-3" />
+                <span className="text-[9px] font-bold uppercase tracking-wider">Title</span>
               </div>
+              <input 
+                type="text" 
+                value={title} 
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter column title..."
+                className="w-full text-xs font-bold text-slate-800 bg-slate-50/50 border border-slate-100 rounded-lg px-3 py-2 placeholder-slate-300 outline-none focus:ring-2 focus:ring-blue-50 focus:border-blue-200 transition-all font-mono"
+              />
+            </div>
 
               {/* Color Theme Selector */}
-              <div className="space-y-3">
-                <label className="flex items-center gap-2 text-xs font-bold text-slate-500 ml-1">
-                  <Palette className="w-3.5 h-3.5" />
-                  Color Theme
-                </label>
-                <div className="grid grid-cols-4 gap-3">
+            {/* Theme Grid */}
+            <div>
+              <div className="flex items-center gap-1 mb-2 text-slate-400">
+                <Palette className="w-3 h-3" />
+                <span className="text-[9px] font-bold uppercase tracking-wider">Theme</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
                   {COLUMN_THEMES.map((theme) => (
                     <button
                       key={theme.id}
                       onClick={() => setSelectedThemeId(theme.id)}
                       className={`
-                        group relative flex flex-col items-center gap-2 p-2 rounded-2xl transition-all border-2
-                        ${selectedThemeId === theme.id 
-                          ? 'bg-blue-50/50 border-blue-500 shadow-md ring-4 ring-blue-50' 
-                          : 'bg-white border-slate-100 hover:border-slate-200 hover:bg-slate-50'
-                        }
-                      `}
-                    >
-                      <div className={`w-8 h-8 rounded-xl ${theme.color} shadow-sm group-hover:scale-110 transition-transform`} />
-                      <span className={`text-[9px] font-bold ${selectedThemeId === theme.id ? 'text-blue-600' : 'text-slate-400'}`}>
-                        {theme.label}
-                      </span>
+                      relative flex flex-col items-center justify-center p-1.5 rounded-lg border-[1.5px] transition-all group/theme
+                      ${selectedThemeId === theme.id 
+                        ? 'border-blue-500 bg-blue-50/30' 
+                        : 'border-slate-100 bg-white hover:border-slate-200'}
+                    `}
+                  >
+                    <div className={`w-5 h-5 rounded-full mb-1 shadow-sm ${theme.color}`} />
+                    <span className="text-[8px] font-bold text-slate-500">{theme.label}</span>
                       {selectedThemeId === theme.id && (
-                        <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-blue-500 text-white rounded-full flex items-center justify-center shadow-lg border-2 border-white">
-                          <Check className="w-3 h-3 stroke-[3px]" />
+                        <div className="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 text-white rounded-full flex items-center justify-center shadow shadow-blue-200 border border-white">
+                          <Check className="w-2.5 h-2.5 stroke-[3px]" />
                         </div>
                       )}
                     </button>
@@ -140,38 +138,37 @@ const ColumnSettingsModal: React.FC<ColumnSettingsModalProps> = ({
                 </div>
               </div>
 
-              {/* Preview */}
-              <div className="pt-2">
-                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider ml-1 mb-2 block">
-                  Live Preview
-                </label>
-                <div className={`p-4 rounded-2xl border border-slate-100 flex items-center gap-3 ${COLUMN_THEMES.find(t => t.id === selectedThemeId)?.bgColor}`}>
-                  <div className={`w-1.5 h-6 rounded-full ${COLUMN_THEMES.find(t => t.id === selectedThemeId)?.color}`} />
-                  <span className="text-sm font-bold text-slate-800">
-                    {title || 'Untitled Column'}
-                  </span>
+            {/* Preview Section */}
+            <div>
+              <div className="flex items-center gap-1 mb-2 text-slate-400">
+                <div className="text-[9px] font-bold uppercase tracking-wider">Preview</div>
+              </div>
+              <div className={`p-2.5 rounded-lg border border-slate-100 ${selectedTheme?.bgColor}`}>
+                <div className="flex items-center gap-2">
+                  <div className={`w-1 h-3.5 rounded-full ${selectedTheme?.color}`} />
+                  <span className="text-[11px] font-bold text-slate-800">{title || 'Column'}</span>
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Footer */}
-            <div className="px-6 py-5 bg-slate-50/80 border-t border-slate-100 flex gap-3">
-              <button
-                onClick={onClose}
-                className="flex-1 px-4 py-3 bg-white text-slate-600 text-sm font-bold rounded-2xl border border-slate-200 hover:bg-slate-50 hover:border-slate-300 transition-all active:scale-95"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={!title.trim()}
-                className="flex-1 px-4 py-3 bg-blue-600 text-white text-sm font-bold rounded-2xl border border-blue-700 shadow-lg shadow-blue-200 hover:bg-blue-700 hover:-translate-y-0.5 transition-all active:scale-95 active:translate-y-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-              >
-                Save Changes
-              </button>
-            </div>
-          </motion.div>
-        </div>
+          {/* Footer */}
+          <div className="px-4 py-2.5 border-t border-slate-100 bg-slate-50/30 flex items-center gap-2 flex-shrink-0">
+            <button 
+              onClick={onClose}
+              className="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-slate-600 hover:bg-slate-100 transition-all border border-slate-200 bg-white"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleSave}
+              className="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 shadow shadow-blue-200 transition-all active:scale-[0.98]"
+            >
+              Save
+            </button>
+          </div>
+        </motion.div>
+      </div>
       )}
     </AnimatePresence>
   );
