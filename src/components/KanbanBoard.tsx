@@ -771,7 +771,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               </div>
 
               <p className="text-[15px] text-gray-600 mb-6 leading-relaxed font-medium text-left">
-                Are you sure you want to remove all tickets from <span className="text-gray-900 font-bold break-words">"{columns.find(c => c.id === confirmingClearColumn)?.title}"</span>? This action cannot be undone.
+                Are you sure you want to remove all tickets from <span className="text-gray-900 font-bold">"{(columns.find(c => c.id === confirmingClearColumn)?.title || '').length > 18 ? (columns.find(c => c.id === confirmingClearColumn)?.title || '').slice(0, 15) + '...' : columns.find(c => c.id === confirmingClearColumn)?.title}"</span>? This action cannot be undone.
               </p>
 
               <div className="flex space-x-3">
