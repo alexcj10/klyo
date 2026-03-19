@@ -271,7 +271,7 @@ function App() {
         const newActivities: TicketActivity[] = [...(t.activities || [])];
         const timestamp = new Date().toISOString();
 
-        if (updates.status && updates.status !== t.status) {
+        if (updates.status !== undefined && updates.status !== t.status) {
           newActivities.push({
             id: Math.random().toString(36).substr(2, 9),
             type: 'status',
@@ -280,7 +280,7 @@ function App() {
             timestamp
           });
         }
-        if (updates.priority && updates.priority !== t.priority) {
+        if (updates.priority !== undefined && updates.priority !== t.priority) {
           newActivities.push({
             id: Math.random().toString(36).substr(2, 9),
             type: 'priority',
@@ -289,7 +289,7 @@ function App() {
             timestamp
           });
         }
-        if (updates.title && updates.title !== t.title) {
+        if (updates.title !== undefined && updates.title !== t.title) {
           newActivities.push({
             id: Math.random().toString(36).substr(2, 9),
             type: 'edit',
@@ -317,7 +317,7 @@ function App() {
             timestamp
           });
         }
-        if (updates.labels && JSON.stringify(updates.labels) !== JSON.stringify(t.labels)) {
+        if (updates.labels !== undefined && JSON.stringify(updates.labels) !== JSON.stringify(t.labels)) {
           const added = updates.labels.filter(l => !t.labels.includes(l));
           const removed = t.labels.filter(l => !updates.labels?.includes(l));
           if (added.length > 0) {
