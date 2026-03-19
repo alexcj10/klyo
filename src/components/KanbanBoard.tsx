@@ -303,9 +303,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         return (
           <div key={column.id} className={`flex-1 min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl ${column.bgColor} border border-slate-100 p-3 snap-center shadow-sm relative`}>
             {/* Column Header */}
-            <div className="flex items-center justify-between mb-4 px-1 group">
-              <div className="flex items-center gap-2.5">
-                <div className={`w-1.5 h-6 rounded-full ${column.color}`} />
+            <div className="flex items-center justify-between gap-4 mb-4 px-1 group min-w-0">
+              <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                <div className={`w-1.5 h-6 rounded-full flex-shrink-0 ${column.color}`} />
                 <div className="flex flex-col min-w-0">
                   <h3 className="text-xs font-bold text-slate-800 tracking-tight truncate">
                     {column.title}
@@ -314,7 +314,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     {columnTickets.reduce((acc, t) => acc + (t.storyPoints || 0), 0)} story points
                   </span>
                 </div>
-                <span className="text-[10px] font-bold text-slate-400 bg-white border border-slate-100 px-2 py-0.5 rounded-full shadow-sm ml-1">
+                <span className="text-[10px] font-bold text-slate-400 bg-white border border-slate-100 px-2 py-0.5 rounded-full shadow-sm ml-1 flex-shrink-0">
                   {columnTickets.length}
                 </span>
               </div>
