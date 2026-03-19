@@ -179,7 +179,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             {searchQuery && (
               <button 
                 onClick={() => setSearchQuery('')}
-                className="absolute right-1 text-slate-300 hover:text-slate-500 p-1"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-300 hover:text-slate-500 p-1 transition-colors"
               >
                 <X className="w-3 h-3" />
               </button>
