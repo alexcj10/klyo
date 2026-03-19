@@ -9,7 +9,7 @@ import EventModal from './components/EventModal';
 import EventViewModal from './components/EventViewModal';
 import DayViewModal from './components/DayViewModal';
 import AnalyticsModal from './components/AnalyticsModal';
-import { Event, Task, KanbanTicket } from './types';
+import { Event, Task, KanbanTicket, KanbanColumn } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
 import AIChat from './components/AIChat';
@@ -47,6 +47,13 @@ function App() {
       createdAt: new Date(),
       subtasks: []
     }
+  ]);
+
+  const [kanbanColumns, setKanbanColumns] = useLocalStorage<KanbanColumn[]>('klyo-kanban-columns', [
+    { id: 'backlog', title: 'Backlog', color: 'bg-slate-500', bgColor: 'bg-slate-100/60' },
+    { id: 'todo', title: 'To Do', color: 'bg-blue-600', bgColor: 'bg-blue-50/60' },
+    { id: 'in-progress', title: 'In Progress', color: 'bg-amber-600', bgColor: 'bg-amber-50/60' },
+    { id: 'done', title: 'Done', color: 'bg-emerald-600', bgColor: 'bg-emerald-50/60' }
   ]);
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
@@ -260,6 +267,10 @@ function App() {
     setKanbanTickets(kanbanTickets.filter(t => t.id !== ticketId));
   };
 
+  const handleKanbanColumnUpdate = (columnId: string, updates: Partial<KanbanColumn>) => {
+    setKanbanColumns(kanbanColumns.map(col => col.id === columnId ? { ...col, ...updates } : col));
+  };
+
   const handleTaskDelete = (taskId: string) => {
     setTasks(tasks.filter((task) => task.id !== taskId));
   };
@@ -339,18 +350,18 @@ function App() {
         >
           <CalendarView
             events={filteredEvents}
-            onEventClick={handleEventClick}
-            onDateClick={handleDateClick}
             onEventView={handleEventView}
+            onDateClick={handleDateClick}
             onAddEvent={handleAddEvent}
             onDayViewOpen={handleDayViewOpen}
             onEventDelete={(event) => handleEventDelete(event.id)}
             isSidebarOpen={isActuallySidebarOpen}
-            onTaskComplete={handleTaskComplete}
             kanbanTickets={kanbanTickets}
             onKanbanTicketAdd={handleKanbanTicketAdd}
             onKanbanTicketUpdate={handleKanbanTicketUpdate}
             onKanbanTicketDelete={handleKanbanTicketDelete}
+            kanbanColumns={kanbanColumns}
+            onKanbanColumnUpdate={handleKanbanColumnUpdate}
           />
         </div>
 

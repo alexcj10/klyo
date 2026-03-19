@@ -17,27 +17,33 @@ import {
   Tag,
   ListChecks
 } from 'lucide-react';
-import { KanbanTicket, KanbanStatus, KanbanPriority } from '../types';
+import { KanbanTicket, KanbanStatus, KanbanPriority, KanbanColumn } from '../types';
 import KanbanTicketModal from './KanbanTicketModal';
+import ColumnSettingsModal from './ColumnSettingsModal';
 
 interface KanbanBoardProps {
   tickets: KanbanTicket[];
   onTicketAdd: (ticket: Omit<KanbanTicket, 'id' | 'createdAt'>) => void;
   onTicketUpdate: (ticketId: string, updates: Partial<KanbanTicket>) => void;
   onTicketDelete: (ticketId: string) => void;
+  columns: KanbanColumn[];
+  onColumnUpdate: (columnId: string, updates: Partial<KanbanColumn>) => void;
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ 
   tickets, 
   onTicketAdd, 
   onTicketUpdate, 
-  onTicketDelete 
+  onTicketDelete,
+  columns,
+  onColumnUpdate
 }) => {
   const [addingToColumn, setAddingToColumn] = useState<KanbanStatus | null>(null);
   const [inlineTitle, setInlineTitle] = useState('');
   const [inlineDescription, setInlineDescription] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
   
   // Inline creator state
   const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
@@ -47,13 +53,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [newLabelInput, setNewLabelInput] = useState('');
   const [newSubtaskInput, setNewSubtaskInput] = useState('');
 
-  // Standalone Kanban Columns
-  const columns: { id: KanbanStatus; title: string; color: string; bgColor: string }[] = [
-    { id: 'backlog', title: 'Backlog', color: 'bg-slate-500', bgColor: 'bg-slate-100/60' },
-    { id: 'todo', title: 'To Do', color: 'bg-blue-600', bgColor: 'bg-blue-50/60' },
-    { id: 'in-progress', title: 'In Progress', color: 'bg-amber-600', bgColor: 'bg-amber-50/60' },
-    { id: 'done', title: 'Done', color: 'bg-emerald-600', bgColor: 'bg-emerald-50/60' }
-  ];
 
   const getPriorityInfo = (priority: KanbanPriority) => {
     switch (priority) {
@@ -162,7 +161,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
       </div>
 
       <div className="flex-1 flex overflow-x-auto p-3 sm:p-5 gap-4 custom-scrollbar bg-slate-50/20 snap-x snap-mandatory scroll-smooth" onClick={() => setActiveMenu(null)}>
-      {columns.map((column) => {
+      {(columns || []).map((column) => {
         const columnTickets = tickets.filter(t => t.status === column.id);
 
         return (
@@ -199,7 +198,10 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                        <button onClick={() => { handleCancelInline(); setAddingToColumn(column.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
                         <Plus className="w-3.5 h-3.5" /> Add New Ticket
                       </button>
-                      <button className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-400 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
+                      <button 
+                        onClick={() => { setEditingColumnId(column.id); setActiveMenu(null); }}
+                        className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors"
+                      >
                         <Layout className="w-3.5 h-3.5" /> Column Settings
                       </button>
                     </motion.div>
@@ -281,12 +283,12 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           </div>
 
                           <div className="flex items-center gap-0.5">
-                            {column.id !== 'backlog' && (
+                            {column.id !== (columns?.[0]?.id || 'backlog') && (
                               <button onClick={(e) => { e.stopPropagation(); onTicketUpdate(ticket.id, { status: columns[columns.findIndex(c => c.id === column.id) - 1].id }); }} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-blue-600 rotate-180 active:scale-75 transition-all">
                                 <ChevronRight className="w-4 h-4" />
                               </button>
                             )}
-                            {column.id !== 'done' && (
+                            {column.id !== (columns?.[columns.length - 1]?.id || 'done') && (
                               <button onClick={(e) => { e.stopPropagation(); onTicketUpdate(ticket.id, { status: columns[columns.findIndex(c => c.id === column.id) + 1].id }); }} className="p-1.5 hover:bg-slate-50 rounded-lg text-slate-300 hover:text-blue-600 active:scale-75 transition-all">
                                 <ChevronRight className="w-4 h-4" />
                               </button>
@@ -530,6 +532,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
           ticket={tickets.find(t => t.id === selectedTicketId)!}
           onUpdate={(updates) => onTicketUpdate(selectedTicketId, updates)}
           onDelete={() => { onTicketDelete(selectedTicketId); setSelectedTicketId(null); }}
+        />
+      )}
+      {/* Column Settings Modal */}
+      {editingColumnId && columns.find(c => c.id === editingColumnId) && (
+        <ColumnSettingsModal 
+          isOpen={!!editingColumnId}
+          onClose={() => setEditingColumnId(null)}
+          column={columns.find(c => c.id === editingColumnId)!}
+          onUpdate={(updates) => onColumnUpdate(editingColumnId, updates)}
         />
       )}
     </div>

@@ -27,8 +27,22 @@ export interface Task {
   status: 'todo' | 'in-progress' | 'done';
 }
 
-export type KanbanStatus = 'backlog' | 'todo' | 'in-progress' | 'done';
+export type KanbanStatus = string;
 export type KanbanPriority = 'low' | 'medium' | 'high' | 'urgent';
+
+export interface ColumnTheme {
+  id: string;
+  label: string;
+  color: string;
+  bgColor: string;
+}
+
+export interface KanbanColumn {
+  id: KanbanStatus;
+  title: string;
+  color: string;
+  bgColor: string;
+}
 
 export interface KanbanTicket {
   id: string;

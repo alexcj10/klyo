@@ -31,24 +31,24 @@ import {
   setHours,
   setMinutes
 } from 'date-fns';
-import { Event, KanbanTicket } from '../types';
+import { Event, KanbanTicket, KanbanColumn } from '../types';
 import DateSelectorPopup from './DateSelectorPopup';
 import KanbanBoard from './KanbanBoard';
 
 interface CalendarViewProps {
   events: Event[];
-  onEventClick: (event: Event) => void;
   onEventView: (event: Event) => void;
   onDateClick: (date: Date, isTimeSpecific?: boolean) => void;
   onAddEvent: () => void;
   onDayViewOpen: (date: Date) => void;
   onEventDelete: (event: Event) => void;
   isSidebarOpen?: boolean;
-  onTaskComplete: (taskId: string) => void;
   kanbanTickets: KanbanTicket[];
   onKanbanTicketAdd: (ticket: Omit<KanbanTicket, 'id' | 'createdAt'>) => void;
   onKanbanTicketUpdate: (ticketId: string, updates: Partial<KanbanTicket>) => void;
   onKanbanTicketDelete: (ticketId: string) => void;
+  kanbanColumns: KanbanColumn[];
+  onKanbanColumnUpdate: (columnId: string, updates: Partial<KanbanColumn>) => void;
 }
 
 type ViewMode = 'day' | 'week' | 'month' | 'year' | 'kanban';
@@ -64,7 +64,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   kanbanTickets,
   onKanbanTicketAdd,
   onKanbanTicketUpdate,
-  onKanbanTicketDelete
+  onKanbanTicketDelete,
+  kanbanColumns = [],
+  onKanbanColumnUpdate
 }) => {
   const isDraggingRef = useRef(false);
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -832,6 +834,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               onTicketAdd={onKanbanTicketAdd}
               onTicketUpdate={onKanbanTicketUpdate}
               onTicketDelete={onKanbanTicketDelete}
+              columns={kanbanColumns}
+              onColumnUpdate={onKanbanColumnUpdate}
             />
           )}
         </motion.div>
