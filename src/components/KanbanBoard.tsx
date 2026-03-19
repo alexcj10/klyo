@@ -228,8 +228,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   className="absolute right-0 top-full mt-2 w-32 bg-white rounded-xl shadow-2xl border border-slate-100 z-[60] py-1.5 overflow-hidden sm:hidden"
                 >
-                  <div className="px-3 py-1.5 border-b border-slate-50 mb-1">
-                    <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Priority</span>
+                  <div className="px-3 py-1.5 border-b border-slate-50 mb-1 flex items-center justify-center">
+                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest text-center">Priority</span>
                   </div>
                   {['all', 'low', 'medium', 'high', 'urgent'].map((p) => (
                     <button
