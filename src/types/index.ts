@@ -30,6 +30,15 @@ export interface Task {
 export type KanbanStatus = string;
 export type KanbanPriority = 'low' | 'medium' | 'high' | 'urgent';
 
+/*
+ * Column Actions & Sorting
+ * - [x] Add Sort by Priority function
+ * - [x] Add Sort by Story Points function
+ * - [x] Add Clear Column (Bulk Delete) action
+ * - [x] Update KanbanBoard dropdown UI
+ * - [x] Implement sorting logic in ticket rendering
+ * - [x] Fixed: Filters/Column menus stay open when clicking outside
+ */
 export interface ColumnTheme {
   id: string;
   label: string;
