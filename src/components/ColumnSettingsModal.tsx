@@ -103,6 +103,7 @@ const ColumnSettingsModal: React.FC<ColumnSettingsModalProps> = ({
                 value={title} 
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Enter column title..."
+                maxLength={30}
                 className="w-full text-xs font-bold text-slate-800 bg-slate-50/50 border border-slate-100 rounded-lg px-3 py-2 placeholder-slate-300 outline-none focus:ring-2 focus:ring-blue-50 focus:border-blue-200 transition-all font-mono"
               />
             </div>
@@ -144,9 +145,9 @@ const ColumnSettingsModal: React.FC<ColumnSettingsModalProps> = ({
                 <div className="text-[10px] font-bold text-slate-400">Preview</div>
               </div>
               <div className={`p-2.5 rounded-lg border border-slate-100 ${selectedTheme?.bgColor}`}>
-                <div className="flex items-center gap-2">
-                  <div className={`w-1 h-3.5 rounded-full ${selectedTheme?.color}`} />
-                  <span className="text-[11px] font-bold text-slate-800">{title || 'Column'}</span>
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className={`w-1 h-3.5 rounded-full flex-shrink-0 ${selectedTheme?.color}`} />
+                  <span className="text-[11px] font-bold text-slate-800 truncate">{title || 'Column'}</span>
                 </div>
               </div>
             </div>

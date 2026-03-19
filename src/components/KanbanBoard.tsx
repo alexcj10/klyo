@@ -306,8 +306,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <div className="flex items-center justify-between mb-4 px-1 group">
               <div className="flex items-center gap-2.5">
                 <div className={`w-1.5 h-6 rounded-full ${column.color}`} />
-                <div className="flex flex-col">
-                  <h3 className="text-xs font-bold text-slate-800 tracking-tight">
+                <div className="flex flex-col min-w-0">
+                  <h3 className="text-xs font-bold text-slate-800 tracking-tight truncate">
                     {column.title}
                   </h3>
                   <span className="text-[9px] font-medium text-slate-400">
@@ -771,7 +771,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               </div>
 
               <p className="text-[15px] text-gray-600 mb-6 leading-relaxed font-medium text-left">
-                Are you sure you want to remove all tickets from <span className="text-gray-900 font-bold">"{columns.find(c => c.id === confirmingClearColumn)?.title}"</span>? This action cannot be undone.
+                Are you sure you want to remove all tickets from <span className="text-gray-900 font-bold break-words">"{columns.find(c => c.id === confirmingClearColumn)?.title}"</span>? This action cannot be undone.
               </p>
 
               <div className="flex space-x-3">
