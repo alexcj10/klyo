@@ -7,7 +7,8 @@ import {
   LayoutGrid,
   Rows3,
   CalendarDays,
-  Trash2
+  Trash2,
+  Columns
 } from 'lucide-react';
 import {
   format,
@@ -801,7 +802,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                 }
               `}
             >
-              <LayoutGrid className="w-4 h-4 rotate-90" />
+              <Columns className="w-4 h-4" />
               <span className="hidden sm:inline text-sm font-medium">Kanban</span>
             </motion.button>
           </div>
