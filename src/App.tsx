@@ -9,7 +9,7 @@ import EventModal from './components/EventModal';
 import EventViewModal from './components/EventViewModal';
 import DayViewModal from './components/DayViewModal';
 import AnalyticsModal from './components/AnalyticsModal';
-import { Event, Task, KanbanTicket, KanbanColumn } from './types';
+import { Event, Task, KanbanTicket, KanbanColumn, TicketActivity } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
 import AIChat from './components/AIChat';
@@ -251,16 +251,59 @@ function App() {
 
 
   const handleKanbanTicketAdd = (ticket: Omit<KanbanTicket, 'id' | 'createdAt'>) => {
+    const timestamp = new Date().toISOString();
     const newTicket: KanbanTicket = {
       ...ticket,
       id: Date.now().toString(),
-      createdAt: new Date()
+      createdAt: new Date(),
+      activities: [{
+        id: Math.random().toString(36).substr(2, 9),
+        type: 'create',
+        timestamp
+      }]
     };
     setKanbanTickets([...kanbanTickets, newTicket]);
   };
 
   const handleKanbanTicketUpdate = (ticketId: string, updates: Partial<KanbanTicket>) => {
-    setKanbanTickets(kanbanTickets.map(t => t.id === ticketId ? { ...t, ...updates } : t));
+    setKanbanTickets(kanbanTickets.map(t => {
+      if (t.id === ticketId) {
+        const newActivities: TicketActivity[] = [...(t.activities || [])];
+        const timestamp = new Date().toISOString();
+
+        if (updates.status && updates.status !== t.status) {
+          newActivities.push({
+            id: Math.random().toString(36).substr(2, 9),
+            type: 'status',
+            oldValue: t.status,
+            newValue: updates.status,
+            timestamp
+          });
+        }
+        if (updates.priority && updates.priority !== t.priority) {
+          newActivities.push({
+            id: Math.random().toString(36).substr(2, 9),
+            type: 'priority',
+            oldValue: t.priority,
+            newValue: updates.priority,
+            timestamp
+          });
+        }
+        if (updates.title && updates.title !== t.title) {
+          newActivities.push({
+            id: Math.random().toString(36).substr(2, 9),
+            type: 'edit',
+            fieldName: 'title',
+            oldValue: t.title,
+            newValue: updates.title,
+            timestamp
+          });
+        }
+
+        return { ...t, ...updates, activities: newActivities };
+      }
+      return t;
+    }));
   };
 
   const handleKanbanTicketDelete = (ticketId: string) => {

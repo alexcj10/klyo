@@ -44,6 +44,17 @@ export interface KanbanColumn {
   bgColor: string;
 }
 
+export type ActivityType = 'status' | 'priority' | 'edit' | 'comment' | 'create' | 'subtask';
+
+export interface TicketActivity {
+  id: string;
+  type: ActivityType;
+  fieldName?: string;
+  oldValue?: string;
+  newValue?: string;
+  timestamp: string;
+}
+
 export interface KanbanTicket {
   id: string;
   title: string;
@@ -54,6 +65,7 @@ export interface KanbanTicket {
   labels: string[];
   createdAt: Date;
   subtasks: Array<{ id: string; title: string; completed: boolean }>;
+  activities?: TicketActivity[];
 }
 
 export interface Message {

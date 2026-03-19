@@ -4,9 +4,13 @@ import {
   X, 
   Check, 
   Trash2, 
-  Plus
+  Plus,
+  History,
+  Clock,
+  MessageSquare
 } from 'lucide-react';
-import { KanbanTicket, KanbanPriority } from '../types';
+import { KanbanTicket, KanbanPriority, TicketActivity } from '../types';
+import { format } from 'date-fns';
 
 interface KanbanTicketModalProps {
   isOpen: boolean;
@@ -32,6 +36,7 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
   const [isAddingLabel, setIsAddingLabel] = useState(false);
   const [newLabelText, setNewLabelText] = useState('');
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [activeTab, setActiveTab] = useState<'details' | 'activity'>('details');
 
   useEffect(() => {
     setTitle(ticket.title);
@@ -109,6 +114,41 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
     return labelColorPalette[hash % labelColorPalette.length];
   };
 
+  const getActivityMessage = (activity: TicketActivity) => {
+    switch (activity.type) {
+      case 'create':
+        return <span className="text-slate-600">created this ticket</span>;
+      case 'status':
+        return (
+          <span className="text-slate-600">
+            moved this ticket from <span className="font-bold text-slate-800">{activity.oldValue}</span> to <span className="font-bold text-slate-800">{activity.newValue}</span>
+          </span>
+        );
+      case 'priority':
+        return (
+          <span className="text-slate-600">
+            changed priority from <span className="font-bold text-slate-800">{activity.oldValue}</span> to <span className="font-bold text-slate-800">{activity.newValue}</span>
+          </span>
+        );
+      case 'edit':
+        return <span className="text-slate-600">updated the <span className="font-bold text-slate-800">{activity.fieldName}</span></span>;
+      case 'subtask':
+        return <span className="text-slate-600">updated subtasks</span>;
+      default:
+        return <span className="text-slate-600">updated this ticket</span>;
+    }
+  };
+
+  const getActivityIcon = (type: TicketActivity['type']) => {
+    switch (type) {
+      case 'create': return <Plus className="w-3 h-3" />;
+      case 'status': return <History className="w-3 h-3" />;
+      case 'priority': return <Clock className="w-3 h-3" />;
+      case 'edit': return <MessageSquare className="w-3 h-3" />;
+      default: return <Clock className="w-3 h-3" />;
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -126,9 +166,28 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
           className="relative bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[65vh] sm:max-h-[80vh]"
         >
-          {/* Header with Save button */}
-          <div className="px-4 sm:px-5 py-2.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 flex-shrink-0">
-            <span className="text-xs font-bold text-slate-600">Ticket Detail</span>
+          {/* Header with Tabs */}
+          <div className="px-4 sm:px-5 py-2.5 border-b border-slate-100 flex items-center justify-between bg-white flex-shrink-0">
+            <div className="flex items-center gap-4 relative">
+              <button 
+                onClick={() => setActiveTab('details')}
+                className={`text-[10px] font-bold transition-all relative py-1 px-1 ${activeTab === 'details' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                Details
+                {activeTab === 'details' && (
+                  <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
+                )}
+              </button>
+              <button 
+                onClick={() => setActiveTab('activity')}
+                className={`text-[10px] font-bold transition-all relative py-1 px-1 ${activeTab === 'activity' ? 'text-blue-600' : 'text-slate-400 hover:text-slate-600'}`}
+              >
+                Activity
+                {activeTab === 'activity' && (
+                  <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 rounded-full" />
+                )}
+              </button>
+            </div>
             <div className="flex items-center gap-1.5">
               <button 
                 onClick={saveChanges}
@@ -148,172 +207,221 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
           </div>
 
           {/* Scrollable body */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-5">
-            <div className="space-y-4">
-              {/* Title with 100 char limit */}
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-[9px] font-bold text-slate-400">Title</label>
-                  <span className={`text-[9px] font-bold tabular-nums ${title.length > 90 ? 'text-red-500' : 'text-slate-300'}`}>
-                    {title.length}/100
-                  </span>
-                </div>
-                <input 
-                  type="text" 
-                  value={title} 
-                  onChange={(e) => { setTitle(e.target.value.slice(0, 100)); markDirty(); }}
-                  className="w-full text-base font-bold text-slate-800 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 placeholder-slate-200 outline-none focus:ring-2 focus:ring-blue-50 focus:border-blue-200 transition-all"
-                />
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="text-[9px] font-bold text-slate-400 mb-1 block">Description</label>
-                <textarea 
-                  value={description} 
-                  onChange={(e) => { setDescription(e.target.value); markDirty(); }}
-                  placeholder="Add a more detailed description..."
-                  className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-50 focus:border-blue-200 rounded-xl p-3 min-h-[70px] resize-none leading-relaxed outline-none transition-all"
-                />
-              </div>
-
-              {/* Properties Row */}
-              <div className="flex flex-wrap gap-3 items-end">
-                <div className="flex flex-col gap-1">
-                  <span className="text-[9px] font-bold text-slate-400">Priority</span>
-                  <select 
-                    value={priority} 
-                    onChange={(e) => { setPriority(e.target.value as KanbanPriority); markDirty(); }}
-                    className="text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:ring-2 focus:ring-blue-50 transition-all outline-none cursor-pointer"
-                  >
-                    <option value="low">🟢 Low</option>
-                    <option value="medium">🔵 Medium</option>
-                    <option value="high">🟠 High</option>
-                    <option value="urgent">🔴 Urgent</option>
-                  </select>
-                </div>
-
-                <div className="flex flex-col gap-1">
-                  <span className="text-[9px] font-bold text-slate-400">Story Points</span>
-                  <div className="flex items-center gap-1.5">
-                    <input 
-                      type="number" 
-                      value={storyPoints} 
-                      onChange={(e) => { setStoryPoints(parseInt(e.target.value) || 0); markDirty(); }}
-                      className="w-16 text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none focus:ring-2 focus:ring-blue-50"
-                    />
-                    <span className="text-[10px] font-medium text-slate-400">pts</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Labels */}
-              <div>
-                <span className="text-[9px] font-bold text-slate-400 mb-1.5 block">Labels</span>
-                <div className="flex flex-wrap gap-1.5 items-center">
-                  {labels.map(l => (
-                    <span 
-                      key={l} 
-                      onClick={() => removeLabel(l)}
-                      className={`group relative text-[10px] font-bold border px-2.5 py-1 rounded-lg cursor-pointer hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all flex items-center gap-1 ${getLabelColor(l)}`}
-                    >
-                      {l}
-                      <X className="w-2.5 h-2.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-current" />
-                    </span>
-                  ))}
-                  
-                  <AnimatePresence>
-                    {isAddingLabel ? (
-                      <motion.form 
-                        initial={{ width: 0, opacity: 0 }} 
-                        animate={{ width: 'auto', opacity: 1 }} 
-                        className="flex items-center gap-1"
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          addLabel();
-                        }}
-                      >
-                        <input 
-                          autoFocus
-                          type="text"
-                          value={newLabelText}
-                          onChange={(e) => setNewLabelText(e.target.value)}
-                          onBlur={() => { if (!newLabelText) setIsAddingLabel(false); }}
-                          placeholder="Label..."
-                          enterKeyHint="done"
-                          className="text-[10px] font-bold bg-white border border-blue-200 rounded-lg px-2 py-1 outline-none w-20 shadow-sm focus:ring-2 focus:ring-blue-50"
-                        />
-                        <button type="submit" className="p-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm"><Check className="w-3 h-3" /></button>
-                        <button type="button" onClick={() => setIsAddingLabel(false)} className="p-1 bg-slate-100 text-slate-500 rounded-md hover:bg-slate-200"><X className="w-3 h-3" /></button>
-                      </motion.form>
-                    ) : (
-                      <button 
-                        onClick={() => setIsAddingLabel(true)}
-                        className="p-1 rounded-lg border border-dashed border-slate-300 text-slate-300 hover:text-blue-400 hover:border-blue-400 transition-all flex items-center gap-1 px-2"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span className="text-[9px] font-bold">Add</span>
-                      </button>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </div>
-
-              {/* Checklist */}
-              <div>
-                <label className="text-[9px] font-bold text-slate-400 mb-2 block">
-                  Checklist
-                  {ticket.subtasks.length > 0 && (
-                    <span className="ml-1.5 text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-md">
-                      {ticket.subtasks.filter(s => s.completed).length}/{ticket.subtasks.length}
-                    </span>
-                  )}
-                </label>
-                <div className="space-y-1">
-                  {ticket.subtasks.map(sub => (
-                    <div key={sub.id} className="flex items-start gap-2.5 group py-1">
-                      <button 
-                        onClick={() => toggleSubtask(sub.id)}
-                        className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${sub.completed ? 'bg-emerald-500 border-emerald-500 shadow-sm shadow-emerald-100' : 'border-slate-200 bg-white hover:border-blue-300'}`}
-                      >
-                        {sub.completed && <Check className="w-3 h-3 text-white stroke-[3px]" />}
-                      </button>
-                      <span className={`text-sm flex-1 min-w-0 break-words ${sub.completed ? 'text-slate-400 line-through' : 'text-slate-700 font-medium'}`}>
-                        {sub.title}
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-4 sm:p-5 bg-white">
+            <AnimatePresence mode="wait">
+              {activeTab === 'details' ? (
+                <motion.div 
+                  key="details"
+                  initial={{ opacity: 0, x: -10 }} 
+                  animate={{ opacity: 1, x: 0 }} 
+                  exit={{ opacity: 0, x: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-4"
+                >
+                  {/* Title with 100 char limit */}
+                  <div>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-[9px] font-bold text-slate-400">Title</label>
+                      <span className={`text-[9px] font-bold tabular-nums ${title.length > 90 ? 'text-red-500' : 'text-slate-300'}`}>
+                        {title.length}/100
                       </span>
-                      <button 
-                        onClick={() => removeSubtask(sub.id)} 
-                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 hover:bg-red-50 text-slate-300 hover:text-red-500 rounded-lg transition-all flex-shrink-0"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
                     </div>
-                  ))}
-                  <form 
-                    className="flex items-center gap-2.5 pt-1"
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      addSubtask();
-                    }}
-                  >
-                    <button 
-                      type="submit"
-                      className="w-5 h-5 rounded-md border-2 border-dashed border-slate-300 flex items-center justify-center flex-shrink-0 hover:border-blue-400 hover:text-blue-500 text-slate-400 transition-all active:scale-95 bg-white"
-                    >
-                      <Plus className="w-3 h-3" />
-                    </button>
                     <input 
                       type="text" 
-                      placeholder="Add an item & press Enter..." 
-                      value={newSubtask} 
-                      onChange={(e) => setNewSubtask(e.target.value)}
-                      enterKeyHint="done"
-                      className="flex-1 text-sm bg-transparent border-none focus:ring-0 p-0 placeholder-slate-300 font-medium outline-none min-w-0"
+                      value={title} 
+                      onChange={(e) => { setTitle(e.target.value.slice(0, 100)); markDirty(); }}
+                      className="w-full text-base font-bold text-slate-800 bg-slate-50 border border-slate-100 rounded-lg px-3 py-2 placeholder-slate-200 outline-none focus:ring-2 focus:ring-blue-50 focus:border-blue-200 transition-all"
                     />
-                  </form>
-                </div>
-              </div>
-            </div>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 mb-1 block">Description</label>
+                    <textarea 
+                      value={description} 
+                      onChange={(e) => { setDescription(e.target.value); markDirty(); }}
+                      placeholder="Add a more detailed description..."
+                      className="w-full text-sm text-slate-600 bg-slate-50 border border-slate-100 focus:ring-2 focus:ring-blue-50 focus:border-blue-200 rounded-xl p-3 min-h-[70px] resize-none leading-relaxed outline-none transition-all"
+                    />
+                  </div>
+
+                  {/* Properties Row */}
+                  <div className="flex flex-wrap gap-3 items-end">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[9px] font-bold text-slate-400">Priority</span>
+                      <select 
+                        value={priority} 
+                        onChange={(e) => { setPriority(e.target.value as KanbanPriority); markDirty(); }}
+                        className="text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 focus:ring-2 focus:ring-blue-50 transition-all outline-none cursor-pointer"
+                      >
+                        <option value="low">🟢 Low</option>
+                        <option value="medium">🔵 Medium</option>
+                        <option value="high">🟠 High</option>
+                        <option value="urgent">🔴 Urgent</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <span className="text-[9px] font-bold text-slate-400">Story Points</span>
+                      <div className="flex items-center gap-1.5">
+                        <input 
+                          type="number" 
+                          value={storyPoints} 
+                          onChange={(e) => { setStoryPoints(parseInt(e.target.value) || 0); markDirty(); }}
+                          className="w-16 text-xs font-bold bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-slate-700 outline-none focus:ring-2 focus:ring-blue-50"
+                        />
+                        <span className="text-[10px] font-medium text-slate-400">pts</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Labels */}
+                  <div>
+                    <span className="text-[9px] font-bold text-slate-400 mb-1.5 block">Labels</span>
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      {labels.map(l => (
+                        <span 
+                          key={l} 
+                          onClick={() => removeLabel(l)}
+                          className={`group relative text-[10px] font-bold border px-2.5 py-1 rounded-lg cursor-pointer hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all flex items-center gap-1 ${getLabelColor(l)}`}
+                        >
+                          {l}
+                          <X className="w-2.5 h-2.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-current" />
+                        </span>
+                      ))}
+                      
+                      <AnimatePresence>
+                        {isAddingLabel ? (
+                          <motion.form 
+                            initial={{ width: 0, opacity: 0 }} 
+                            animate={{ width: 'auto', opacity: 1 }} 
+                            className="flex items-center gap-1"
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              addLabel();
+                            }}
+                          >
+                            <input 
+                              autoFocus
+                              type="text"
+                              value={newLabelText}
+                              onChange={(e) => setNewLabelText(e.target.value)}
+                              onBlur={() => { if (!newLabelText) setIsAddingLabel(false); }}
+                              placeholder="Label..."
+                              enterKeyHint="done"
+                              className="text-[10px] font-bold bg-white border border-blue-200 rounded-lg px-2 py-1 outline-none w-20 shadow-sm focus:ring-2 focus:ring-blue-50"
+                            />
+                            <button type="submit" className="p-1 bg-blue-600 text-white rounded-md hover:bg-blue-700 shadow-sm"><Check className="w-3 h-3" /></button>
+                            <button type="button" onClick={() => setIsAddingLabel(false)} className="p-1 bg-slate-100 text-slate-500 rounded-md hover:bg-slate-200"><X className="w-3 h-3" /></button>
+                          </motion.form>
+                        ) : (
+                          <button 
+                            onClick={() => setIsAddingLabel(true)}
+                            className="p-1 rounded-lg border border-dashed border-slate-300 text-slate-300 hover:text-blue-400 hover:border-blue-400 transition-all flex items-center gap-1 px-2"
+                          >
+                            <Plus className="w-3 h-3" />
+                            <span className="text-[9px] font-bold">Add</span>
+                          </button>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+
+                  {/* Checklist */}
+                  <div>
+                    <label className="text-[9px] font-bold text-slate-400 mb-2 block">
+                      Checklist
+                      {ticket.subtasks.length > 0 && (
+                        <span className="ml-1.5 text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-md">
+                          {ticket.subtasks.filter(s => s.completed).length}/{ticket.subtasks.length}
+                        </span>
+                      )}
+                    </label>
+                    <div className="space-y-1">
+                      {ticket.subtasks.map(sub => (
+                        <div key={sub.id} className="flex items-start gap-2.5 group py-1">
+                          <button 
+                            onClick={() => toggleSubtask(sub.id)}
+                            className={`w-5 h-5 rounded-md border flex items-center justify-center transition-all flex-shrink-0 mt-0.5 ${sub.completed ? 'bg-emerald-500 border-emerald-500 shadow-sm shadow-emerald-100' : 'border-slate-200 bg-white hover:border-blue-300'}`}
+                          >
+                            {sub.completed && <Check className="w-3 h-3 text-white stroke-[3px]" />}
+                          </button>
+                          <span className={`text-sm flex-1 min-w-0 break-words ${sub.completed ? 'text-slate-400 line-through' : 'text-slate-700 font-medium'}`}>
+                            {sub.title}
+                          </span>
+                          <button 
+                            onClick={() => removeSubtask(sub.id)} 
+                            className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 p-1 hover:bg-red-50 text-slate-300 hover:text-red-500 rounded-lg transition-all flex-shrink-0"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                      <form 
+                        className="flex items-center gap-2.5 pt-1"
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          addSubtask();
+                        }}
+                      >
+                        <button 
+                          type="submit"
+                          className="w-5 h-5 rounded-md border-2 border-dashed border-slate-300 flex items-center justify-center flex-shrink-0 hover:border-blue-400 hover:text-blue-500 text-slate-400 transition-all active:scale-95 bg-white"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                        <input 
+                          type="text" 
+                          placeholder="Add an item & press Enter..." 
+                          value={newSubtask} 
+                          onChange={(e) => setNewSubtask(e.target.value)}
+                          enterKeyHint="done"
+                          className="flex-1 text-sm bg-transparent border-none focus:ring-0 p-0 placeholder-slate-300 font-medium outline-none min-w-0"
+                        />
+                      </form>
+                    </div>
+                  </div>
+                </motion.div>
+              ) : (
+                <motion.div 
+                  key="activity"
+                  initial={{ opacity: 0, x: 10 }} 
+                  animate={{ opacity: 1, x: 0 }} 
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.2 }}
+                  className="space-y-6 py-2"
+                >
+                  {ticket.activities && ticket.activities.length > 0 ? (
+                    <div className="relative space-y-4 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-slate-100">
+                      {[...ticket.activities].reverse().map((activity) => (
+                        <div key={activity.id} className="relative pl-8 group">
+                          <div className={`absolute left-0 top-1 w-6 h-6 rounded-lg flex items-center justify-center shadow-sm border transition-all ${
+                            activity.type === 'create' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' :
+                            activity.type === 'status' ? 'bg-blue-50 border-blue-100 text-blue-600' :
+                            'bg-slate-50 border-slate-100 text-slate-500'
+                          }`}>
+                            {getActivityIcon(activity.type)}
+                          </div>
+                          <div className="flex flex-col gap-0.5">
+                            <div className="text-[11px] leading-relaxed">
+                              {getActivityMessage(activity)}
+                            </div>
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">
+                              {format(new Date(activity.timestamp), 'MMM d, HH:mm')}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="h-40 flex flex-col items-center justify-center text-center opacity-40">
+                      <History className="w-8 h-8 text-slate-300 mb-2" />
+                      <p className="text-xs font-bold text-slate-400">No activity logged yet.</p>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Footer */}
