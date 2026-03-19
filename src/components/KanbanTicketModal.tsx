@@ -62,35 +62,73 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
 
   const toggleSubtask = (id: string) => {
     const updated = ticket.subtasks.map(s => s.id === id ? { ...s, completed: !s.completed } : s);
-    onUpdate({ subtasks: updated });
+    onUpdate({ 
+      subtasks: updated,
+      title,
+      description,
+      priority,
+      storyPoints: storyPoints > 0 ? storyPoints : undefined,
+      labels
+    });
+    setHasUnsavedChanges(false);
   };
 
   const addSubtask = () => {
     if (newSubtask.trim()) {
       const updatedSubtasks = [...ticket.subtasks, { id: Date.now().toString(), title: newSubtask.trim(), completed: false }];
-      onUpdate({ subtasks: updatedSubtasks });
+      onUpdate({ 
+        subtasks: updatedSubtasks,
+        title,
+        description,
+        priority,
+        storyPoints: storyPoints > 0 ? storyPoints : undefined,
+        labels
+      });
       setNewSubtask('');
+      setHasUnsavedChanges(false);
     }
   };
 
   const removeSubtask = (id: string) => {
-    onUpdate({ subtasks: ticket.subtasks.filter(s => s.id !== id) });
+    onUpdate({ 
+      subtasks: ticket.subtasks.filter(s => s.id !== id),
+      title,
+      description,
+      priority,
+      storyPoints: storyPoints > 0 ? storyPoints : undefined,
+      labels
+    });
+    setHasUnsavedChanges(false);
   };
 
   const addLabel = () => {
     if (newLabelText.trim() && !labels.includes(newLabelText.trim())) {
       const updatedLabels = [...labels, newLabelText.trim()];
       setLabels(updatedLabels);
-      onUpdate({ labels: updatedLabels });
+      onUpdate({ 
+        labels: updatedLabels,
+        title,
+        description,
+        priority,
+        storyPoints: storyPoints > 0 ? storyPoints : undefined
+      });
       setNewLabelText('');
       setIsAddingLabel(false);
+      setHasUnsavedChanges(false);
     }
   };
 
   const removeLabel = (labelToRemove: string) => {
     const updatedLabels = labels.filter(l => l !== labelToRemove);
     setLabels(updatedLabels);
-    onUpdate({ labels: updatedLabels });
+    onUpdate({ 
+      labels: updatedLabels,
+      title,
+      description,
+      priority,
+      storyPoints: storyPoints > 0 ? storyPoints : undefined
+    });
+    setHasUnsavedChanges(false);
   };
 
   // Dynamic label colors matching KanbanBoard
