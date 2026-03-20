@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, Search, Clock, PanelRightOpen, PanelRightClose } from 'lucide-react';
+import { Menu, X, Search, Clock, PanelRightOpen, PanelRightClose } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SearchOverlay from './SearchOverlay';
 import WorldClockModal from './WorldClockModal';
@@ -11,6 +11,7 @@ interface HeaderProps {
   onToggleSidebar: () => void;
   onToggleDesktopSidebar?: () => void;
   isSidebarOpen?: boolean;
+  isMobileSidebarOpen?: boolean;
   onSearch: (query: string) => void;
   events?: Event[];
   onAnalyticsClick?: () => void;
@@ -23,6 +24,7 @@ const Header: React.FC<HeaderProps> = ({
   onToggleSidebar,
   onToggleDesktopSidebar,
   isSidebarOpen = true,
+  isMobileSidebarOpen = false,
   onSearch,
   events = [],
   onAnalyticsClick,
@@ -138,7 +140,11 @@ const Header: React.FC<HeaderProps> = ({
               onClick={onToggleSidebar}
               className="lg:hidden p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
             >
-              <Menu className="w-5 h-5" />
+              {isMobileSidebarOpen ? (
+                <X className="w-5 h-5" />
+              ) : (
+                <Menu className="w-5 h-5" />
+              )}
             </motion.button>
           </div>
         </div>

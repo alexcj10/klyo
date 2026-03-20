@@ -443,7 +443,8 @@ function App() {
       <Header
         onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         onToggleDesktopSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-        isSidebarOpen={isActuallySidebarOpen}
+        isSidebarOpen={isSidebarOpen}
+        isMobileSidebarOpen={isMobileSidebarOpen}
         onSearch={setSearchQuery}
         events={events}
         onAnalyticsClick={handleAnalyticsClick}
