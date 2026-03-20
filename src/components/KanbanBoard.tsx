@@ -511,14 +511,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     className="bg-white rounded-2xl border-2 border-blue-400 shadow-xl shadow-blue-100/50"
                   >
                     {/* Header bar */}
-                    <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50/50 border-b border-blue-100/50 rounded-t-2xl">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${column.color} animate-pulse`} />
-                        <span className="text-[10px] font-bold text-slate-500">
-                          Adding to <span className="text-blue-600">{column.title}</span>
+                    <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50/50 border-b border-blue-100/50 rounded-t-2xl gap-2">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        <div className={`w-2 h-2 rounded-full ${column.color} animate-pulse flex-shrink-0`} />
+                        <span className="text-[10px] font-bold text-slate-500 truncate">
+                          Adding to <span className="text-blue-600 truncate">{column.title}</span>
                         </span>
                       </div>
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
                         <button 
                           onClick={handleCancelInline} 
                           className="p-1 hover:bg-white/80 rounded-lg text-slate-400 hover:text-red-500 transition-all"
