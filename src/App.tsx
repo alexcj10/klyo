@@ -13,6 +13,7 @@ import { Event, Task, KanbanTicket, KanbanColumn, TicketActivity, Note } from '.
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
 import AIChat from './components/AIChat';
+import NoteEditorModal from './components/NoteEditorModal';
 
 // --------- Data Persistence -----------
 
@@ -72,6 +73,7 @@ function App() {
   const [showSadAnimation, setShowSadAnimation] = useState(false);
   const [isAnalyticsModalOpen, setIsAnalyticsModalOpen] = useState(false);
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+  const [selectedNoteId, setSelectedNoteId] = useState<string | null>(null);
   const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1024);
 
   // Responsive check
@@ -83,7 +85,7 @@ function App() {
 
   // Body Scroll Lock when overlays are open
   useEffect(() => {
-    const needsLock = isMobileSidebarOpen || isEventModalOpen || isEventViewModalOpen || isDayViewModalOpen || isAnalyticsModalOpen;
+    const needsLock = isMobileSidebarOpen || isEventModalOpen || isEventViewModalOpen || isDayViewModalOpen || isAnalyticsModalOpen || selectedNoteId !== null;
     if (needsLock) {
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
@@ -98,7 +100,7 @@ function App() {
       document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
     };
-  }, [isMobileSidebarOpen, isEventModalOpen, isEventViewModalOpen, isDayViewModalOpen, isAnalyticsModalOpen]);
+  }, [isMobileSidebarOpen, isEventModalOpen, isEventViewModalOpen, isDayViewModalOpen, isAnalyticsModalOpen, selectedNoteId]);
 
   const isActuallySidebarOpen = isLargeScreen ? isSidebarOpen : isMobileSidebarOpen;
 
@@ -481,11 +483,7 @@ function App() {
             kanbanColumns={kanbanColumns}
             onKanbanColumnUpdate={handleKanbanColumnUpdate}
             notes={notes}
-            onNoteAdd={(noteData) => {
-              const newNote = { ...noteData, id: Date.now().toString(), createdAt: new Date() };
-              setNotes([...notes, newNote]);
-            }}
-            onNoteDelete={(noteId) => setNotes(notes.filter(n => n.id !== noteId))}
+            onNoteClick={setSelectedNoteId}
           />
         </div>
 
@@ -635,6 +633,39 @@ function App() {
         tasks={tasks}
         isOpen={isAIChatOpen}
         setIsOpen={setIsAIChatOpen}
+      />
+
+      <NoteEditorModal
+        isOpen={selectedNoteId !== null}
+        onClose={() => setSelectedNoteId(null)}
+        noteId={selectedNoteId}
+        notes={notes}
+        onSave={(updatedNote) => {
+          if (updatedNote.id) {
+            setNotes(notes.map(n => n.id === updatedNote.id ? { ...n, title: updatedNote.title, content: updatedNote.content } : n));
+          } else {
+            const colors = [
+              'border-l-rose-400 bg-rose-50/80',
+              'border-l-indigo-400 bg-indigo-50/80',
+              'border-l-amber-400 bg-amber-50/80',
+              'border-l-emerald-400 bg-emerald-50/80',
+              'border-l-fuchsia-400 bg-fuchsia-50/80',
+              'border-l-blue-400 bg-blue-50/80',
+              'border-l-lime-400 bg-lime-50/80',
+              'border-l-violet-400 bg-violet-50/80',
+            ];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            const newNote = {
+              id: Date.now().toString(),
+              title: updatedNote.title,
+              content: updatedNote.content,
+              color: randomColor,
+              createdAt: new Date()
+            };
+            setNotes([...notes, newNote]);
+          }
+        }}
+        onDelete={(id) => setNotes(notes.filter(n => n.id !== id))}
       />
     </div>
   );

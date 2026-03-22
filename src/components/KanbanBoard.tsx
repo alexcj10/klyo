@@ -35,10 +35,7 @@ interface KanbanBoardProps {
   columns: KanbanColumn[];
   onColumnUpdate: (columnId: string, updates: Partial<KanbanColumn>) => void;
   notes?: Note[];
-  onNoteAdd?: (note: Omit<Note, 'id' | 'createdAt'>) => void;
-  onNoteDelete?: (noteId: string) => void;
-  isAddingNote?: boolean;
-  setIsAddingNote?: (val: boolean) => void;
+  onNoteClick?: (noteId: string | 'new') => void;
 }
 
 const KanbanBoard: React.FC<KanbanBoardProps> = ({ 
@@ -50,10 +47,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   columns,
   onColumnUpdate,
   notes = [],
-  onNoteAdd,
-  onNoteDelete,
-  isAddingNote,
-  setIsAddingNote
+  onNoteClick
 }) => {
   const [addingToColumn, setAddingToColumn] = useState<KanbanStatus | null>(null);
   const [inlineTitle, setInlineTitle] = useState('');
@@ -65,10 +59,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [filterPriority, setFilterPriority] = useState<KanbanPriority | 'all'>('all');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [confirmingClearColumn, setConfirmingClearColumn] = useState<string | null>(null);
-  
-  const [noteTitle, setNoteTitle] = useState('');
-  const [noteContent, setNoteContent] = useState('');
-  const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
   
   // Inline creator state
   const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
@@ -180,26 +170,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
     setNewLabelInput('');
     setNewSubtaskInput('');
     setAddingToColumn(null);
-  };
-
-  const handleSaveNote = () => {
-    if (noteTitle.trim() || noteContent.trim()) {
-      const colors = [
-        'border-l-rose-400 bg-rose-50/80',
-        'border-l-indigo-400 bg-indigo-50/80',
-        'border-l-amber-400 bg-amber-50/80',
-        'border-l-emerald-400 bg-emerald-50/80',
-        'border-l-fuchsia-400 bg-fuchsia-50/80',
-        'border-l-blue-400 bg-blue-50/80',
-        'border-l-lime-400 bg-lime-50/80',
-        'border-l-violet-400 bg-violet-50/80',
-      ];
-      const randomColor = colors[Math.floor(Math.random() * colors.length)];
-      onNoteAdd?.({ title: noteTitle.trim() || 'Untitled', content: noteContent.trim(), color: randomColor });
-      setNoteTitle('');
-      setNoteContent('');
-      setIsAddingNote?.(false);
-    }
   };
 
   return (
@@ -768,70 +738,32 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               </div>
             </div>
             
-            <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 pb-4 min-h-0">
-              <AnimatePresence>
-                {isAddingNote && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                    className="bg-white rounded-2xl border-2 border-amber-400 shadow-xl shadow-amber-100/50 overflow-hidden flex-shrink-0"
-                  >
-                     <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-amber-50 to-orange-50 border-b border-amber-100/50">
-                       <span className="text-[10px] font-bold text-amber-600">New Note</span>
-                       <div className="flex items-center gap-1.5">
-                         <button onClick={() => setIsAddingNote?.(false)} className="p-1 hover:bg-white/80 rounded-lg text-amber-400 hover:text-red-500 transition-colors">
-                           <X className="w-3.5 h-3.5" />
-                         </button>
-                         <button onClick={handleSaveNote} disabled={!noteTitle.trim() && !noteContent.trim()} className="flex items-center gap-1 px-2.5 py-1 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white rounded-lg text-[10px] font-bold shadow-sm transition-colors">
-                           <Check className="w-3 h-3" /> Save
-                         </button>
-                       </div>
-                     </div>
-                     <div className="p-3 space-y-3">
-                       <input type="text" autoFocus placeholder="Give it a title..." value={noteTitle} onChange={e=>setNoteTitle(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSaveNote()} className="w-full text-sm font-bold text-slate-800 bg-slate-50/50 rounded-lg border border-slate-100 focus:bg-white focus:border-amber-200 outline-none px-3 py-2 transition-all placeholder-slate-300" />
-                       <textarea placeholder="List your thoughts... (each line is a bullet)" value={noteContent} onChange={e=>setNoteContent(e.target.value)} className="w-full text-xs font-medium text-slate-600 bg-slate-50/50 rounded-lg border border-slate-100 focus:bg-white focus:border-amber-200 outline-none px-3 py-2 min-h-[100px] resize-none leading-relaxed transition-all placeholder-slate-300" />
-                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              
+            <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 pb-2 min-h-0">
               <AnimatePresence mode="popLayout">
                 {notes.map(note => (
                   <motion.div 
                     layout
                     initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
                     key={note.id}
-                    onClick={() => setExpandedNoteId(expandedNoteId === note.id ? null : note.id)}
-                    className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer flex-shrink-0 ${note.color}`}
+                    onClick={() => onNoteClick?.(note.id)}
+                    className={`group bg-white rounded-xl border border-slate-200/60 py-3.5 px-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all relative border-l-[6px] cursor-pointer flex-shrink-0 ${note.color}`}
                   >
-                     <div className="flex items-start justify-between gap-3 relative z-10">
-                       <h4 className="text-[13px] font-bold text-slate-800 leading-tight break-words pr-6">{note.title}</h4>
-                       <button onClick={(e) => { e.stopPropagation(); onNoteDelete?.(note.id); }} className="absolute -right-2 -top-2 p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all">
-                         <Trash2 className="w-4 h-4" />
-                       </button>
+                     <div className="flex items-center justify-between gap-3 relative z-10 w-full">
+                       <h4 className="text-xs sm:text-[13px] font-bold text-slate-800 leading-snug break-words flex-1 pr-4">{note.title}</h4>
                      </div>
-                     <AnimatePresence>
-                       {expandedNoteId === note.id && note.content && (
-                         <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                           <div className="mt-4 pt-3 border-t border-slate-100 text-[11px] text-slate-600 font-medium">
-                             {note.content.split('\n').map((line, i) => line.trim() ? (
-                               <div key={i} className="flex items-start gap-2 mb-2 leading-relaxed">
-                                 <span className="mt-1.5 w-1 h-1 rounded-full bg-slate-400 group-hover:bg-slate-600 transition-colors flex-shrink-0" />
-                                 <span className="opacity-90">{line}</span>
-                               </div>
-                             ) : null)}
-                             <div className="mt-4 pt-3 border-t border-slate-50">
-                               <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
-                                 {new Date(note.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
-                               </span>
-                             </div>
-                           </div>
-                         </motion.div>
-                       )}
-                     </AnimatePresence>
                   </motion.div>
                 ))}
               </AnimatePresence>
             </div>
+
+            {/* Note Creator Trigger */}
+            <button
+              onClick={() => onNoteClick?.('new')}
+              className="w-full py-3 flex items-center justify-center gap-2 px-3 text-amber-600 hover:text-amber-700 hover:bg-amber-100/50 border-2 border-dashed border-amber-200 hover:border-amber-300 rounded-2xl transition-all text-xs font-bold group active:scale-[0.98] mt-2 flex-shrink-0"
+            >
+              <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+              New Note
+            </button>
           </div>
         )}
       </div>
