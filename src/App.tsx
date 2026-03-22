@@ -576,7 +576,7 @@ function App() {
       />
 
       <DayViewModal
-        isOpen={isDayViewModalOpen}
+        isOpen={isDayViewModalOpen && !isEventViewModalOpen}
         onClose={handleDayViewModalClose}
         date={dayViewDate}
         events={filteredEvents.filter(
