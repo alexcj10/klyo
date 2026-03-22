@@ -9,7 +9,7 @@ import EventModal from './components/EventModal';
 import EventViewModal from './components/EventViewModal';
 import DayViewModal from './components/DayViewModal';
 import AnalyticsModal from './components/AnalyticsModal';
-import { Event, Task, KanbanTicket, KanbanColumn, TicketActivity } from './types';
+import { Event, Task, KanbanTicket, KanbanColumn, TicketActivity, Note } from './types';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { getNextColor } from './utils/colorPalette';
 import AIChat from './components/AIChat';
@@ -55,6 +55,8 @@ function App() {
     { id: 'in-progress', title: 'In Progress', color: 'bg-amber-600', bgColor: 'bg-amber-50/60' },
     { id: 'done', title: 'Done', color: 'bg-emerald-600', bgColor: 'bg-emerald-50/60' }
   ]);
+
+  const [notes, setNotes] = useLocalStorage<Note[]>('klyo-notes', []);
 
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [viewEvent, setViewEvent] = useState<Event | null>(null);
@@ -478,6 +480,12 @@ function App() {
             onKanbanTicketsBulkDelete={handleKanbanTicketsBulkDelete}
             kanbanColumns={kanbanColumns}
             onKanbanColumnUpdate={handleKanbanColumnUpdate}
+            notes={notes}
+            onNoteAdd={(noteData) => {
+              const newNote = { ...noteData, id: Date.now().toString(), createdAt: new Date() };
+              setNotes([...notes, newNote]);
+            }}
+            onNoteDelete={(noteId) => setNotes(notes.filter(n => n.id !== noteId))}
           />
         </div>
 

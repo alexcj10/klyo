@@ -32,7 +32,7 @@ import {
   setHours,
   setMinutes
 } from 'date-fns';
-import { Event, KanbanTicket, KanbanColumn } from '../types';
+import { Event, KanbanTicket, KanbanColumn, Note } from '../types';
 import DateSelectorPopup from './DateSelectorPopup';
 import KanbanBoard from './KanbanBoard';
 
@@ -51,6 +51,9 @@ interface CalendarViewProps {
   onKanbanTicketsBulkDelete: (ticketIds: string[]) => void;
   kanbanColumns: KanbanColumn[];
   onKanbanColumnUpdate: (columnId: string, updates: Partial<KanbanColumn>) => void;
+  notes?: Note[];
+  onNoteAdd?: (note: Omit<Note, 'id' | 'createdAt'>) => void;
+  onNoteDelete?: (noteId: string) => void;
 }
 
 type ViewMode = 'day' | 'week' | 'month' | 'year' | 'kanban';
@@ -69,13 +72,17 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onKanbanTicketDelete,
   onKanbanTicketsBulkDelete,
   kanbanColumns = [],
-  onKanbanColumnUpdate
+  onKanbanColumnUpdate,
+  notes,
+  onNoteAdd,
+  onNoteDelete
 }) => {
   const isDraggingRef = useRef(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
+  const [isAddingNote, setIsAddingNote] = useState(false);
 
   // Navigation handlers
   const navigatePrev = () => {
@@ -791,6 +798,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             ) : (
               <div className="flex items-center gap-2 px-1.5 sm:px-3 py-1 bg-blue-50/50 rounded-xl border border-blue-200/50">
                 <span className="text-[10px] sm:text-xs font-black text-blue-600 tracking-wider">Project Kanban</span>
+                <button onClick={() => setIsAddingNote(!isAddingNote)} className="flex items-center gap-1 text-[10px] sm:text-xs font-bold bg-white text-blue-600 px-2 py-0.5 rounded-lg shadow-sm hover:shadow hover:bg-blue-50 active:scale-95 transition-all ml-1">
+                  <Plus className="w-3 h-3" /> Note
+                </button>
               </div>
             )}
           </div>
@@ -887,6 +897,11 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               onTicketsBulkDelete={onKanbanTicketsBulkDelete}
               columns={kanbanColumns}
               onColumnUpdate={onKanbanColumnUpdate}
+              notes={notes}
+              onNoteAdd={onNoteAdd}
+              onNoteDelete={onNoteDelete}
+              isAddingNote={isAddingNote}
+              setIsAddingNote={setIsAddingNote}
             />
           )}
         </motion.div>
