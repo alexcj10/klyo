@@ -583,6 +583,7 @@ function App() {
           (event) => dayViewDate && event.date.toDateString() === dayViewDate.toDateString()
         )}
         onEventClick={handleDayViewEventClick}
+        onEventView={handleEventView}
         onEventDelete={(event) => handleEventDelete(event.id)}
         onAddEvent={handleDayViewAddEvent}
       />

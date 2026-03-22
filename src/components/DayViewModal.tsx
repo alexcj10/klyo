@@ -10,6 +10,7 @@ interface DayViewModalProps {
   date: Date | null;
   events: Event[];
   onEventClick: (event: Event) => void;
+  onEventView: (event: Event) => void;
   onEventDelete: (event: Event) => void;
   onAddEvent: (date: Date) => void;
 }
@@ -20,6 +21,7 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
   date,
   events,
   onEventClick,
+  onEventView,
   onEventDelete,
   onAddEvent
 }) => {
@@ -151,7 +153,8 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.8 }}
                     transition={{ delay: index * 0.03, duration: 0.15 }}
-                    className={`bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-all duration-200 ${isDeleting && deleteConfirmEvent?.id === event.id ? 'opacity-50 pointer-events-none' : ''
+                    onClick={() => onEventView(event)}
+                    className={`bg-gray-50 rounded-xl p-3 hover:bg-gray-100 transition-all duration-200 cursor-pointer ${isDeleting && deleteConfirmEvent?.id === event.id ? 'opacity-50 pointer-events-none' : ''
                       }`}
                   >
                     {/* Top row: Color dot + Title + Actions */}
@@ -168,7 +171,10 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
                       <div className="flex items-center space-x-1 flex-shrink-0 ml-2">
                         <motion.button
                           whileTap={{ scale: 0.9 }}
-                          onClick={() => onEventClick(event)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onEventClick(event);
+                          }}
                           className="text-blue-500 hover:text-blue-600 p-1.5 hover:bg-blue-50 rounded-lg transition-colors"
                           disabled={isDeleting}
                         >
@@ -176,7 +182,10 @@ const DayViewModal: React.FC<DayViewModalProps> = ({
                         </motion.button>
                         <motion.button
                           whileTap={{ scale: 0.9 }}
-                          onClick={() => handleDeleteClick(event)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteClick(event);
+                          }}
                           className="text-red-500 hover:text-red-600 p-1.5 hover:bg-red-50 rounded-lg transition-colors"
                           disabled={isDeleting}
                         >
