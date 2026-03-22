@@ -214,6 +214,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         case 'y':
           setViewMode('year');
           break;
+        case 'k':
+          setViewMode('kanban');
+          break;
       }
     };
 

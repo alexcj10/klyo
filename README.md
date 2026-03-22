@@ -47,6 +47,16 @@ A fluid, interactive calendar with multiple views designed for peak organization
 *   **Smooth Transitions**: Fully responsive layouts with fluid animations powered by Framer Motion.    
 *   **Mobile-First**: Optimized for touch and swipe interactions on mobile devices.
 
+### Global Keyboard Shortcuts
+Navigate quickly across Klyo without leaving your keyboard:
+*   `c` - Quick create event
+*   `t` - Jump to Today
+*   `m` - Month view
+*   `w` - Week view
+*   `d` - Day view
+*   `y` - Year view
+*   `k` - Kanban board view
+
 ### Kanban System
 A project management board that works alongside your calendar:
 *   **Visual Workflow Columns**: Organize tickets across Backlog, To Do, In Progress, and Done states.
