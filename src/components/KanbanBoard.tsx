@@ -734,8 +734,15 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               <div className="flex items-center gap-2.5">
                 <div className="w-1.5 h-6 rounded-full bg-amber-400 flex-shrink-0" />
                 <h3 className="text-xs font-bold text-slate-800 tracking-tight">Notes</h3>
-                <span className="text-[10px] font-bold text-slate-400 bg-white border border-amber-100 px-2 py-0.5 rounded-full shadow-sm">{notes.length}</span>
+                <span className="text-[10px] font-bold text-slate-400 bg-white border border-amber-100 px-2 py-0.5 rounded-full shadow-sm flex items-center justify-center">{notes.length}</span>
               </div>
+              <button
+                onClick={() => onNoteClick?.('new')}
+                className="w-6 h-6 rounded-md hover:bg-white text-amber-500 hover:text-amber-600 hover:shadow-sm border border-transparent hover:border-amber-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                title="Create New Note"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
             </div>
             
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 pb-2 min-h-0">
@@ -768,7 +775,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             {/* Note Creator Trigger */}
             <button
               onClick={() => onNoteClick?.('new')}
-              className="w-full py-3 flex items-center justify-center gap-2 px-3 text-amber-600 hover:text-amber-700 hover:bg-amber-100/50 border-2 border-dashed border-amber-200 hover:border-amber-300 rounded-2xl transition-all text-xs font-bold group active:scale-[0.98] mt-2 flex-shrink-0"
+              className="w-full py-3 flex items-center justify-center gap-2 px-3 text-slate-400 hover:text-amber-600 hover:bg-white border-2 border-dashed border-slate-100 hover:border-amber-200 rounded-2xl transition-all text-xs font-bold group active:scale-[0.98] mt-2 flex-shrink-0"
             >
               <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
               New Note
