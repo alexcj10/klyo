@@ -747,27 +747,21 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 pb-2 min-h-0">
               <AnimatePresence mode="popLayout">
-                {notes.map(note => {
-                  const accentMatch = note.color?.match(/border-l-([a-z]+)-(\d+)/);
-                  const accentName = accentMatch?.[1] || 'amber';
-                  const gradientFrom = `from-${accentName}-400`;
-                  const gradientTo = `to-${accentName}-500`;
-                  const tintBg = `bg-${accentName}-50/40`;
+                {notes.map((note) => {
+                  const colors = ['bg-blue-500','bg-violet-500','bg-rose-500','bg-emerald-500','bg-amber-500','bg-cyan-500','bg-pink-500','bg-indigo-500'];
+                  const hash = note.id.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0);
+                  const dotColor = colors[hash % colors.length];
                   
                   return (
                     <motion.div 
                       layout
-                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
                       key={note.id}
                       onClick={() => onNoteClick?.(note.id)}
-                      className="group bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer flex-shrink-0 min-w-0 flex items-stretch overflow-hidden border border-slate-100 hover:border-slate-200"
+                      className="group bg-white rounded-[14px] px-4 py-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-all duration-200 ease-out cursor-pointer flex-shrink-0 min-w-0 flex items-center gap-3 active:scale-[0.98]"
                     >
-                       {/* Left gradient accent */}
-                       <div className={`w-1 bg-gradient-to-b ${gradientFrom} ${gradientTo} rounded-l-xl flex-shrink-0`} />
-                       
-                       <div className={`flex-1 min-w-0 px-3.5 py-3 flex items-center gap-3 ${tintBg}`}>
-                         <h4 className="text-xs sm:text-[13px] font-semibold text-slate-700 group-hover:text-slate-800 leading-snug break-all flex-1 min-w-0 transition-colors">{note.title}</h4>
-                       </div>
+                       <div className={`w-[7px] h-[7px] rounded-full ${dotColor} flex-shrink-0`} />
+                       <h4 className="text-[13px] font-medium text-[#1d1d1f] leading-[1.4] break-all flex-1 min-w-0 tracking-[-0.01em]">{note.title}</h4>
                     </motion.div>
                   );
                 })}
