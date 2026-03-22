@@ -177,6 +177,50 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     return () => window.removeEventListener('resize', calculateMaxEvents);
   }, [numWeeks]);
 
+  // Global Keyboard Shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input, textarea, or contenteditable area
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement ||
+        (e.target as HTMLElement).isContentEditable
+      ) {
+        return;
+      }
+
+      // Ignore if any modifier key is pressed (Ctrl, Cmd, Alt)
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      const key = e.key.toLowerCase();
+      
+      switch (key) {
+        case 'c':
+          e.preventDefault();
+          onAddEvent();
+          break;
+        case 't':
+          goToToday();
+          break;
+        case 'm':
+          setViewMode('month');
+          break;
+        case 'w':
+          setViewMode('week');
+          break;
+        case 'd':
+          setViewMode('day');
+          break;
+        case 'y':
+          setViewMode('year');
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onAddEvent]);
+
   // Day View Component
   const DayView = () => (
     <motion.div
