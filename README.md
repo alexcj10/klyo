@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="src/assets/cf.png" width="170" alt="Mr Croc and Dr Frog"/>
+  <img src="src/assets/cf (1).png" width="170" alt="Mr Croc and Dr Frog"/>
 </p>
 
 <h1 align="center"><strong>Klyo: The Intelligent Workspace</strong></h1>
