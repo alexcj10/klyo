@@ -740,19 +740,28 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 pb-2 min-h-0">
               <AnimatePresence mode="popLayout">
-                {notes.map(note => (
-                  <motion.div 
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                    key={note.id}
-                    onClick={() => onNoteClick?.(note.id)}
-                    className={`group bg-white rounded-xl border border-slate-200/60 py-3.5 px-4 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all relative border-l-[6px] cursor-pointer flex-shrink-0 ${note.color}`}
-                  >
-                     <div className="flex items-center justify-between gap-3 relative z-10 w-full">
-                       <h4 className="text-xs sm:text-[13px] font-bold text-slate-800 leading-snug break-words flex-1 pr-4">{note.title}</h4>
-                     </div>
-                  </motion.div>
-                ))}
+                {notes.map(note => {
+                  // Clean up the classes to ensure it renders as a beautiful sticky note instead of a pill
+                  const bgColorClass = note.color?.match(/bg-[a-z]+-50/)?.[0] || 'bg-amber-50';
+                  const borderColorClass = note.color?.match(/border-l-[a-z]+-[0-9]+/)?.[0]?.replace('-l-', '-') || 'border-amber-200';
+                  
+                  return (
+                    <motion.div 
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                      key={note.id}
+                      onClick={() => onNoteClick?.(note.id)}
+                      className={`group ${bgColorClass} ${borderColorClass} rounded-lg rounded-br-3xl border px-4 py-3.5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all relative cursor-pointer flex-shrink-0 min-w-0 overflow-visible`}
+                    >
+                       {/* Subtle page curl effect */}
+                       <div className="absolute right-0 bottom-0 w-6 h-6 bg-white/60 rounded-tl-lg backdrop-blur-sm shadow-[-2px_-2px_4px_rgba(0,0,0,0.02)] border-t border-l border-white/80 pointer-events-none transition-all group-hover:w-7 group-hover:h-7" />
+                       
+                       <div className="flex items-center justify-between gap-3 relative z-10 w-full min-w-0">
+                         <h4 className="text-xs sm:text-[13px] font-bold text-slate-800 leading-relaxed break-all flex-1 min-w-0 pr-4">{note.title}</h4>
+                       </div>
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
             </div>
 

@@ -133,17 +133,17 @@ const NoteEditorModal: React.FC<NoteEditorModalProps> = ({
                 </div>
               </motion.div>
             ) : (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-                <div>
-                  <h3 className="text-[15px] sm:text-base font-bold text-slate-800 tracking-tight leading-snug break-words">
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 w-full min-w-0">
+                <div className="w-full min-w-0">
+                  <h3 className="text-[15px] sm:text-base font-bold text-slate-800 tracking-tight leading-snug break-all w-full min-w-0">
                     {title}
                   </h3>
                 </div>
-                <div className="space-y-1.5 pt-3 border-t border-slate-100">
+                <div className="space-y-1.5 pt-3 border-t border-slate-100 w-full min-w-0">
                   {content.split('\n').map((line, i) => line.trim() ? (
-                    <div key={i} className="flex items-start gap-2.5 mb-1.5 leading-relaxed w-full">
+                    <div key={i} className="flex items-start gap-2.5 mb-1.5 leading-relaxed w-full min-w-0">
                       <span className="mt-2 w-1.5 h-1.5 rounded-full bg-amber-400/80 shadow-sm shadow-amber-400/20 flex-shrink-0" />
-                      <span className="text-xs sm:text-[13px] font-medium text-slate-700 break-words flex-1 whitespace-pre-wrap">{line}</span>
+                      <span className="text-xs sm:text-[13px] font-medium text-slate-700 break-all flex-1 whitespace-pre-wrap min-w-0">{line}</span>
                     </div>
                   ) : null)}
                   {!content.trim() && (
