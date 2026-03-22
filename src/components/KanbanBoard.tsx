@@ -748,20 +748,19 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 pb-2 min-h-0">
               <AnimatePresence mode="popLayout">
                 {notes.map((note) => {
-                  const colors = ['bg-blue-500','bg-violet-500','bg-rose-500','bg-emerald-500','bg-amber-500','bg-cyan-500','bg-pink-500','bg-indigo-500'];
+                  const borderColors = ['border-l-blue-500','border-l-violet-500','border-l-rose-500','border-l-emerald-500','border-l-amber-500','border-l-cyan-500','border-l-pink-500','border-l-indigo-500'];
                   const hash = note.id.split('').reduce((a: number, c: string) => a + c.charCodeAt(0), 0);
-                  const dotColor = colors[hash % colors.length];
+                  const borderColor = borderColors[hash % borderColors.length];
                   
                   return (
                     <motion.div 
                       layout
-                      initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }}
+                      initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
                       key={note.id}
                       onClick={() => onNoteClick?.(note.id)}
-                      className="group bg-white rounded-[14px] px-4 py-3.5 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)] transition-all duration-200 ease-out cursor-pointer flex-shrink-0 min-w-0 flex items-center gap-3 active:scale-[0.98]"
+                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer flex-shrink-0 min-w-0 ${borderColor}`}
                     >
-                       <div className={`w-[7px] h-[7px] rounded-full ${dotColor} flex-shrink-0`} />
-                       <h4 className="text-[13px] font-medium text-[#1d1d1f] leading-[1.4] break-all flex-1 min-w-0 tracking-[-0.01em]">{note.title}</h4>
+                       <h4 className="text-[13px] font-bold text-slate-800 leading-tight break-all tracking-tight">{note.title}</h4>
                     </motion.div>
                   );
                 })}
