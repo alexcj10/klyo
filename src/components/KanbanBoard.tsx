@@ -738,7 +738,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
               </div>
               <button
                 onClick={() => onNoteClick?.('new')}
-                className="w-6 h-6 rounded-md hover:bg-white text-amber-500 hover:text-amber-600 hover:shadow-sm border border-transparent hover:border-amber-200 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                className="w-6 h-6 rounded-md hover:bg-white text-amber-500 hover:text-amber-600 hover:shadow-sm border border-transparent hover:border-amber-200 flex items-center justify-center transition-all opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus:opacity-100"
                 title="Create New Note"
               >
                 <Plus className="w-4 h-4" />
@@ -748,23 +748,25 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto custom-scrollbar pr-1.5 pb-2 min-h-0">
               <AnimatePresence mode="popLayout">
                 {notes.map(note => {
-                  // Clean up the classes to ensure it renders as a beautiful sticky note instead of a pill
-                  const bgColorClass = note.color?.match(/bg-[a-z]+-50/)?.[0] || 'bg-amber-50';
-                  const borderColorClass = note.color?.match(/border-l-[a-z]+-[0-9]+/)?.[0]?.replace('-l-', '-') || 'border-amber-200';
+                  const accentMatch = note.color?.match(/border-l-([a-z]+)-(\d+)/);
+                  const accentName = accentMatch?.[1] || 'amber';
+                  const gradientFrom = `from-${accentName}-400`;
+                  const gradientTo = `to-${accentName}-500`;
+                  const tintBg = `bg-${accentName}-50/40`;
                   
                   return (
                     <motion.div 
                       layout
-                      initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                      initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95 }}
                       key={note.id}
                       onClick={() => onNoteClick?.(note.id)}
-                      className={`group ${bgColorClass} ${borderColorClass} rounded-lg rounded-br-3xl border px-4 py-3.5 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all relative cursor-pointer flex-shrink-0 min-w-0 overflow-visible`}
+                      className="group bg-white rounded-xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-md transition-all cursor-pointer flex-shrink-0 min-w-0 flex items-stretch overflow-hidden border border-slate-100 hover:border-slate-200"
                     >
-                       {/* Subtle page curl effect */}
-                       <div className="absolute right-0 bottom-0 w-6 h-6 bg-white/60 rounded-tl-lg backdrop-blur-sm shadow-[-2px_-2px_4px_rgba(0,0,0,0.02)] border-t border-l border-white/80 pointer-events-none transition-all group-hover:w-7 group-hover:h-7" />
+                       {/* Left gradient accent */}
+                       <div className={`w-1 bg-gradient-to-b ${gradientFrom} ${gradientTo} rounded-l-xl flex-shrink-0`} />
                        
-                       <div className="flex items-center justify-between gap-3 relative z-10 w-full min-w-0">
-                         <h4 className="text-xs sm:text-[13px] font-bold text-slate-800 leading-relaxed break-all flex-1 min-w-0 pr-4">{note.title}</h4>
+                       <div className={`flex-1 min-w-0 px-3.5 py-3 flex items-center gap-3 ${tintBg}`}>
+                         <h4 className="text-xs sm:text-[13px] font-semibold text-slate-700 group-hover:text-slate-800 leading-snug break-all flex-1 min-w-0 transition-colors">{note.title}</h4>
                        </div>
                     </motion.div>
                   );
