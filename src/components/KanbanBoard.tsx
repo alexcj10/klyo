@@ -304,8 +304,11 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
 
         const sortedTickets = sortTickets(columnTickets, columnSorts[column.id] || 'none');
 
+        // Derive border color from column bgColor (e.g. 'bg-blue-50/60' -> 'border-blue-100')
+        const colBorderColor = column.bgColor.replace('bg-', 'border-').replace(/50\/60|100\/60/, '200');
+
         return (
-          <div key={column.id} className={`flex-1 min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl ${column.bgColor} border border-slate-100 p-3 snap-center shadow-sm relative`}>
+          <div key={column.id} className={`flex-1 min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl ${column.bgColor} border ${colBorderColor} p-3 snap-center shadow-sm relative`}>
             {/* Column Header */}
             <div className="flex items-center justify-between gap-4 mb-4 px-1 group min-w-0">
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
@@ -729,7 +732,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         
         {/* Notes Column */}
         {notes !== undefined && (
-          <div className="flex-1 min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl bg-amber-50/40 border border-amber-100 p-3 snap-center shadow-sm relative mr-4">
+          <div className="flex-1 min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl bg-amber-50/40 border border-amber-200 p-3 snap-center shadow-sm relative mr-4">
             <div className="flex items-center justify-between gap-4 mb-4 px-1 group">
               <div className="flex items-center gap-2.5">
                 <div className="w-1.5 h-6 rounded-full bg-amber-400 flex-shrink-0" />
