@@ -290,7 +290,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         </div>
       </div>
 
-      <div className="flex-1 flex overflow-x-auto p-3 sm:p-5 gap-4 custom-scrollbar bg-slate-50/20 snap-x snap-mandatory scroll-smooth">
+      <div className="flex-1 flex overflow-x-auto p-4 min-[350px]:p-3 sm:p-5 lg:p-6 gap-4 custom-scrollbar bg-slate-50/20 snap-x snap-mandatory scroll-smooth">
       {(columns || []).map((column) => {
         const columnTickets = tickets.filter(t => {
           const matchesColumn = t.status === column.id;
@@ -308,7 +308,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
         const colBorderColor = column.bgColor.replace('bg-', 'border-').replace(/50\/60|100\/60/, '200');
 
         return (
-          <div key={column.id} className={`flex-1 min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl ${column.bgColor} border ${colBorderColor} p-3 snap-center shadow-sm relative`}>
+          <div key={column.id} className={`flex-1 min-w-[260px] min-[350px]:min-w-[290px] sm:min-w-[320px] max-w-[420px] flex flex-col rounded-2xl ${column.bgColor} border ${colBorderColor} p-4 min-[350px]:p-3 sm:p-5 snap-center shadow-sm relative`}>
             {/* Column Header */}
             <div className="flex items-center justify-between gap-4 mb-4 px-1 group min-w-0">
               <div className="flex items-center gap-2.5 min-w-0 flex-1">
