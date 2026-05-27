@@ -255,11 +255,11 @@ const WorldClockModal: React.FC<WorldClockModalProps> = ({ isOpen, onClose }) =>
                         </div>
 
                         {/* Footer */}
-                        <div className="px-5 py-3 bg-white border-t border-gray-100/50 flex items-center justify-between">
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Global Time Engine v2.0</span>
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                                <span className="text-[10px] font-bold text-green-600 uppercase">System Active</span>
+                        <div className="px-4 sm:px-5 py-2.5 sm:py-3 bg-white border-t border-gray-100/50 flex items-center justify-between">
+                            <span className="text-[8px] sm:text-[10px] font-bold text-gray-400 uppercase tracking-wider sm:tracking-widest whitespace-nowrap">Global Time Engine v2.0</span>
+                            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                                <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500 animate-pulse shrink-0" />
+                                <span className="text-[8px] sm:text-[10px] font-bold text-green-600 uppercase whitespace-nowrap">System Active</span>
                             </div>
                         </div>
                     </motion.div>
