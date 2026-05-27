@@ -433,7 +433,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -20, scale: 0.95 }}
                     transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 25 }}
-                    className="p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 group relative overflow-hidden"
+                    className="p-2.5 sm:p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 group relative overflow-hidden"
                   >
                     {/* Priority accent line */}
                     <div className={`absolute left-0 top-0 bottom-0 w-1 ${task.priority === 'high' ? 'bg-red-500' :
@@ -483,7 +483,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <span className={`
-                              px-2.5 py-1 rounded-lg text-xs font-semibold border flex items-center space-x-1
+                              px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-lg text-[9px] sm:text-xs font-semibold border flex items-center space-x-1
                               ${getPriorityColor(task.priority || 'low')}
                             `}>
                               {getPriorityIcon(task.priority || 'low')}

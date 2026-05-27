@@ -41,12 +41,12 @@ const Header: React.FC<HeaderProps> = ({
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4 }}
-        className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 px-4 sm:px-6 py-3 sticky top-0 z-50 shadow-sm"
+        className="bg-white/95 backdrop-blur-xl border-b border-gray-200/50 px-3 sm:px-6 py-2 sm:py-3 sticky top-0 z-50 shadow-sm"
       >
         <div className="flex items-center justify-between max-w-[1800px] mx-auto">
           {/* Logo */}
           <div className="flex items-center">
-            <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+            <h1 className="text-lg sm:text-2xl font-bold tracking-tight">
               <span className="text-gray-900">Kl</span>
               <span className="text-blue-500">y</span>
               <span className="text-gray-900">o</span>
@@ -78,7 +78,7 @@ const Header: React.FC<HeaderProps> = ({
               className="lg:hidden p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
               title="Search"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
 
             {/* AI Assistant Button - Always visible in Header */}
@@ -141,9 +141,9 @@ const Header: React.FC<HeaderProps> = ({
               className="lg:hidden p-2.5 rounded-xl hover:bg-gray-100 transition-colors text-gray-600"
             >
               {isMobileSidebarOpen ? (
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               ) : (
-                <Menu className="w-5 h-5" />
+                <Menu className="w-4 h-4 sm:w-5 sm:h-5" />
               )}
             </motion.button>
           </div>

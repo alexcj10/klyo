@@ -490,7 +490,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                             className="flex flex-col h-full overflow-hidden"
                                         >
                                             <div
-                                                className="flex-1 overflow-y-auto p-3 sm:p-4 space-y-3 overscroll-contain"
+                                                className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-3 overscroll-contain"
                                                 onClick={() => setShowMentionPopup(false)}
                                             >
                                                 {messages.map((msg) => (
@@ -499,7 +499,7 @@ export default function AIChat({ events, tasks, isOpen = false, setIsOpen = () =
                                                         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                                                     >
                                                         <div
-                                                            className={`max-w-[85%] p-3 sm:p-4 rounded-2xl text-[15px] leading-relaxed shadow-sm break-words overflow-hidden ${msg.role === 'user'
+                                                            className={`max-w-[85%] p-2.5 sm:p-4 rounded-2xl text-[13px] sm:text-[15px] leading-relaxed shadow-sm break-words overflow-hidden ${msg.role === 'user'
                                                                 ? `${msg.content.includes('@frog') ? 'bg-emerald-600' :
                                                                     msg.content.includes('@coach') ? 'bg-rose-600' :
                                                                         msg.content.includes('@analyst') ? 'bg-purple-600' :

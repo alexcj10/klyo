@@ -71,3 +71,10 @@
     opacity: 1;
   }
 }
+
+/* Klyo: Ultra-Compact Responsive Strategy */
+@media (max-width: 375px) {
+  html {
+    font-size: 13px !important;
+  }
+}
