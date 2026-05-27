@@ -480,8 +480,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     cy="50%"
                     labelLine={false}
                     label={false}
-                    outerRadius={window.innerWidth < 640 ? 60 : window.innerWidth < 1024 ? 75 : 85}
-                    innerRadius={window.innerWidth < 640 ? 30 : window.innerWidth < 1024 ? 40 : 45}
+                    outerRadius={window.innerWidth < 640 ? 45 : window.innerWidth < 1024 ? 75 : 85}
+                    innerRadius={window.innerWidth < 640 ? 25 : window.innerWidth < 1024 ? 40 : 45}
                     fill="#8884d8"
                     dataKey="value"
                     paddingAngle={2}
@@ -497,7 +497,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     ]}
                   />
                   <Legend
-                    wrapperStyle={{ fontSize: '12px' }}
+                    wrapperStyle={{ fontSize: window.innerWidth < 640 ? '9px' : '12px' }}
                     iconType="circle"
                     formatter={(value: string) => {
                       const item = analytics.eventsByCategory.find(c => c.name === value);
@@ -523,8 +523,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     data={analytics.moodDistribution}
                     cx="50%"
                     cy="50%"
-                    innerRadius={window.innerWidth < 640 ? 30 : window.innerWidth < 1024 ? 40 : 45}
-                    outerRadius={window.innerWidth < 640 ? 60 : window.innerWidth < 1024 ? 75 : 85}
+                    innerRadius={window.innerWidth < 640 ? 25 : window.innerWidth < 1024 ? 40 : 45}
+                    outerRadius={window.innerWidth < 640 ? 45 : window.innerWidth < 1024 ? 75 : 85}
                     paddingAngle={3}
                     dataKey="value"
                   >
@@ -539,7 +539,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     ]}
                   />
                   <Legend
-                    wrapperStyle={{ fontSize: '10px' }}
+                    wrapperStyle={{ fontSize: window.innerWidth < 640 ? '8px' : '10px' }}
                     iconType="circle"
                     formatter={(value: string) => {
                       const item = analytics.moodDistribution.find(c => c.name === value);
@@ -575,8 +575,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 160 : window.innerWidth < 1024 ? 185 : 250}>
                 <BarChart data={analytics.timeDistributionData} layout="horizontal">
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis type="number" stroke="#6b7280" fontSize={12} />
-                  <YAxis dataKey="name" type="category" stroke="#6b7280" fontSize={12} />
+                  <XAxis type="number" stroke="#6b7280" fontSize={window.innerWidth < 640 ? 9 : 12} />
+                  <YAxis dataKey="name" type="category" stroke="#6b7280" fontSize={window.innerWidth < 640 ? 9 : 12} width={window.innerWidth < 640 ? 60 : 70} />
                   <Tooltip content={<CustomTooltip />} />
                   <Bar dataKey="value" fill="#06B6D4" radius={[0, 4, 4, 0]} maxBarSize={12} />
                 </BarChart>
@@ -600,8 +600,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     cy="50%"
                     labelLine={false}
                     label={false}
-                    innerRadius={window.innerWidth < 640 ? 30 : window.innerWidth < 1024 ? 40 : 45}
-                    outerRadius={window.innerWidth < 640 ? 60 : window.innerWidth < 1024 ? 75 : 85}
+                    innerRadius={window.innerWidth < 640 ? 25 : window.innerWidth < 1024 ? 40 : 45}
+                    outerRadius={window.innerWidth < 640 ? 45 : window.innerWidth < 1024 ? 75 : 85}
                     paddingAngle={3}
                     dataKey="value"
                   >
@@ -616,7 +616,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
                     ]}
                   />
                   <Legend
-                    wrapperStyle={{ fontSize: '12px' }}
+                    wrapperStyle={{ fontSize: window.innerWidth < 640 ? '9px' : '12px' }}
                     iconType="circle"
                     formatter={(value: string) => {
                       const item = analytics.eventsByPriority.find(c => c.name === value);
@@ -639,8 +639,8 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({ events, tasks, 
               <ResponsiveContainer width="100%" height={window.innerWidth < 640 ? 160 : window.innerWidth < 1024 ? 185 : 250}>
                 <AreaChart data={analytics.monthlyTrends}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                  <XAxis dataKey="month" stroke="#6b7280" fontSize={12} />
-                  <YAxis stroke="#6b7280" fontSize={12} />
+                  <XAxis dataKey="month" stroke="#6b7280" fontSize={window.innerWidth < 640 ? 9 : 12} />
+                  <YAxis stroke="#6b7280" fontSize={window.innerWidth < 640 ? 9 : 12} />
                   <Tooltip content={<CustomTooltip />} />
                   <Legend />
                   <Area
