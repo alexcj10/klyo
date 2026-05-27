@@ -58,10 +58,10 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                         initial={{ scale: 0.9, opacity: 0, y: 10 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 10 }}
-                        className="relative bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden w-full max-w-[320px]"
+                        className="relative bg-white rounded-3xl shadow-2xl border border-blue-100 overflow-hidden w-full max-w-[260px] sm:max-w-[320px]"
                     >
                         {/* Header */}
-                        <div className="px-5 py-2.5 border-b border-blue-50 flex items-center justify-between bg-blue-50/50">
+                        <div className="px-4 sm:px-5 py-2 sm:py-2.5 border-b border-blue-50 flex items-center justify-between bg-blue-50/50">
                             <h3 className="font-bold text-gray-800 text-[11px] uppercase tracking-wider">
                                 {viewMode === 'year' ? 'Select Year' : 'Select Month'}
                             </h3>
@@ -73,19 +73,19 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                             </button>
                         </div>
 
-                        <div className="p-5">
+                        <div className="p-3 sm:p-5">
                             {/* Year Selector Control - Only show if not in year mode or to change year for month selection */}
-                            <div className="flex items-center justify-between mb-5 bg-gray-50/80 p-1.5 rounded-2xl">
+                            <div className="flex items-center justify-between mb-3 sm:mb-5 bg-gray-50/80 p-1 sm:p-1.5 rounded-xl sm:rounded-2xl">
                                 <button
                                     onClick={() => setSelectorYear(prev => prev - 1)}
-                                    className="p-1.5 hover:bg-white hover:shadow-sm rounded-xl transition-all"
+                                    className="p-1 sm:p-1.5 hover:bg-white hover:shadow-sm rounded-lg sm:rounded-xl transition-all"
                                 >
                                     <ChevronLeft className="w-4 h-4 text-gray-600" />
                                 </button>
-                                <span className="text-base font-bold text-gray-900">{selectorYear}</span>
+                                <span className="text-sm sm:text-base font-bold text-gray-900">{selectorYear}</span>
                                 <button
                                     onClick={() => setSelectorYear(prev => prev + 1)}
-                                    className="p-1.5 hover:bg-white hover:shadow-sm rounded-xl transition-all"
+                                    className="p-1 sm:p-1.5 hover:bg-white hover:shadow-sm rounded-lg sm:rounded-xl transition-all"
                                 >
                                     <ChevronRight className="w-4 h-4 text-gray-600" />
                                 </button>
@@ -102,7 +102,7 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                                                 onClose();
                                             }}
                                             className={`
-                        py-3 rounded-2xl text-sm font-semibold transition-all
+                        py-1.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-semibold transition-all
                         ${year === getYear(currentDate)
                                                     ? 'bg-blue-500 text-white shadow-sm'
                                                     : 'bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50'
@@ -127,7 +127,7 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                                                     onClose();
                                                 }}
                                                 className={`
-                          py-3 rounded-2xl text-sm font-semibold transition-all
+                          py-1.5 sm:py-3 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-semibold transition-all
                           ${isSelected
                                                         ? 'bg-blue-500 text-white shadow-sm'
                                                         : 'bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50'
@@ -143,13 +143,13 @@ const DateSelectorPopup: React.FC<DateSelectorPopupProps> = ({
                         </div>
 
                         {/* Footer / Today shortcut */}
-                        <div className="px-5 py-3 bg-gray-50/30 border-t border-blue-50">
+                        <div className="px-3 sm:px-5 py-2 sm:py-3 bg-gray-50/30 border-t border-blue-50">
                             <button
                                 onClick={() => {
                                     onSelectDate(new Date());
                                     onClose();
                                 }}
-                                className="w-full py-2.5 bg-white border border-blue-100 text-blue-600 font-bold rounded-2xl hover:bg-blue-50 transition-all text-xs"
+                                className="w-full py-1.5 sm:py-2.5 bg-white border border-blue-100 text-blue-600 font-bold rounded-xl sm:rounded-2xl hover:bg-blue-50 transition-all text-[11px] sm:text-xs"
                             >
                                 Go to Today
                             </button>
