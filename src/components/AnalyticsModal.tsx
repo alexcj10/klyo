@@ -56,8 +56,8 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             </div>
 
             {/* Content */}
-            <div className={hasData ? "overflow-y-auto max-h-[calc(70vh-100px)] sm:max-h-[calc(90vh-100px)] md:max-h-[calc(80vh-100px)] lg:max-h-[calc(85vh-100px)] xl:max-h-[calc(90vh-100px)] scrollbar-hide" : "flex-1 flex items-center justify-center px-4 sm:px-6"}>
-              <div className={hasData ? "px-4 sm:px-6 py-6 sm:py-8" : "w-full flex items-center justify-center min-h-[350px] sm:min-h-[400px]"}>
+            <div className={`overflow-y-auto max-h-[calc(75vh-60px)] sm:max-h-[calc(90vh-100px)] md:max-h-[calc(80vh-100px)] lg:max-h-[calc(85vh-100px)] xl:max-h-[calc(90vh-100px)] scrollbar-hide ${!hasData ? 'flex-1 px-4 sm:px-6 flex items-center justify-center' : ''}`}>
+              <div className={hasData ? "px-4 sm:px-6 py-6 sm:py-8" : "w-full flex items-center justify-center py-6 sm:min-h-[400px]"}>
                 <AnalyticsDashboard events={events} tasks={tasks} onAddEvent={onAddEvent} onAddTask={onAddTask} />
               </div>
             </div>
