@@ -31,11 +31,11 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className={`w-[94%] sm:w-full ${hasData ? 'max-w-[340px] sm:max-w-[95%] md:max-w-[85%] lg:max-w-[85%] xl:max-w-5xl' : 'max-w-[340px] sm:max-w-lg'} max-h-[70vh] sm:max-h-[90vh] md:max-h-[80vh] lg:max-h-[85vh] xl:max-h-[85vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden`}
+            className={`w-[94%] sm:w-full ${hasData ? 'max-w-[340px] sm:max-w-[95%] md:max-w-[85%] lg:max-w-[85%] xl:max-w-5xl' : 'max-w-[340px] sm:max-w-lg'} max-h-[70vh] sm:max-h-[90vh] md:max-h-[80vh] lg:max-h-[85vh] xl:max-h-[85vh] bg-gray-50 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col`}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header - Compact */}
-            <div className="flex items-center justify-between px-4 py-2.5 sm:px-5 sm:py-3 bg-white border-b border-gray-100">
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-2.5 sm:px-5 sm:py-3 bg-white border-b border-gray-100">
               <div className="flex items-center gap-3 min-w-0 flex-1">
                 <div className="w-8 h-8 sm:w-9 sm:h-9 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
                   <BarChart3 className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -56,7 +56,7 @@ const AnalyticsModal: React.FC<AnalyticsModalProps> = ({ isOpen, onClose, events
             </div>
 
             {/* Content */}
-            <div className={`overflow-y-auto max-h-[calc(75vh-60px)] sm:max-h-[calc(90vh-100px)] md:max-h-[calc(80vh-100px)] lg:max-h-[calc(85vh-100px)] xl:max-h-[calc(90vh-100px)] scrollbar-hide ${!hasData ? 'flex-1 px-4 sm:px-6 flex items-center justify-center' : ''}`}>
+            <div className={`flex-1 min-h-0 overflow-y-auto scrollbar-hide ${!hasData ? 'px-4 sm:px-6 flex items-center justify-center' : ''}`}>
               <div className={hasData ? "px-4 sm:px-6 py-6 sm:py-8" : "w-full flex items-center justify-center py-6 sm:min-h-[400px]"}>
                 <AnalyticsDashboard events={events} tasks={tasks} onAddEvent={onAddEvent} onAddTask={onAddTask} />
               </div>
