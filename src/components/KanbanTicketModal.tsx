@@ -349,10 +349,10 @@ const KanbanTicketModal: React.FC<KanbanTicketModalProps> = ({
                         <span 
                           key={l} 
                           onClick={() => removeLabel(l)}
-                          className={`group relative text-[10px] font-bold border px-2.5 py-1 rounded-lg cursor-pointer hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all flex items-center gap-1 ${getLabelColor(l)}`}
+                          className={`group relative text-[10px] font-bold border px-2.5 py-1 rounded-lg cursor-pointer hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all flex items-center gap-1 max-w-full min-w-0 ${getLabelColor(l)}`}
                         >
-                          {l}
-                          <X className="w-2.5 h-2.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-current" />
+                          <span className="truncate">{l}</span>
+                          <X className="w-2.5 h-2.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity text-current flex-shrink-0" />
                         </span>
                       ))}
                       

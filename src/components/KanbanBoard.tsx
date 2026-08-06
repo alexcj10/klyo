@@ -374,7 +374,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         {ticket.labels.length > 0 && (
                           <div className="flex flex-wrap gap-1.5">
                             {ticket.labels.map(label => (
-                              <span key={label} className={`text-[8px] font-bold px-2 py-0.5 rounded-md border ${getLabelColor(label)}`}>
+                              <span key={label} className={`text-[8px] font-bold px-2 py-0.5 rounded-md border inline-block max-w-full truncate ${getLabelColor(label)}`}>
                                 {label}
                               </span>
                             ))}
