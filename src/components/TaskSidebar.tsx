@@ -468,10 +468,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between mb-2">
-                          <h4 className={`
-                            font-semibold text-sm leading-relaxed break-words overflow-hidden
-                            ${task.completed ? 'line-through text-gray-500' : 'text-gray-800'}
-                          `}>
+                          <h4 className={`text-[13px] font-bold leading-tight break-all tracking-tight flex-1 ${task.completed ? 'line-through text-slate-400' : 'text-slate-800'}`}>
                             {task.title}
                           </h4>
                           <div className="flex items-center space-x-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
@@ -487,7 +484,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                         </div>
 
                         {task.description && (
-                          <p className="text-xs text-gray-600 mb-3 leading-relaxed line-clamp-2 break-words">
+                          <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2 font-medium mb-3">
                             {task.description}
                           </p>
                         )}
