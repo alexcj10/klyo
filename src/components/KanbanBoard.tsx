@@ -411,7 +411,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                     <motion.div
                       key={ticket.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
                       onClick={(e) => { e.stopPropagation(); setSelectedTicketId(ticket.id); }}
-                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer ${getTicketBorderColor(ticket.id)}`}
+                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:border-slate-300/80 hover:shadow-[0_2px_12px_rgb(0,0,0,0.03)] hover:-translate-y-0.5 transition-all duration-300 relative border-l-[6px] cursor-pointer ${getTicketBorderColor(ticket.id)}`}
                     >
                       <div className="flex flex-col gap-3">
                         {/* Tags / Labels Row */}
@@ -761,7 +761,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                       initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
                       key={note.id}
                       onClick={() => onNoteClick?.(note.id)}
-                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all relative border-l-[6px] cursor-pointer flex-shrink-0 min-w-0 ${borderColor}`}
+                      className={`group bg-white rounded-2xl border border-slate-200/60 p-4 shadow-sm hover:border-slate-300/80 hover:shadow-[0_2px_12px_rgb(0,0,0,0.03)] hover:-translate-y-0.5 transition-all duration-300 relative border-l-[6px] cursor-pointer flex-shrink-0 min-w-0 ${borderColor}`}
                     >
                        <h4 className="text-[13px] font-bold text-slate-800 leading-tight break-all tracking-tight">{note.title}</h4>
                     </motion.div>
