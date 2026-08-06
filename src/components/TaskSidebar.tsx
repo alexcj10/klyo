@@ -17,11 +17,14 @@ interface TaskSidebarProps {
 
 const taskBorderColors = [
   'border-l-blue-500',
-  'border-l-indigo-500',
+  'border-l-emerald-500',
   'border-l-purple-500',
-  'border-l-fuchsia-500',
   'border-l-pink-500',
+  'border-l-amber-500',
+  'border-l-indigo-500',
   'border-l-rose-500',
+  'border-l-cyan-500',
+  'border-l-teal-500',
   'border-l-violet-500',
   'border-l-sky-500',
   'border-l-orange-500',
@@ -446,7 +449,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                   <motion.div
                     key={task.id}
                     layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
-                    className={`p-2.5 sm:p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-slate-300/80 hover:shadow-[0_2px_12px_rgb(0,0,0,0.03)] hover:-translate-y-0.5 transition-all duration-300 group relative overflow-hidden border-l-[6px] ${getTaskBorderColor(task.id)}`}
+                    className={`group bg-white rounded-2xl border border-slate-200/60 p-2.5 sm:p-4 shadow-sm hover:border-slate-300/80 hover:shadow-[0_2px_12px_rgb(0,0,0,0.03)] hover:-translate-y-0.5 transition-all duration-300 relative overflow-hidden border-l-[6px] ${getTaskBorderColor(task.id)}`}
                   >
 
                     <div className="flex items-start space-x-3 pl-2">
@@ -471,14 +474,14 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                           `}>
                             {task.title}
                           </h4>
-                          <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="flex items-center space-x-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-300">
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
                               onClick={() => onTaskDelete(task.id)}
-                              className="text-red-400 hover:text-red-600 transition-colors duration-200 p-1.5 hover:bg-red-50 rounded-lg"
+                              className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all flex-shrink-0"
                             >
-                              <Trash2 className="w-3.5 h-3.5" />
+                              <Trash2 className="w-4 h-4" />
                             </motion.button>
                           </div>
                         </div>
