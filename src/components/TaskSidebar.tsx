@@ -55,7 +55,6 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
   const [newTaskMood, setNewTaskMood] = useState<Mood>('none');
   const [sortBy, setSortBy] = useState<'priority' | 'date' | 'category'>('priority');
   const [deleteConfirmEvent, setDeleteConfirmEvent] = useState<Event | null>(null);
-  const [deleteConfirmTask, setDeleteConfirmTask] = useState<string | null>(null);
   // Removed isSorting state as sorting is now instant with useMemo
 
   const sortedAndFilteredTasks = useMemo(() => {
@@ -476,7 +475,7 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                             <motion.button
                               whileHover={{ scale: 1.1 }}
                               whileTap={{ scale: 0.9 }}
-                              onClick={() => setDeleteConfirmTask(task.id)}
+                              onClick={() => onTaskDelete(task.id)}
                               className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 transition-all flex-shrink-0"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -731,51 +730,6 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleConfirmDelete}
-                className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-200 transition-all duration-200"
-              >
-                Delete
-              </motion.button>
-            </div>
-          </motion.div>
-        </div>
-      )}
-      {/* Task Delete Confirmation Dialog */}
-      {deleteConfirmTask && (
-        <div className="fixed inset-0 bg-black/40 z-[70] flex items-center justify-center p-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="bg-white rounded-2xl shadow-2xl p-5 max-w-[320px] w-full mx-auto overflow-hidden border border-gray-100"
-          >
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Trash2 className="w-5 h-5 text-red-600" />
-              </div>
-              <h3 className="text-lg font-bold text-gray-900">
-                Delete Task?
-              </h3>
-            </div>
-
-            <p className="text-[15px] text-gray-600 mb-6 leading-relaxed font-medium text-left">
-              Are you sure you want to delete <span className="text-gray-900 font-bold">"{(tasks.find(t => t.id === deleteConfirmTask)?.title || '').length > 30 ? (tasks.find(t => t.id === deleteConfirmTask)?.title || '').slice(0, 27) + '...' : tasks.find(t => t.id === deleteConfirmTask)?.title}"</span>? This action cannot be undone.
-            </p>
-
-            <div className="flex space-x-3">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setDeleteConfirmTask(null)}
-                className="flex-1 px-4 py-2.5 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200"
-              >
-                Cancel
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => {
-                  onTaskDelete(deleteConfirmTask);
-                  setDeleteConfirmTask(null);
-                }}
                 className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-200 transition-all duration-200"
               >
                 Delete
