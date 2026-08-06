@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plus, 
   MoreHorizontal, 
-  Check,
   Trash2,
   X,
   ChevronRight,
@@ -12,10 +11,6 @@ import {
   Layout,
   Layers,
   Star,
-  Type,
-  AlignLeft,
-  Tag,
-  ListChecks,
   Search,
   Inbox,
   Filter,
@@ -24,6 +19,7 @@ import {
 } from 'lucide-react';
 import { KanbanTicket, KanbanStatus, KanbanPriority, KanbanColumn, Note } from '../types';
 import KanbanTicketModal from './KanbanTicketModal';
+import NewTicketModal from './NewTicketModal';
 import ColumnSettingsModal from './ColumnSettingsModal';
 
 interface KanbanBoardProps {
@@ -49,9 +45,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   notes = [],
   onNoteClick
 }) => {
-  const [addingToColumn, setAddingToColumn] = useState<KanbanStatus | null>(null);
-  const [inlineTitle, setInlineTitle] = useState('');
-  const [inlineDescription, setInlineDescription] = useState('');
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
   const [editingColumnId, setEditingColumnId] = useState<string | null>(null);
@@ -60,13 +53,8 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [confirmingClearColumn, setConfirmingClearColumn] = useState<string | null>(null);
   
-  // Inline creator state
-  const [inlinePriority, setInlinePriority] = useState<KanbanPriority>('medium');
-  const [inlinePoints, setInlinePoints] = useState<number>(0);
-  const [inlineLabels, setInlineLabels] = useState<string[]>([]);
-  const [inlineSubtasks, setInlineSubtasks] = useState<string[]>([]);
-  const [newLabelInput, setNewLabelInput] = useState('');
-  const [newSubtaskInput, setNewSubtaskInput] = useState('');
+  // New Ticket Modal state
+  const [newTicketModalColumn, setNewTicketModalColumn] = useState<KanbanStatus | null>(null);
 
   // Column Sorting State
   const [columnSorts, setColumnSorts] = useState<Record<string, 'priority' | 'points' | 'none'>>({});
@@ -135,41 +123,6 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   const getTicketBorderColor = (ticketId: string) => {
     const hash = ticketId.split('').reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
     return ticketBorderColors[hash % ticketBorderColors.length];
-  };
-
-  const handleInlineSubmit = (status: KanbanStatus) => {
-    if (inlineTitle.trim()) {
-      onTicketAdd({
-        title: inlineTitle.trim(),
-        description: inlineDescription.trim() || undefined,
-        status,
-        priority: inlinePriority,
-        storyPoints: inlinePoints > 0 ? inlinePoints : undefined,
-        labels: inlineLabels,
-        subtasks: inlineSubtasks.map(t => ({ id: Math.random().toString(), title: t, completed: false }))
-      });
-      setInlineTitle('');
-      setInlineDescription('');
-      setInlinePriority('medium');
-      setInlinePoints(0);
-      setInlineLabels([]);
-      setInlineSubtasks([]);
-      setNewLabelInput('');
-      setNewSubtaskInput('');
-      setAddingToColumn(null);
-    }
-  };
-
-  const handleCancelInline = () => {
-    setInlineTitle('');
-    setInlineDescription('');
-    setInlinePriority('medium');
-    setInlinePoints(0);
-    setInlineLabels([]);
-    setInlineSubtasks([]);
-    setNewLabelInput('');
-    setNewSubtaskInput('');
-    setAddingToColumn(null);
   };
 
   return (
@@ -342,7 +295,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">Actions</span>
                       </div>
                       
-                      <button onClick={() => { handleCancelInline(); setAddingToColumn(column.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
+                      <button onClick={() => { setNewTicketModalColumn(column.id); setActiveMenu(null); }} className="w-full text-left px-4 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-50 flex items-center gap-2.5 transition-colors">
                         <Plus className="w-3.5 h-3.5 text-blue-500" /> Add New Ticket
                       </button>
 
@@ -507,224 +460,14 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                 )}
               </AnimatePresence>
 
-              {/* ===== REDESIGNED INLINE TICKET CREATOR ===== */}
-              <AnimatePresence>
-                {addingToColumn === column.id && (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 10 }} 
-                    animate={{ opacity: 1, y: 0 }} 
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                    className="bg-white rounded-2xl border-2 border-blue-400 shadow-xl shadow-blue-100/50"
-                  >
-                    {/* Header bar */}
-                    <div className="flex items-center justify-between px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50/50 border-b border-blue-100/50 rounded-t-2xl gap-2">
-                      <div className="flex items-center gap-2 min-w-0 flex-1">
-                        <div className={`w-2 h-2 rounded-full ${column.color} animate-pulse flex-shrink-0`} />
-                        <span className="text-[10px] font-bold text-slate-500 truncate">
-                          Adding to <span className="text-blue-600 truncate">{column.title}</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 flex-shrink-0">
-                        <button 
-                          onClick={handleCancelInline} 
-                          className="p-1 hover:bg-white/80 rounded-lg text-slate-400 hover:text-red-500 transition-all"
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                        <button 
-                          onClick={() => handleInlineSubmit(column.id)} 
-                          disabled={!inlineTitle.trim()} 
-                          className="flex items-center gap-1 px-2.5 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-all text-[10px] font-bold shadow-sm active:scale-95"
-                        >
-                          <Check className="w-3 h-3 stroke-[3px]" />
-                          Save
-                        </button>
-                      </div>
-                    </div>
 
-                    {/* Content area */}
-                    <div className="p-3 space-y-3">
-                      {/* Title */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-1.5 text-slate-400">
-                            <Type className="w-3 h-3" />
-                            <span className="text-[9px] font-bold">Title</span>
-                          </div>
-                          <span className={`text-[9px] font-bold tabular-nums ${inlineTitle.length > 90 ? 'text-red-500' : 'text-slate-300'}`}>
-                            {inlineTitle.length}/100
-                          </span>
-                        </div>
-                        <textarea
-                          autoFocus 
-                          placeholder="What needs to be done?" 
-                          value={inlineTitle} 
-                          onChange={(e) => setInlineTitle(e.target.value.slice(0, 100))}
-                          onKeyDown={(e) => { 
-                            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleInlineSubmit(column.id); } 
-                            if (e.key === 'Escape') handleCancelInline(); 
-                          }}
-                          rows={1}
-                          className="w-full text-sm font-semibold text-slate-800 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2 resize-none leading-snug outline-none focus:ring-2 focus:ring-blue-50 transition-all caret-blue-600"
-                        />
-                      </div>
-
-                      {/* Description */}
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-slate-400">
-                          <AlignLeft className="w-3 h-3" />
-                          <span className="text-[9px] font-bold">Description</span>
-                          <span className="text-[9px] font-medium text-slate-300">(optional)</span>
-                        </div>
-                        <textarea
-                          placeholder="Add more details, context, or notes..." 
-                          value={inlineDescription}
-                          onChange={(e) => setInlineDescription(e.target.value)}
-                          rows={2}
-                          className="w-full text-xs font-medium text-slate-600 placeholder-slate-300 bg-slate-50/50 rounded-lg border border-slate-100 focus:border-blue-200 focus:bg-white px-3 py-2 resize-none leading-relaxed outline-none focus:ring-2 focus:ring-blue-50 transition-all max-h-[120px]"
-                        />
-                      </div>
-
-                      {/* Priority + Points Row */}
-                      <div className="flex flex-wrap gap-2 items-center">
-                        <select 
-                          value={inlinePriority} 
-                          onChange={(e) => setInlinePriority(e.target.value as KanbanPriority)}
-                          className="text-[10px] font-bold bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 text-slate-600 hover:bg-white hover:border-blue-200 transition-all outline-none focus:ring-2 focus:ring-blue-50 cursor-pointer"
-                        >
-                          <option value="low">🟢 Low</option>
-                          <option value="medium">🔵 Medium</option>
-                          <option value="high">🟠 High</option>
-                          <option value="urgent">🔴 Urgent</option>
-                        </select>
-                        
-                        <div className="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-lg px-2 py-1.5 focus-within:border-blue-200 focus-within:ring-2 focus-within:ring-blue-50 transition-all">
-                          <Star className="w-3 h-3 text-amber-400" />
-                          <input 
-                            type="number" 
-                            placeholder="Pts" 
-                            min="0"
-                            max="99"
-                            value={inlinePoints || ''} 
-                            onChange={(e) => setInlinePoints(parseInt(e.target.value) || 0)}
-                            className="w-8 text-[10px] font-bold bg-transparent text-slate-600 outline-none placeholder-slate-400"
-                          />
-                        </div>
-                      </div>
-
-                      {/* Labels */}
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-slate-400">
-                          <Tag className="w-3 h-3" />
-                          <span className="text-[9px] font-bold">Labels</span>
-                        </div>
-                        <div className="flex flex-wrap gap-1.5 items-center">
-                          {inlineLabels.map(l => (
-                            <motion.button 
-                              key={l} 
-                              initial={{ scale: 0.8, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              onClick={() => setInlineLabels(prev => prev.filter(x => x !== l))}
-                              className={`text-[10px] font-bold px-2 py-0.5 rounded-lg border hover:bg-red-50 hover:text-red-500 hover:border-red-200 transition-all group/label flex items-center gap-1 ${getLabelColor(l)}`}
-                            >
-                              {l}
-                              <X className="w-2.5 h-2.5 opacity-0 group-hover/label:opacity-100 transition-opacity" />
-                            </motion.button>
-                          ))}
-                          <form 
-                            className="flex-1 flex flex-wrap gap-1.5 items-center"
-                            onSubmit={(e) => {
-                              e.preventDefault();
-                              if (newLabelInput.trim() && !inlineLabels.includes(newLabelInput.trim())) {
-                                setInlineLabels([...inlineLabels, newLabelInput.trim()]); 
-                              }
-                              setNewLabelInput('');
-                            }}
-                          >
-                            <input 
-                              type="text" 
-                              placeholder={inlineLabels.length > 0 ? "+ Add" : "+ Type label & Enter"} 
-                              value={newLabelInput} 
-                              onChange={(e) => setNewLabelInput(e.target.value)}
-                              enterKeyHint="done"
-                              className="min-w-[80px] flex-1 text-[10px] font-bold bg-slate-50/50 border border-dashed border-slate-200 rounded-lg px-2 py-1 text-slate-500 focus:bg-white focus:border-blue-300 outline-none transition-all placeholder-slate-300"
-                            />
-                          </form>
-                        </div>
-                      </div>
-
-                      {/* Checklist */}
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1.5 text-slate-400">
-                          <ListChecks className="w-3 h-3" />
-                          <span className="text-[9px] font-bold">Checklist</span>
-                          {inlineSubtasks.length > 0 && (
-                            <span className="text-[9px] font-bold text-blue-500 bg-blue-50 px-1.5 rounded-md">{inlineSubtasks.length}</span>
-                          )}
-                        </div>
-
-                        {inlineSubtasks.length > 0 && (
-                          <div className="space-y-0.5 max-h-[80px] overflow-y-auto custom-scrollbar">
-                            {inlineSubtasks.map((st, i) => (
-                              <motion.div 
-                                key={i} 
-                                initial={{ opacity: 0, x: -10 }} 
-                                animate={{ opacity: 1, x: 0 }}
-                                className="flex items-center gap-2 group py-0.5 px-1.5 hover:bg-slate-50 rounded-lg transition-colors"
-                              >
-                                <div className="w-3.5 h-3.5 rounded border-2 border-slate-200 flex items-center justify-center flex-shrink-0">
-                                  <div className="w-1 h-1 rounded-sm bg-slate-300" />
-                                </div>
-                                <span className="text-[10px] font-medium text-slate-600 flex-1">{st}</span>
-                                <button 
-                                  onClick={() => setInlineSubtasks(prev => prev.filter((_, idx) => idx !== i))} 
-                                  className="opacity-0 group-hover:opacity-100 p-0.5 hover:bg-red-50 rounded text-slate-300 hover:text-red-500 transition-all"
-                                >
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </motion.div>
-                            ))}
-                          </div>
-                        )}
-
-                        <form 
-                          className="flex-1 flex items-center gap-2 px-1.5"
-                          onSubmit={(e) => {
-                            e.preventDefault();
-                            if (newSubtaskInput.trim()) {
-                              setInlineSubtasks([...inlineSubtasks, newSubtaskInput.trim()]); 
-                            }
-                            setNewSubtaskInput('');
-                          }}
-                        >
-                          <div className="w-3.5 h-3.5 rounded border-2 border-dashed border-slate-200 flex items-center justify-center flex-shrink-0">
-                            <Plus className="w-2 h-2 text-slate-300" />
-                          </div>
-                          <input 
-                            type="text" 
-                            placeholder="Add checklist item & Enter" 
-                            value={newSubtaskInput} 
-                            onChange={(e) => setNewSubtaskInput(e.target.value)}
-                            enterKeyHint="done"
-                            className="flex-1 text-[10px] font-medium text-slate-600 placeholder-slate-300 bg-transparent outline-none"
-                          />
-                        </form>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {!addingToColumn && (
-                <button
-                  onClick={() => { handleCancelInline(); setAddingToColumn(column.id); }}
+              <button
+                  onClick={() => setNewTicketModalColumn(column.id)}
                   className="w-full py-3 flex items-center justify-center gap-2 px-3 text-slate-400 hover:text-blue-600 hover:bg-white border-2 border-dashed border-slate-100 hover:border-blue-200 rounded-2xl transition-all text-xs font-bold group active:scale-[0.98] mt-1"
                 >
                   <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
                   New Ticket
                 </button>
-              )}
             </div>
           </div>
         );
@@ -792,6 +535,20 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
           onDelete={() => { onTicketDelete(selectedTicketId); setSelectedTicketId(null); }}
         />
       )}
+
+      {/* New Ticket Modal */}
+      {newTicketModalColumn && (
+        <NewTicketModal
+          isOpen={!!newTicketModalColumn}
+          onClose={() => setNewTicketModalColumn(null)}
+          onSubmit={(ticket) => onTicketAdd(ticket)}
+          targetColumn={newTicketModalColumn}
+          columnTitle={columns.find(c => c.id === newTicketModalColumn)?.title || ''}
+          columnColor={columns.find(c => c.id === newTicketModalColumn)?.color || ''}
+          columns={columns.map(c => ({ id: c.id, title: c.title, color: c.color }))}
+        />
+      )}
+
       {/* Column Settings Modal */}
       {editingColumnId && columns.find(c => c.id === editingColumnId) && (
         <ColumnSettingsModal 
