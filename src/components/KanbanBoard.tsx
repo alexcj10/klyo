@@ -56,6 +56,9 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
   // New Ticket Modal state
   const [newTicketModalColumn, setNewTicketModalColumn] = useState<KanbanStatus | null>(null);
 
+  // Delete confirmation state
+  const [confirmingDeleteTicket, setConfirmingDeleteTicket] = useState<string | null>(null);
+
   // Column Sorting State
   const [columnSorts, setColumnSorts] = useState<Record<string, 'priority' | 'points' | 'none'>>({});
 
@@ -382,7 +385,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                           <h4 className="text-[13px] font-bold text-slate-800 leading-tight break-all flex-1 tracking-tight">
                             {ticket.title}
                           </h4>
-                          <button onClick={(e) => { e.stopPropagation(); onTicketDelete(ticket.id); }} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex-shrink-0 active:scale-90">
+                          <button onClick={(e) => { e.stopPropagation(); setConfirmingDeleteTicket(ticket.id); }} className="p-1.5 rounded-lg hover:bg-red-50 text-slate-300 hover:text-red-500 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-all flex-shrink-0 active:scale-90">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
@@ -532,7 +535,7 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
           onClose={() => setSelectedTicketId(null)}
           ticket={tickets.find(t => t.id === selectedTicketId)!}
           onUpdate={(updates) => onTicketUpdate(selectedTicketId, updates)}
-          onDelete={() => { onTicketDelete(selectedTicketId); setSelectedTicketId(null); }}
+          onDelete={() => { setConfirmingDeleteTicket(selectedTicketId); }}
         />
       )}
 
@@ -612,6 +615,63 @@ const KanbanBoard: React.FC<KanbanBoardProps> = ({
                   className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-200 transition-all duration-200"
                 >
                   Clear All
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Ticket Delete Confirmation */}
+      <AnimatePresence>
+        {confirmingDeleteTicket && (
+          <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              onClick={() => setConfirmingDeleteTicket(null)}
+              className="absolute inset-0 bg-black/40"
+            />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative bg-white rounded-2xl shadow-2xl p-5 max-w-[320px] w-full mx-auto overflow-hidden border border-gray-100"
+            >
+              <div className="flex items-center space-x-3 mb-4 text-left">
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900">
+                  Delete Ticket?
+                </h3>
+              </div>
+
+              <p className="text-[15px] text-gray-600 mb-6 leading-relaxed font-medium text-left">
+                Are you sure you want to delete <span className="text-gray-900 font-bold">"{(tickets.find(t => t.id === confirmingDeleteTicket)?.title || '').length > 30 ? (tickets.find(t => t.id === confirmingDeleteTicket)?.title || '').slice(0, 27) + '...' : tickets.find(t => t.id === confirmingDeleteTicket)?.title}"</span>? This action cannot be undone.
+              </p>
+
+              <div className="flex space-x-3">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setConfirmingDeleteTicket(null)}
+                  className="flex-1 px-4 py-2.5 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    onTicketDelete(confirmingDeleteTicket);
+                    if (selectedTicketId === confirmingDeleteTicket) setSelectedTicketId(null);
+                    setConfirmingDeleteTicket(null);
+                  }}
+                  className="flex-1 px-4 py-2.5 text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-lg shadow-red-200 transition-all duration-200"
+                >
+                  Delete
                 </motion.button>
               </div>
             </motion.div>
