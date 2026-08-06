@@ -15,6 +15,23 @@ interface TaskSidebarProps {
   onEventDelete: (event: Event) => void;
 }
 
+const taskBorderColors = [
+  'border-l-blue-500',
+  'border-l-indigo-500',
+  'border-l-purple-500',
+  'border-l-fuchsia-500',
+  'border-l-pink-500',
+  'border-l-rose-500',
+  'border-l-violet-500',
+  'border-l-sky-500',
+  'border-l-orange-500',
+];
+
+const getTaskBorderColor = (taskId: string) => {
+  const hash = taskId.split('').reduce((acc, char, i) => acc + char.charCodeAt(0) * (i + 1), 0);
+  return taskBorderColors[hash % taskBorderColors.length];
+};
+
 const TaskSidebar: React.FC<TaskSidebarProps> = ({
   tasks,
   onTaskComplete,
@@ -428,17 +445,9 @@ const TaskSidebar: React.FC<TaskSidebarProps> = ({
                 {sortedAndFilteredTasks.map((task, index) => (
                   <motion.div
                     key={task.id}
-                    layout
-                    initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
-                    transition={{ delay: index * 0.05, type: "spring", stiffness: 300, damping: 25 }}
-                    className="p-2.5 sm:p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-300 group relative overflow-hidden"
+                    layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}
+                    className={`p-2.5 sm:p-4 bg-white/80 backdrop-blur-sm rounded-xl border border-gray-200/50 hover:border-slate-300/80 hover:shadow-[0_2px_12px_rgb(0,0,0,0.03)] hover:-translate-y-0.5 transition-all duration-300 group relative overflow-hidden border-l-[6px] ${getTaskBorderColor(task.id)}`}
                   >
-                    {/* Priority accent line */}
-                    <div className={`absolute left-0 top-0 bottom-0 w-1 ${task.priority === 'high' ? 'bg-red-500' :
-                      task.priority === 'medium' ? 'bg-amber-500' : 'bg-emerald-500'
-                      }`}></div>
 
                     <div className="flex items-start space-x-3 pl-2">
                       <motion.button
