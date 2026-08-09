@@ -728,6 +728,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           <div className="flex items-center flex-1 min-w-0">
             {viewMode !== 'kanban' ? (
               <>
+                {/* Inline Today indicator */}
+                {((viewMode === 'year' && getYear(currentDate) !== getYear(new Date())) ||
+                  (viewMode !== 'year' && format(currentDate, 'yyyy-MM') !== format(new Date(), 'yyyy-MM'))) && (
+                    <motion.button
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={goToToday}
+                      className="text-[10px] sm:text-xs text-blue-700 font-bold px-2 sm:px-3 py-1 bg-white hover:bg-blue-50 rounded-full border border-blue-200 transition-colors flex-shrink-0 mr-1 sm:mr-2 shadow-sm"
+                    >
+                      Today
+                    </motion.button>
+                  )}
+
                 <motion.button
                   whileTap={{ scale: 0.9 }}
                   onClick={navigatePrev}
@@ -736,53 +750,39 @@ const CalendarView: React.FC<CalendarViewProps> = ({
                   <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
                 </motion.button>
 
-            <h2 className="text-sm sm:text-xl font-bold flex-1 text-center whitespace-nowrap truncate px-0.5 sm:px-1 relative group cursor-pointer"
-              onClick={() => setIsSelectorOpen(true)}
-            >
-              <motion.span
-                whileHover={{ scale: 1.02, color: '#3b82f6' }}
-                whileTap={{ scale: 0.98 }}
-                className="inline-block text-gray-900 transition-colors duration-200"
-              >
-                {viewMode === 'day'
-                  ? (
-                    <>
-                      <span className="hidden sm:inline">{format(currentDate, 'EEEE, MMMM d')}</span>
-                      <span className="sm:hidden">{format(currentDate, 'MMM d, yyyy')}</span>
-                    </>
-                  )
-                  : viewMode === 'month'
-                    ? (
-                      <>
-                        <span className="hidden sm:inline">{format(currentDate, 'MMMM yyyy')}</span>
-                        <span className="sm:hidden">{format(currentDate, 'MMM yyyy')}</span>
-                      </>
-                    )
-                    : viewMode === 'week'
+                <h2 className="text-sm sm:text-xl font-bold flex-1 text-center whitespace-nowrap truncate px-0.5 sm:px-1 relative group cursor-pointer"
+                  onClick={() => setIsSelectorOpen(true)}
+                >
+                  <motion.span
+                    whileHover={{ scale: 1.02, color: '#3b82f6' }}
+                    whileTap={{ scale: 0.98 }}
+                    className="inline-block text-gray-900 transition-colors duration-200"
+                  >
+                    {viewMode === 'day'
                       ? (
                         <>
-                          <span className="hidden sm:inline">{format(startOfWeek(currentDate), 'MMMM d, yyyy')}</span>
-                          <span className="sm:hidden">{format(startOfWeek(currentDate), 'MMM d')}</span>
+                          <span className="hidden sm:inline">{format(currentDate, 'EEEE, MMMM d')}</span>
+                          <span className="sm:hidden">{format(currentDate, 'MMM d, yyyy')}</span>
                         </>
                       )
-                      : format(currentDate, 'yyyy')
-                }
-              </motion.span>
-            </h2>
-
-            {/* Inline Today indicator */}
-            {((viewMode === 'year' && getYear(currentDate) !== getYear(new Date())) ||
-              (viewMode !== 'year' && format(currentDate, 'yyyy-MM') !== format(new Date(), 'yyyy-MM'))) && (
-                <motion.button
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={goToToday}
-                  className="text-[9px] sm:text-xs text-blue-600 font-bold px-1.5 sm:px-2 py-0.5 bg-blue-50/80 hover:bg-blue-100 rounded-full border border-blue-100/50 transition-colors flex-shrink-0 mx-0.5 sm:mx-1"
-                >
-                  Today
-                </motion.button>
-              )}
+                      : viewMode === 'month'
+                        ? (
+                          <>
+                            <span className="hidden sm:inline">{format(currentDate, 'MMMM yyyy')}</span>
+                            <span className="sm:hidden">{format(currentDate, 'MMM yyyy')}</span>
+                          </>
+                        )
+                        : viewMode === 'week'
+                          ? (
+                            <>
+                              <span className="hidden sm:inline">{format(startOfWeek(currentDate), 'MMMM d, yyyy')}</span>
+                              <span className="sm:hidden">{format(startOfWeek(currentDate), 'MMM d')}</span>
+                            </>
+                          )
+                          : format(currentDate, 'yyyy')
+                    }
+                  </motion.span>
+                </h2>
 
                 <motion.button
                   whileTap={{ scale: 0.9 }}
@@ -801,7 +801,6 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
           {/* View Toggle - Simple Pills */}
           <div className="flex items-center bg-gray-100 rounded-full p-0.5 ml-1 flex-shrink-0">
-
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => setViewMode('month')}
@@ -814,7 +813,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               `}
             >
               <LayoutGrid className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm font-medium">Month</span>
+              <span className="hidden lg:inline text-sm font-medium">Month</span>
             </motion.button>
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -828,7 +827,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               `}
             >
               <Rows3 className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm font-medium">Week</span>
+              <span className="hidden lg:inline text-sm font-medium">Week</span>
             </motion.button>
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -842,7 +841,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               `}
             >
               <CalendarDays className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm font-medium">Year</span>
+              <span className="hidden lg:inline text-sm font-medium">Year</span>
             </motion.button>
             <motion.button
               whileTap={{ scale: 0.95 }}
@@ -856,7 +855,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               `}
             >
               <Columns className="w-4 h-4" />
-              <span className="hidden sm:inline text-sm font-medium">Kanban</span>
+              <span className="hidden xl:inline text-sm font-medium">Kanban</span>
             </motion.button>
           </div>
         </div>
